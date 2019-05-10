@@ -18,7 +18,7 @@
 					</radio>
 				</label>
 			</view>
-			<view class="type-item b-b" @click="changePayType(2)">
+			<!-- <view class="type-item b-b" @click="changePayType(2)">
 				<text class="icon yticon icon-alipay"></text>
 				<view class="con">
 					<text class="tit">支付宝支付</text>
@@ -27,7 +27,7 @@
 					<radio value="" color="#fa436a" :checked='payType == 2' />
 					</radio>
 				</label>
-			</view>
+			</view> -->
 			<view class="type-item" @click="changePayType(3)">
 				<text class="icon yticon icon-erjiye-yucunkuan"></text>
 				<view class="con">

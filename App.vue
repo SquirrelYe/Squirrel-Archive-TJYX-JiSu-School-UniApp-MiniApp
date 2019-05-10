@@ -29,9 +29,12 @@ export default {
 </script>
 
 <style lang="scss">
+@import './common/colorui/main.css';
+@import './common/colorui/icon.css';
+@import './common/colorui/animation.css';
 /*
-		全局公共样式和字体图标
-	*/
+	全局公共样式和字体图标
+*/
 @font-face {
 	font-family: yticon;
 	font-weight: normal;

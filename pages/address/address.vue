@@ -28,18 +28,18 @@
 				source: 0,
 				addressList: [
 					{
-						name: '刘晓晓',
-						mobile: '18666666666',
-						addressName: '贵族皇仕牛排(东城店)',
-						address: '北京市东城区',
-						area: 'B区',
+						name: '叶泫',
+						mobile: '17695796264',
+						addressName: '天津城建大学启能斋',
+						address: '天津西青',
+						area: '张家窝镇',
 						default: true
 					},{
-						name: '刘大大',
-						mobile: '18667766666',
-						addressName: '龙回1区12号楼',
-						address: '山东省济南市历城区',
-						area: '西单元302',
+						name: '李连鑫',
+						mobile: '13043296672',
+						addressName: '天津城建大学启能斋',
+						address: '天津西青',
+						area: '张家窝镇',
 						default: false,
 					}
 				]

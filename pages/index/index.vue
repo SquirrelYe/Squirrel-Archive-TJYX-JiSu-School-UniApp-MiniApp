@@ -2,7 +2,7 @@
 	<view class="container">
 		<!-- 小程序头部兼容 -->
 		<!-- #ifdef MP -->
-		<view class="mp-search-box"><input class="ser-input" type="text" value="输入关键字搜索" disabled /></view>
+		<!-- <view class="mp-search-box"><input class="ser-input" type="text" value="输入关键字搜索" disabled /></view> -->
 		<!-- #endif -->
 
 		<!-- 头部轮播 -->
@@ -26,104 +26,38 @@
 		<!-- 分类 -->
 		<view class="cate-section">
 			<view class="cate-item">
-				<image src="/static/temp/c3.png"></image>
-				<text>环球美食</text>
+				<image src="/static/kind/cards.png"></image>
+				<text>开卡</text>
+			</view>
+			<view class="cate-item" @click="navToPage('/pages/flow/flow')">
+				<image src="/static/kind/kuaidi.png"></image>
+				<text>快递</text>
+			</view>
+			<view class="cate-item" @click="navToPage('/pages/exam/exam')">
+				<image src="/static/kind/exam.png"></image>
+				<text>考试</text>
 			</view>
 			<view class="cate-item">
-				<image src="/static/temp/c5.png"></image>
-				<text>个护美妆</text>
+				<image src="/static/kind/fruit.png"></image>
+				<text>水果</text>
 			</view>
 			<view class="cate-item">
-				<image src="/static/temp/c6.png"></image>
-				<text>营养保健</text>
-			</view>
-			<view class="cate-item">
-				<image src="/static/temp/c7.png"></image>
-				<text>家居厨卫</text>
-			</view>
-			<view class="cate-item">
-				<image src="/static/temp/c8.png"></image>
-				<text>速食生鲜</text>
+				<image src="/static/kind/journey.png"></image>
+				<text>旅游</text>
 			</view>
 		</view>
 
 		<view class="ad-1"><image src="/static/temp/ad1.jpg" mode="scaleToFill"></image></view>
 
-		<!-- 秒杀楼层 -->
-		<view class="seckill-section m-t">
-			<view class="s-header">
-				<image class="s-img" src="/static/temp/secskill-img.jpg" mode="widthFix"></image>
-				<text class="tip">8点场</text>
-				<text class="hour timer">07</text>
-				<text class="minute timer">13</text>
-				<text class="second timer">55</text>
-				<text class="yticon icon-you"></text>
-			</view>
-			<scroll-view class="floor-list" scroll-x>
-				<view class="scoll-wrapper">
-					<view v-for="(item, index) in goodsList" :key="index" class="floor-item" @click="navToDetailPage(item)">
-						<image :src="item.image" mode="aspectFill"></image>
-						<text class="title clamp">{{ item.title }}</text>
-						<text class="price">￥{{ item.price }}</text>
-					</view>
-				</view>
-			</scroll-view>
-		</view>
-
-		<!-- 团购楼层 -->
-		<view class="f-header m-t">
-			<image src="/static/temp/h1.png"></image>
-			<view class="tit-box">
-				<text class="tit">精品团购</text>
-				<text class="tit2">Boutique Group Buying</text>
-			</view>
-			<text class="yticon icon-you"></text>
-		</view>
-		<view class="group-section">
-			<swiper class="g-swiper" :duration="500">
-				<swiper-item class="g-swiper-item" v-for="(item, index) in goodsList" :key="index" v-if="index % 2 === 0" @click="navToDetailPage(item)">
-					<view class="g-item left">
-						<image :src="item.image" mode="aspectFill"></image>
-						<view class="t-box">
-							<text class="title clamp">{{ item.title }}</text>
-							<view class="price-box">
-								<text class="price">￥{{ item.price }}</text>
-								<text class="m-price">￥188</text>
-							</view>
-
-							<view class="pro-box">
-								<view class="progress-box"><progress percent="72" activeColor="#fa436a" active stroke-width="6" /></view>
-								<text>6人成团</text>
-							</view>
-						</view>
-					</view>
-					<view class="g-item right">
-						<image :src="goodsList[index + 1].image" mode="aspectFill"></image>
-						<view class="t-box">
-							<text class="title clamp">{{ goodsList[index + 1].title }}</text>
-							<view class="price-box">
-								<text class="price">￥{{ goodsList[index + 1].price }}</text>
-								<text class="m-price">￥188</text>
-							</view>
-							<view class="pro-box">
-								<view class="progress-box"><progress percent="72" activeColor="#fa436a" active stroke-width="6" /></view>
-								<text>10人成团</text>
-							</view>
-						</view>
-					</view>
-				</swiper-item>
-			</swiper>
-		</view>
-
 		<!-- 分类推荐楼层 -->
 		<view class="f-header m-t">
 			<image src="/static/temp/h1.png"></image>
 			<view class="tit-box">
-				<text class="tit">分类精选</text>
-				<text class="tit2">Competitive Products For You</text>
+				<text class="tit">热门推荐</text>
+				<text class="tit2">popular Products For You</text>
 			</view>
 			<text class="yticon icon-you"></text>
-		</view>
+		</view>		
 		<view class="hot-floor">
 			<view class="floor-img-box">
 				<image
@@ -139,75 +73,10 @@
 						<text class="title clamp">{{ item.title }}</text>
 						<text class="price">￥{{ item.price }}</text>
 					</view>
-					<view class="more">
-						<text>查看全部</text>
-						<text>More+</text>
-					</view>
-				</view>
-			</scroll-view>
-		</view>
-		<view class="hot-floor">
-			<view class="floor-img-box">
-				<image
-					class="floor-img"
-					src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1553409984228&di=dee176242038c2d545b7690b303d65ea&imgtype=0&src=http%3A%2F%2Fhbimg.b0.upaiyun.com%2F5ef4da9f17faaf4612f0d5046f4161e556e9bbcfdb5b-rHjf00_fw658"
-					mode="scaleToFill"
-				></image>
-			</view>
-			<scroll-view class="floor-list" scroll-x>
-				<view class="scoll-wrapper">
-					<view v-for="(item, index) in goodsList" :key="index" class="floor-item" @click="navToDetailPage(item)">
-						<image :src="item.image3" mode="aspectFill"></image>
-						<text class="title clamp">{{ item.title }}</text>
-						<text class="price">￥{{ item.price }}</text>
-					</view>
-					<view class="more">
-						<text>查看全部</text>
-						<text>More+</text>
-					</view>
-				</view>
-			</scroll-view>
-		</view>
-		<view class="hot-floor">
-			<view class="floor-img-box">
-				<image
-					class="floor-img"
-					src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1553409794730&di=12b840ec4f5748ef06880b85ff63e34e&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F01dc03589ed568a8012060c82ac03c.jpg%40900w_1l_2o_100sh.jpg"
-					mode="scaleToFill"
-				></image>
-			</view>
-			<scroll-view class="floor-list" scroll-x>
-				<view class="scoll-wrapper">
-					<view v-for="(item, index) in goodsList" :key="index" class="floor-item" @click="navToDetailPage(item)">
-						<image :src="item.image2" mode="aspectFill"></image>
-						<text class="title clamp">{{ item.title }}</text>
-						<text class="price">￥{{ item.price }}</text>
-					</view>
-					<view class="more">
-						<text>查看全部</text>
-						<text>More+</text>
-					</view>
 				</view>
 			</scroll-view>
 		</view>
 
-		<!-- 猜你喜欢 -->
-		<view class="f-header m-t">
-			<image src="/static/temp/h1.png"></image>
-			<view class="tit-box">
-				<text class="tit">猜你喜欢</text>
-				<text class="tit2">Guess You Like It</text>
-			</view>
-			<text class="yticon icon-you"></text>
-		</view>
-
-		<view class="guess-section">
-			<view v-for="(item, index) in goodsList" :key="index" class="guess-item" @click="navToDetailPage(item)">
-				<view class="image-wrapper"><image :src="item.image" mode="aspectFill"></image></view>
-				<text class="title clamp">{{ item.title }}</text>
-				<text class="price">￥{{ item.price }}</text>
-			</view>
-		</view>
 	</view>
 </template>
 
@@ -227,6 +96,11 @@ export default {
 		this.loadData();
 	},
 	methods: {
+		navToPage(url){
+			uni.navigateTo({  
+				url
+			})  
+		},
 		/**
 		 * 请求静态数据只是为了代码不那么乱
 		 * 分次请求未作整合
@@ -423,7 +297,7 @@ page {
 		height: 88upx;
 		margin-bottom: 14upx;
 		border-radius: 50%;
-		opacity: 0.7;
+		opacity: 1;
 		box-shadow: 4upx 4upx 20upx rgba(250, 67, 106, 0.3);
 	}
 }

@@ -5,7 +5,7 @@
 			"path": "pages/index/index",
 			"style": {
 				// #ifdef MP 
-				"navigationBarTitleText": "Dloud商城",
+				"navigationBarTitleText": "极速校园",
 				// "navigationStyle": "custom",
 				// #endif 
 				"app-plus": {
@@ -49,13 +49,28 @@
 					}
 				}
 			}
-		}, {
+		},
+		{
+			"path": "pages/exam/exam",
+			"style": {
+				"navigationBarTitleText": "考试",				
+				"app-plus": {
+					"bounce": "none"
+				}
+			}
+		},
+		{
 			"path": "pages/set/set",
 			"style": {
 				"navigationBarTitleText": "设置"
 			}
 		},
-
+		{
+			"path": "pages/user/wallet/wallet",
+			"style": {
+				"navigationBarTitleText": "钱包"
+			}
+		},
 		{
 			"path": "pages/userinfo/userinfo",
 			"style": {
@@ -77,11 +92,21 @@
 				}
 			}
 		}, {
+			"path": "pages/public/register",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom",
+				"app-plus": {
+					"titleNView": false,
+					"animationType": "slide-in-bottom"
+				}
+			}
+		}, {
 			"path": "pages/user/user",
 			"style": {
 				"navigationBarTitleText": "我的",
 				// #ifdef MP
-				"navigationStyle": "custom",
+				// "navigationStyle": "custom",
 				// #endif
 				"app-plus": {
 					"bounce": "none",
@@ -137,6 +162,11 @@
 			"path": "pages/address/address",
 			"style": {
 				"navigationBarTitleText": "收货地址"
+			}
+		},{
+			"path": "pages/set/dashi/dashi",
+			"style": {
+				"navigationBarTitleText": "申请校园大使"
 			}
 		}, {
 			"path": "pages/address/addressManage",
@@ -205,13 +235,13 @@
 				"text": "首页"
 			},
 			{
-				"pagePath": "pages/flow/flow",
+				"pagePath": "pages/category/category",
 				"iconPath": "static/tab-cate.png",
 				"selectedIconPath": "static/tab-cate-current.png",
 				"text": "分类"
 			},
 			{
-				"pagePath": "pages/category/category",
+				"pagePath": "pages/money/money",
 				"iconPath": "static/add.png",
 				"selectedIconPath": "static/add1.png",
 				"text": "发布"

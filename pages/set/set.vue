@@ -1,31 +1,18 @@
 <template>
 	<view class="container">
-		<view class="list-cell b-b m-t" @click="navTo('个人资料')" hover-class="cell-hover" :hover-stay-time="50">
-			<text class="cell-tit">个人资料</text>
-			<text class="cell-more yticon icon-you"></text>
-		</view>
-		<view class="list-cell b-b" @click="navTo('收货地址')" hover-class="cell-hover" :hover-stay-time="50">
+		<view class="list-cell b-b" @click="navToPage('/pages/address/address')" hover-class="cell-hover" :hover-stay-time="50">
 			<text class="cell-tit">收货地址</text>
 			<text class="cell-more yticon icon-you"></text>
 		</view>
-		<view class="list-cell" @click="navTo('实名认证')" hover-class="cell-hover" :hover-stay-time="50">
-			<text class="cell-tit">实名认证</text>
+		<view class="list-cell" @click="navToPage('/pages/set/dashi/dashi')" hover-class="cell-hover" :hover-stay-time="50">
+			<text class="cell-tit">大使认证</text>
 			<text class="cell-more yticon icon-you"></text>
 		</view>
-		
-		<view class="list-cell m-t">
-			<text class="cell-tit">消息推送</text>
-			<switch checked color="#fa436a" @change="switchChange" />
-		</view>
-		<view class="list-cell m-t b-b" @click="navTo('清除缓存')" hover-class="cell-hover" :hover-stay-time="50">
-			<text class="cell-tit">清除缓存</text>
+		<view class="list-cell b-b m-t"  @tap="showModal" data-target="Modal" hover-class="cell-hover" :hover-stay-time="50">
+			<text class="cell-tit">关于我们</text>
 			<text class="cell-more yticon icon-you"></text>
 		</view>
-		<view class="list-cell b-b" @click="navTo('关于Dcloud')" hover-class="cell-hover" :hover-stay-time="50">
-			<text class="cell-tit">关于Dcloud</text>
-			<text class="cell-more yticon icon-you"></text>
-		</view>
-		<view class="list-cell">
+		<view class="list-cell" @click="update()">
 			<text class="cell-tit">检查更新</text>
 			<text class="cell-tip">当前版本 1.0.3</text>
 			<text class="cell-more yticon icon-you"></text>
@@ -33,17 +20,30 @@
 		<view class="list-cell log-out-btn" @click="toLogout">
 			<text class="cell-tit">退出登录</text>
 		</view>
+		
+		
+		<view class="cu-modal" :class="modalName=='Modal'?'show':''">
+			<view class="cu-dialog">
+				<view class="cu-bar bg-white justify-end">
+					<view class="content">我们是谁</view>
+					<view class="action" @tap="hideModal">
+						<text class="cuIcon-close text-red"></text>
+					</view>
+				</view>
+				<view class="padding-xl">
+					Modal 内容。
+				</view>
+			</view>
+		</view>
 	</view>
 </template>
 
 <script>
-	import {  
-	    mapMutations  
-	} from 'vuex';
+	import { mapMutations } from 'vuex';
 	export default {
 		data() {
-			return {
-				
+			return {				
+				modalName: null,
 			};
 		},
 		methods:{
@@ -52,6 +52,11 @@
 			navTo(url){
 				this.$api.msg(`跳转到${url}`);
 			},
+			navToPage(url){
+				uni.navigateTo({  
+					url
+				})  
+			}, 
 			//退出登录
 			toLogout(){
 				uni.showModal({
@@ -66,10 +71,16 @@
 				    }
 				});
 			},
-			//switch
-			switchChange(e){
-				let statusTip = e.detail.value ? '打开': '关闭';
-				this.$api.msg(`${statusTip}消息推送`);
+			update(){
+				uni.showModal({
+					title:'已是最新版本'
+				})
+			},			
+			showModal(e) {
+				this.modalName = e.currentTarget.dataset.target
+			},
+			hideModal(e) {
+				this.modalName = null
 			},
 
 		}

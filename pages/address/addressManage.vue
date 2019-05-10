@@ -9,15 +9,15 @@
 			<input class="input" type="number" v-model="addressData.mobile" placeholder="收货人手机号码" placeholder-class="placeholder" />
 		</view>
 		<view class="row b-b">
-			<text class="tit">地址</text>
+			<text class="tit">学校</text>
 			<text @click="chooseLocation" class="input">
 				{{addressData.addressName}}
 			</text>
 			<text class="yticon icon-shouhuodizhi"></text>
 		</view>
 		<view class="row b-b"> 
-			<text class="tit">门牌号</text>
-			<input class="input" type="text" v-model="addressData.area" placeholder="楼号、门牌" placeholder-class="placeholder" />
+			<text class="tit">宿舍号</text>
+			<input class="input" type="text" v-model="addressData.area" placeholder="宿舍楼、门牌号" placeholder-class="placeholder" />
 		</view>
 		
 		<view class="row default-row">
@@ -85,7 +85,7 @@
 					return;
 				}
 				if(!data.area){
-					this.$api.msg('请填写门牌号信息');
+					this.$api.msg('请填写宿舍信息');
 					return;
 				}
 				

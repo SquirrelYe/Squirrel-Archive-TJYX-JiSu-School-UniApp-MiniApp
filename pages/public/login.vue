@@ -37,9 +37,6 @@
 				</view>
 			</view>
 			<button class="confirm-btn" @click="toLogin" :disabled="logining">登录</button>
-			<view class="forget-section">
-				忘记密码?
-			</view>
 		</view>
 		<view class="register-section">
 			还没有账号?
@@ -74,7 +71,7 @@
 				uni.navigateBack();
 			},
 			toRegist(){
-				this.$api.msg('去注册');
+				uni.navigateTo({url:'/pages/public/register'})
 			},
 			async toLogin(){
 				this.logining = true;
