@@ -25,7 +25,7 @@
 		</view>
 		<!-- 分类 -->
 		<view class="cate-section">
-			<view class="cate-item">
+			<view class="cate-item" @click="navToPage('/pages/card/card')">
 				<image src="/static/kind/cards.png"></image>
 				<text>开卡</text>
 			</view>
@@ -47,7 +47,7 @@
 			</view>
 		</view>
 
-		<view class="ad-1"><image src="/static/temp/ad1.jpg" mode="scaleToFill"></image></view>
+		<!-- <view class="ad-1"><image src="/static/temp/ad1.jpg" mode="scaleToFill"></image></view> -->
 
 		<!-- 分类推荐楼层 -->
 		<view class="f-header m-t">
@@ -62,7 +62,7 @@
 			<view class="floor-img-box">
 				<image
 					class="floor-img"
-					src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1553409398864&di=4a12763adccf229133fb85193b7cc08f&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201703%2F19%2F20170319150032_MNwmn.jpeg"
+					:src="hot"
 					mode="scaleToFill"
 				></image>
 			</view>
@@ -88,7 +88,8 @@ export default {
 			swiperCurrent: 0,
 			swiperLength: 0,
 			carouselList: [],
-			goodsList: []
+			goodsList: [],
+			hot:'http://bpic.588ku.com/back_pic/05/81/48/485c36f841e84c6.jpg'
 		};
 	},
 
@@ -298,7 +299,7 @@ page {
 		margin-bottom: 14upx;
 		border-radius: 50%;
 		opacity: 1;
-		box-shadow: 4upx 4upx 20upx rgba(250, 67, 106, 0.3);
+		box-shadow: 4upx 4upx 20upx rgba(250, 67, 106, 0.1);
 	}
 }
 .ad-1 {

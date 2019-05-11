@@ -231,6 +231,10 @@ export default {
 		}
 	}
 }
+	
+.cart-list{
+	background: #ffffff;
+}
 /* 购物车列表项 */
 .cart-item {
 	display: flex;

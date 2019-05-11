@@ -4,10 +4,8 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				// #ifdef MP 
 				"navigationBarTitleText": "极速校园",
 				// "navigationStyle": "custom",
-				// #endif 
 				"app-plus": {
 					"titleNView": {
 						"type": "transparent",
@@ -47,6 +45,15 @@
 					"titleNView": {
 						"type": "transparent"
 					}
+				}
+			}
+		},
+		{
+			"path": "pages/card/card",
+			"style": {
+				"navigationBarTitleText": "开卡",				
+				"app-plus": {
+					"bounce": "none"
 				}
 			}
 		},
@@ -106,7 +113,7 @@
 			"style": {
 				"navigationBarTitleText": "我的",
 				// #ifdef MP
-				// "navigationStyle": "custom",
+				"navigationStyle": "custom",
 				// #endif
 				"app-plus": {
 					"bounce": "none",
@@ -194,7 +201,7 @@
         ,{
             "path" : "pages/flow/flow",
             "style" : {
-				"navigationBarTitleText": "瀑布流",
+				"navigationBarTitleText": "校园快递",
 				"app-plus": {
 					"bounce": "none"
 				}
@@ -214,6 +221,24 @@
             "style" : {
 				"enablePullDownRefresh": true,
 				"navigationBarTitleText": "商品列表"
+			}
+        }
+        ,{
+            "path" : "pages/submit/submit",
+            "style": {
+				"navigationBarTitleText": "发布"
+			}
+        }
+        ,{
+            "path" : "pages/logistic/get",
+            "style": {
+				"navigationBarTitleText": "快递代取"
+			}
+        }
+		,{
+            "path" : "pages/logistic/post",
+            "style": {
+				"navigationBarTitleText": "快递代发"
 			}
         }
     ],
@@ -241,7 +266,7 @@
 				"text": "分类"
 			},
 			{
-				"pagePath": "pages/money/money",
+				"pagePath": "pages/submit/submit",
 				"iconPath": "static/add.png",
 				"selectedIconPath": "static/add1.png",
 				"text": "发布"
