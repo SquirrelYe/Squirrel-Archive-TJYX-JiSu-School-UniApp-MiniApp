@@ -15,7 +15,7 @@
 				<text class="text-xs item-center">送货地址：启能斋520宿舍</text>
 				<text class="title item-center">衣服，不大</text>
 				<view class="price-box">
-					<text class="price">风继续吹</text>
+					<text>风继续吹</text>
 					<text>数量 3 ￥ 3</text>
 				</view>
 			</view>
@@ -35,7 +35,6 @@ export default {
 			headerTop: '0px',
 			loadingType: 'more', //加载更多状态
 			filterIndex: 0,
-			cateId: 0, //已选三级分类id
 			goodsList: []
 		};
 	},
@@ -44,8 +43,6 @@ export default {
 		// #ifdef H5
 		this.headerTop = document.getElementsByTagName('uni-page-head')[0].offsetHeight + 'px';
 		// #endif
-		this.cateId = options.tid;
-		this.loadCateList(options.fid, options.sid);
 		this.loadData();
 	},
 	onPageScroll(e) {
@@ -65,17 +62,6 @@ export default {
 		this.loadData();
 	},
 	methods: {
-		//加载分类
-		async loadCateList(fid, sid) {
-			let list = await this.$api.json('cateList');
-			let cateList = list.filter(item => item.pid == fid);
-
-			cateList.forEach(item => {
-				let tempList = list.filter(val => val.pid == item.id);
-				item.child = tempList;
-			});
-			this.cateList = cateList;
-		},
 		//加载商品 ，带下拉刷新和上滑加载
 		async loadData(type = 'add', loading) {
 			//没有更多直接返回
@@ -142,10 +128,9 @@ export default {
 			//测试数据没有写id，用title代替
 			let id = item.title;
 			uni.navigateTo({
-				url: `/pages/product/product?id=${id}`
+				url: `/pages/flow/logistic_detail/logistic_detail`
 			});
 		},
-		stopPrevent() {}
 	}
 };
 </script>

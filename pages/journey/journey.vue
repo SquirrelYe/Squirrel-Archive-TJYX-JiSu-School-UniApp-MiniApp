@@ -30,24 +30,24 @@ export default {
 			cateList: [
 				// 一级菜单
 				{ id: 1, name: '为你推荐' },
-				{ id: 2, name: '计算机' },
-				{ id: 3, name: '驾考' },
-				{ id: 4, name: '普通话' },
+				{ id: 2, name: '商家一' },
+				{ id: 3, name: '商家二' },
+				{ id: 4, name: '商家三' },
 				// 二级菜单
 				{ id: 5, pid: 1, name: '最近热门' },
 				{ id: 6, pid: 1, name: '最近热销' },
-				{ id: 7, pid: 2, name: '计算机' },
-				{ id: 8, pid: 3, name: '驾考' },
-				{ id: 9, pid: 4, name: '普通话' },
+				{ id: 7, pid: 2, name: '进口旅游' },
+				{ id: 8, pid: 3, name: '野生旅游' },
+				{ id: 9, pid: 4, name: '便宜旅游' },
 				// 三级菜单
-				{ id: 13, pid: 5, name: '推荐1', picture: '/static/temp/exam.png' },
-				{ id: 14, pid: 5, name: '推荐2', picture: '/static/temp/exam.png' },
-				{ id: 15, pid: 5, name: '推荐3', picture: '/static/temp/exam.png' },
-				{ id: 16, pid: 5, name: '推荐4', picture: '/static/temp/exam.png' },
-				{ id: 14, pid: 6, name: '热销1', picture: '/static/temp/exam.png' },				
-				{ id: 19, pid: 7, name: '计算机1', picture: '/static/temp/exam.png' },
-				{ id: 20, pid: 8, name: '驾考1', picture: '/static/temp/exam.png' },
-				{ id: 21, pid: 9, name: '普通话1', picture: '/static/temp/exam.png' },
+				{ id: 13, pid: 5, name: '推荐1', picture: '/static/temp/journey.png' },
+				{ id: 14, pid: 5, name: '推荐2', picture: '/static/temp/journey.png' },
+				{ id: 15, pid: 5, name: '推荐3', picture: '/static/temp/journey.png' },
+				{ id: 16, pid: 5, name: '推荐4', picture: '/static/temp/journey.png' },
+				{ id: 14, pid: 6, name: '热销1', picture: '/static/temp/journey.png' },				
+				{ id: 19, pid: 7, name: '进口1', picture: '/static/temp/journey.png' },
+				{ id: 20, pid: 8, name: '野生1', picture: '/static/temp/journey.png' },
+				{ id: 21, pid: 9, name: '便宜1', picture: '/static/temp/journey.png' },
 			]
 		};
 	},
@@ -109,7 +109,7 @@ export default {
 		},
 		navToList(sid, tid) {
 			uni.navigateTo({
-				url: `/pages/exam/exam_list/exam_list?fid=${this.currentId}&sid=${sid}&tid=${tid}`
+				url: `/pages/journey/journey_list/journey_list?fid=${this.currentId}&sid=${sid}&tid=${tid}`
 			});
 		}
 	}

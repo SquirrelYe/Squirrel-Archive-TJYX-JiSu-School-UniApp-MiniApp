@@ -241,6 +241,60 @@
 				"navigationBarTitleText": "快递代发"
 			}
         }
+        ,{
+            "path" : "pages/flow/logistic_detail/logistic_detail",
+             "style": {
+				"navigationBarTitleText": "快递详情"
+			}
+        }
+        ,{
+            "path" : "pages/exam/exam_list/exam_list",
+            "style": {
+				"navigationBarTitleText": "商品详情"
+			}
+        }
+        ,{
+            "path" : "pages/exam/exam_callback/exam_callback",
+            "style" : {
+				"navigationBarTitleText": "商品评价"
+			}
+        }
+        ,{
+            "path" : "pages/fruit/fruit",
+            "style" : {
+				"navigationBarTitleText": "水果"
+			}
+        }
+        ,{
+            "path" : "pages/fruit/fruit_list/fruit_list",
+			"style": {
+				"navigationBarTitleText": "商品详情"
+			}
+        }
+        ,{
+            "path" : "pages/fruit/fruit_callback/fruit_callback",
+            "style" : {
+				"navigationBarTitleText": "商品评价"
+			}
+        }
+        ,{
+            "path" : "pages/journey/journey",
+             "style" : {
+				"navigationBarTitleText": "旅游"
+			}
+        }
+        ,{
+            "path" : "pages/journey/journey_list/journey_list",
+            "style": {
+				"navigationBarTitleText": "商品详情"
+			}
+        }
+        ,{
+            "path" : "pages/journey/journey_callback/journey_callback",
+            "style" : {
+				"navigationBarTitleText": "商品评价"
+			}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

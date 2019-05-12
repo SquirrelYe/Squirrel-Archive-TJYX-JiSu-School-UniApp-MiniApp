@@ -37,11 +37,11 @@
 				<image src="/static/kind/exam.png"></image>
 				<text>考试</text>
 			</view>
-			<view class="cate-item">
+			<view class="cate-item" @click="navToPage('/pages/fruit/fruit')">
 				<image src="/static/kind/fruit.png"></image>
 				<text>水果</text>
 			</view>
-			<view class="cate-item">
+			<view class="cate-item" @click="navToPage('/pages/journey/journey')">
 				<image src="/static/kind/journey.png"></image>
 				<text>旅游</text>
 			</view>
@@ -56,7 +56,6 @@
 				<text class="tit">热门推荐</text>
 				<text class="tit2">popular Products For You</text>
 			</view>
-			<text class="yticon icon-you"></text>
 		</view>		
 		<view class="hot-floor">
 			<view class="floor-img-box">
@@ -89,7 +88,7 @@ export default {
 			swiperLength: 0,
 			carouselList: [],
 			goodsList: [],
-			hot:'http://bpic.588ku.com/back_pic/05/81/48/485c36f841e84c6.jpg'
+			hot:'http://bpic.588ku.com/back_pic/05/84/39/655c6f6566bbec3.jpg'
 		};
 	},
 
