@@ -22,15 +22,15 @@
 			></image>
 		</navigator>
 
-		<view class="row b-b">
-			<text class="tit">学号</text>
-			<input class="input" type="number" v-model="address.xuehao" placeholder="请输入学号" placeholder-class="placeholder" />
+		<view class="row b-b margin-top">
+			<text class="tit">收货人</text>
+			<input class="input" type="text" v-model="address.name" placeholder="请输入收货人" placeholder-class="placeholder text-sm" />
 		</view>
 		<view class="row b-b">
-			<text class="tit">数量</text>
-			<input class="input" type="number" v-model="address.sum" placeholder="请输入快递数量" placeholder-class="placeholder" />
+			<text class="tit">手机号码</text>
+			<input class="input" type="number" v-model="address.phone" placeholder="请输入收货人手机号" placeholder-class="placeholder text-sm" />
 		</view>
-		<view class="cu-form-group"><textarea maxlength="-1" v-model="address.msg" :placeholder="msg"></textarea></view>
+		<view class="cu-form-group"><textarea maxlength="-1" v-model="address.msg" :placeholder="msg" placeholder-class="placeholder text-sm"></textarea></view>
 
 		<button class="add-btn" @click="confirm">提交</button>
 	</view>
@@ -41,19 +41,19 @@ export default {
 	data() {
 		return {
 			address:{
-				xuehao:'',
-				sum:'',
+				name:'',
+				phone:null,
 				msg:''
 			},
 			addressData: {
-				name: '点击选择收货地址',
+				name: '点击选择取货地址',
 				mobile: '',
 				addressName: '',
 				address: '',
 				area: '',
 				default: false,
 			},
-			msg: '备注信息，物品的大小以及重量相关信息'
+			msg: '详细地址：精确到道路、门牌号、小区、楼栋号、单元室等'
 		};
 	},
 	onLoad(option) {},
@@ -81,12 +81,8 @@ export default {
 				this.$api.msg('请选择收货位置');
 				return;
 			}
-			if (!/(^1[5|6|7|8|9][0-9]{8}$)/.test(data.xuehao)) {
-				this.$api.msg('请输入正确的学号');
-				return;
-			}
 			if (!data.sum || data.sum<=0) {
-				this.$api.msg('请输入正确快递数量');
+				this.$api.msg('请输入正确寄件数量');
 				return;
 			}
 			// 提交代取信息

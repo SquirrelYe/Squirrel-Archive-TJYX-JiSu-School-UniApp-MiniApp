@@ -10,10 +10,6 @@
 				<image src="/static/submit/post.png"></image>
 				<text>快递代发</text>
 			</view>
-			<view class="cate-item" @click="navToPage('/pages/card/card')">
-				<image src="/static/submit/card.png"></image>
-				<text>开卡申请</text>
-			</view>
 		</view>
 	</view>
 </template>

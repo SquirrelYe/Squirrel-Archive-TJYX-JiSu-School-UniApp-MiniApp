@@ -1,5 +1,13 @@
 <template>
 	<view class="content">
+		<view class="bg-white padding margin-top-xs">
+			<view class="cu-steps">
+				<view class="cu-item" :class="index > basics ? '' : 'text-orange'" v-for="(item, index) in basicsList" :key="index">
+					<text :class="index > basics ? 'cuIcon-title' : 'cuIcon-' + item.icon"></text>
+					{{ item.name }}
+				</view>
+			</view>
+		</view>
 		<view class="row b-b">
 			<text class="tit">姓名</text>
 			<input class="input" type="text" v-model="addressData.name" placeholder="请输入真实姓名" placeholder-class="placeholder" />
@@ -24,7 +32,7 @@
 			<input class="input" type="text" v-model="addressData.dom" placeholder="宿舍楼、门牌号" placeholder-class="placeholder" />
 		</view>
 		
-		<view class="cu-bar bg-white margin-top">
+		<view class="cu-bar bg-white">
 			<view class="action">
 				身份认证
 			</view>
@@ -62,6 +70,13 @@
 					default: false
 				},
 				imgList: [],
+				basics: 3,
+				basicsList: [
+					{ icon: 'usefullfill', name: '未申请' },
+					{ icon: 'radioboxfill', name: '已申请' },
+					{ icon: 'subscription', name: '待认证' },
+					{ icon: 'roundcheckfill', name: '已完成' }
+				]
 			}
 		},
 		onLoad(option){

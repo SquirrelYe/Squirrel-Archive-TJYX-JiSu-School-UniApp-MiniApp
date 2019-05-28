@@ -124,7 +124,7 @@ export default {
 		},
 		buy() {
 			uni.navigateTo({
-				url: `/pages/money/pay`
+				url: `/pages/order/createOrder`
 			});
 		},
 		// 评价
