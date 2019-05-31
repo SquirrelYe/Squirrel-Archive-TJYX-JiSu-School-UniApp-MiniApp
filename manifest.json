@@ -65,5 +65,10 @@
                 "desc" : "定位用户学校"
             }
         }
+    },
+    "h5" : {
+        "devServer" : {
+            "https" : false
+        }
     }
 }

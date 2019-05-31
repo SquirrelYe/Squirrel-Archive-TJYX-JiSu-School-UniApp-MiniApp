@@ -3,7 +3,7 @@
 		<view class="user-section">
 			<image class="bg" src="/static/user/back.jpg"></image>
 			<view class="user-info-box">
-				<view class="portrait-box"><image class="portrait" :src="userInfo.portrait || '/static/missing-face.png'"></image></view>
+				<view class="portrait-box"><image class="portrait" :src="userInfo.portrait || '/static/missing-face.png'" @click="navTo('/pages/set/set')"></image></view>
 				<view class="info-box">
 					<text class="username">{{ userInfo.nickname || '游客' }}</text>
 				</view>

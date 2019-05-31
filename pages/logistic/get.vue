@@ -1,7 +1,6 @@
 <template>
 	<view class="content">
-		<view class="container b-b">
-			<!-- 分类 -->
+		<!-- <view class="container b-b">
 			<view class="cate-section">
 				<view class="cate-item" @click="switchkd(0)">
 					<image src="/static/submit/select_down.png" v-if="address.judge === 0"></image>
@@ -14,7 +13,7 @@
 					<text>煦园驿站</text>
 				</view>
 			</view>
-		</view>
+		</view> -->
 		
 		<text style="display:block;padding: 16upx 30upx 10upx;lihe-height: 1.6;color: #fa436a;font-size: 24upx;">选择你的收货地址，校园大使会将包裹送至此地址。</text>
 

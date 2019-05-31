@@ -14,29 +14,34 @@
 					<text class="tit">手机号码</text>
 					<input 
 						type="number" 
-						:value="mobile" 
 						placeholder="请输入手机号码"
 						maxlength="11"
-						data-key="mobile"
-						@input="inputChange"
+						v-model="mobile"
 					/>
 				</view>
 				<view class="input-item">
 					<text class="tit">密码</text>
 					<input 
 						type="mobile" 
-						value="" 
 						placeholder="8-18位不含特殊字符的数字、字母组合"
 						placeholder-class="input-empty"
 						maxlength="20"
 						password 
-						data-key="password"
-						@input="inputChange"
-						@confirm="toRegister"
+						v-model="password"
+					/>
+				</view>
+				<view class="input-item">
+					<text class="tit">学校</text>
+					<input 
+						type="text" 
+						placeholder="官方认证的学校名称、全称"
+						placeholder-class="input-empty"
+						maxlength="20"
+						v-model="school"
 					/>
 				</view>
 			</view>
-			<button class="confirm-btn" @click="toRegister" :disabled="logining">注册</button>
+			<button class="confirm-btn" :disabled="logining" v-if="canIUse" open-type="getUserInfo" @getuserinfo="bindGetUserInfo" @click="toRegister">注册</button>
 		</view>
 	</view>
 </template>
@@ -49,26 +54,42 @@
 	export default{
 		data(){
 			return {
+				canIUse: uni.canIUse('button.open-type.getUserInfo'),
+
 				mobile: '',
 				password: '',
+				school:'',
 				logining: false
 			}
 		},
 		onLoad(){
-			
+			// 查看是否授权
+			wx.getSetting({
+			  success (res){
+				if (res.authSetting['scope.userInfo']) {
+				  // 已经授权，可以直接调用 getUserInfo 获取头像昵称
+				  wx.getUserInfo({
+					success: function(res) {
+					  console.log(res.userInfo)
+					}
+				  })
+				}
+			  }
+			})
 		},
 		methods: {
-			...mapMutations(['login']),
-			inputChange(e){
-				const key = e.currentTarget.dataset.key;
-				this[key] = e.detail.value;
-			},
+			...mapMutations(['login']),			
 			navBack(){
 				uni.navigateBack();
 			},
+			bindGetUserInfo(e) {
+				console.log(e.detail.userInfo)
+				
+			},
 			async toRegister(){
-				this.logining = true;
-				const {mobile, password} = this;
+				// this.logining = true;
+				const {mobile, password ,school} = this;
+				console.log(mobile, password, school)
 				/* 数据验证模块
 				if(!this.$api.match({
 					mobile,
@@ -78,18 +99,18 @@
 					return;
 				}
 				*/
-				const sendData = {
-					mobile,
-					password
-				};
-				const result = await this.$api.json('userInfo');
-				if(result.status === 1){
-					this.login(result.data);
-                    uni.navigateBack();  
-				}else{
-					this.$api.msg(result.msg);
-					this.logining = false;
-				}
+				// const sendData = {
+				// 	mobile,
+				// 	password
+				// };
+				// const result = await this.$api.json('userInfo');
+				// if(result.status === 1){
+				// 	this.login(result.data);
+                //     uni.navigateBack();  
+				// }else{
+				// 	this.$api.msg(result.msg);
+				// 	this.logining = false;
+				// }
 			}
 		},
 

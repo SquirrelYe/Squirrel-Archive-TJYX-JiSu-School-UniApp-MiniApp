@@ -65,7 +65,7 @@
 					mode="scaleToFill"
 				></image>
 			</view>
-			<scroll-view class="floor-list" scroll-x>
+			<!-- <scroll-view class="floor-list" scroll-x>
 				<view class="scoll-wrapper">
 					<view v-for="(item, index) in goodsList" :key="index" class="floor-item" @click="navToDetailPage(item)">
 						<image :src="item.image" mode="aspectFill"></image>
@@ -73,13 +73,15 @@
 						<text class="price">￥{{ item.price }}</text>
 					</view>
 				</view>
-			</scroll-view>
+			</scroll-view> -->
 		</view>
 
 	</view>
 </template>
 
 <script>
+import apis from '../../utils/apis'
+
 export default {
 	data() {
 		return {
@@ -88,7 +90,7 @@ export default {
 			swiperLength: 0,
 			carouselList: [],
 			goodsList: [],
-			hot:'http://bpic.588ku.com/back_pic/05/84/39/655c6f6566bbec3.jpg'
+			hot:'http://bpic.588ku.com/back_pic/05/84/39/655c6f6566bbec3.jpg',
 		};
 	},
 
@@ -97,9 +99,24 @@ export default {
 	},
 	methods: {
 		navToPage(url){
-			uni.navigateTo({  
-				url
-			})  
+			
+			apis.test.login('yx',123)
+			.then(res=>{
+				console.log(res.data)
+				uni.navigateTo({ url })
+			})
+			// uni.setNavigationBarTitle({
+			// 	title: '新的标题'
+			// });
+			// uni.showActionSheet({
+			// 	itemList: ['A', 'B', 'C','A', 'B', 'C'],
+			// 	success: function (res) {
+			// 		console.log('选中了第' + (res.tapIndex + 1) + '个按钮');
+			// 	},
+			// 	fail: function (res) {
+			// 		console.log(res.errMsg);
+			// 	}
+			// });
 		},
 		/**
 		 * 请求静态数据只是为了代码不那么乱

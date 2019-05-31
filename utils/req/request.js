@@ -1,7 +1,5 @@
 export default class Request {
-	constructor(arg) {
-		this.request(arg)
-	}
+	constructor(arg) { this.request(arg) }
 	config = {
 		baseUrl: '',
 		header: {
@@ -14,36 +12,24 @@ export default class Request {
 		fail() {},
 		complete() {}
 	}
-	static posUrl(url) { /* 判断url是否为绝对路径 */
+	/* 判断url是否为绝对路径 */
+	static posUrl(url) {
 		return /(http|https):\/\/([\w.]+\/?)\S*/.test(url)
 	}
 	interceptor = {
-		request(f) {
-			if (f) {
-				Request.requestBeforeFun = f
-			}
-		},
-		response(f) {
-			if (f) {
-				Request.requestComFun = f
-			}
-		}
+		request(f) { if (f) { Request.requestBeforeFun = f } },
+		response(f) { if (f) { Request.requestComFun = f } }
 	}
-	static requestBeforeFun(config) {
-		return config
-	}
-	static requestComFun(response) {
-		return response
-	}
-	setConfig(f) {
-		this.config = f(this.config)
-	}
+	static requestBeforeFun(config) { return config }
+	static requestComFun(response) { return response }
+	setConfig(f) { this.config = f(this.config) }
+	
 	request(options = {}) {
 		options.baseUrl = options.baseUrl || this.config.baseUrl
 		options.dataType = options.dataType || this.config.dataType
 		options.url = Request.posUrl(options.url) ? options.url : (options.baseUrl + options.url)
 		options.data = options.data || {},
-			options.header = options.header || this.config.header
+		options.header = options.header || this.config.header
 		options.method = options.method || this.config.method
 		return new Promise((resolve, reject) => {
 			let _config = null
@@ -58,24 +44,22 @@ export default class Request {
 					reject(response)
 				}
 			}
-			let afC = { ...this.config,
-				...options
-			}
-			_config = { ...afC,
-				...Request.requestBeforeFun(afC)
-			}
+			let afC = { ...this.config, ...options }
+			_config = { ...afC, ...Request.requestBeforeFun(afC) }
 			uni.request(_config)
 		})
 	}
+	// GET 请求
 	get(url, data, options = {}) {
 		options.url = url
 		options.data = data
 		options.method = 'GET'
 		return this.request(options)
 	}
+	// POST 请求
 	post(url, data, options = {}) {
 		options.url = url
-		options.data = data
+		options.data = { 'ceshi': true, ...data }
 		options.method = 'POST'
 		return this.request(options)
 	}
