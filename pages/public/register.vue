@@ -23,7 +23,7 @@
 					<text class="tit">密码</text>
 					<input 
 						type="mobile" 
-						placeholder="8-18位不含特殊字符的数字、字母组合"
+						placeholder="6-16位不含特殊字符的数字、字母组合"
 						placeholder-class="input-empty"
 						maxlength="20"
 						password 
@@ -32,13 +32,11 @@
 				</view>
 				<view class="input-item">
 					<text class="tit">学校</text>
-					<input 
-						type="text" 
-						placeholder="官方认证的学校名称、全称"
-						placeholder-class="input-empty"
-						maxlength="20"
-						v-model="school"
-					/>
+					<picker @change="PickerChange" :value="index" :range="school" >
+						<view class="picker">
+							{{index>-1?school[index]:'选择学校'}}
+						</view>
+					</picker>
 				</view>
 			</view>
 			<button class="confirm-btn" :disabled="logining" v-if="canIUse" open-type="getUserInfo" @getuserinfo="bindGetUserInfo" @click="toRegister">注册</button>
@@ -47,22 +45,43 @@
 </template>
 
 <script>
-	import {  
-        mapMutations  
-    } from 'vuex';
+	import { mapMutations, mapState } from 'vuex';
+	import apis from '../../utils/apis.js'
+	import wx_api from '../../utils/wx_api.js'
 	
 	export default{
 		data(){
 			return {
 				canIUse: uni.canIUse('button.open-type.getUserInfo'),
+				isGetUserInfo :false,
 
 				mobile: '',
 				password: '',
 				school:'',
-				logining: false
+				logining: false,
+				
+				index: -1,
+				school: [],
+				schoolObj:{},
+				userinfo:'',
+				openid: null,
+				AccessTaken: null
 			}
 		},
+		computed:{ ...mapState(['userInfo'])},
 		onLoad(){
+			let _this = this
+			// 获取 openid
+			wx.login({
+			  complete: function (res) {
+				if (res.code) {
+				  console.log("JS_CODE\t------>\t" + res.code);
+				  wx_api.getOpenid(res).then(res=>{ console.log('获取openid', res.data) ; _this.openid = res.data.openid })
+				  wx_api.getAccessTaken().then(res => { console.log('获取access_taken', res.data); _this.AccessTaken = res.data.access_token })
+				}
+				else { console.log('登录失败！' + res.errMsg) }
+			  }
+			})
 			// 查看是否授权
 			wx.getSetting({
 			  success (res){
@@ -71,46 +90,75 @@
 				  wx.getUserInfo({
 					success: function(res) {
 					  console.log(res.userInfo)
+					  _this.userinfo = res.userInfo
 					}
 				  })
 				}
 			  }
+			}) 
+			// 获取学校列表
+			apis.school.findAndCountAllOnlyName()
+			.then(res=>{
+				console.log('获取学校列表',res.data)
+				let item = []
+				for (let i = 0; i < res.data.rows.length; i++) {
+					item.push(res.data.rows[i].name)
+				}
+				_this.schoolObj = res.data.rows
+				_this.school = item
 			})
 		},
 		methods: {
-			...mapMutations(['login']),			
-			navBack(){
-				uni.navigateBack();
-			},
-			bindGetUserInfo(e) {
-				console.log(e.detail.userInfo)
-				
-			},
+			...mapMutations(['getInfo']),			
+			navBack(){ uni.navigateBack(); },
+			// 获取用户信息
+			bindGetUserInfo(e) { console.log(e.detail.userInfo); this.userinfo = e.detail.userInfo },
+			// 选择学校
+			PickerChange(e) { this.index = e.detail.value },
 			async toRegister(){
-				// this.logining = true;
-				const {mobile, password ,school} = this;
-				console.log(mobile, password, school)
-				/* 数据验证模块
-				if(!this.$api.match({
-					mobile,
-					password
-				})){
-					this.logining = false;
-					return;
-				}
-				*/
-				// const sendData = {
-				// 	mobile,
-				// 	password
-				// };
-				// const result = await this.$api.json('userInfo');
-				// if(result.status === 1){
-				// 	this.login(result.data);
-                //     uni.navigateBack();  
-				// }else{
-				// 	this.$api.msg(result.msg);
-				// 	this.logining = false;
-				// }
+				let _this = this
+				// 查看是否授权
+				wx.getSetting({
+				  success (res){
+					if (res.authSetting['scope.userInfo']) {
+						const {userinfo, mobile, password ,schoolObj ,index, openid, AccessTaken} = _this;
+						// 校验
+						if(!openid) _this.$api.msg('获取唯一识别码失败') ;
+						else if ( !_this.$regex.phoneP.test(mobile)) _this.$api.msg('电话号码不合法') ;
+						else if ( !_this.$regex.passP.test(password)) _this.$api.msg('密码不合法') ;
+						else if ( index == -1 ) _this.$api.msg('未选择学校') ;
+						else {
+							console.log(userinfo, mobile, password, index, schoolObj[index],openid,AccessTaken)							
+							// 调用注册接口
+							apis.user.cusCreate(mobile,openid,password, schoolObj[index].id)
+							.then(res=>{
+								console.log(res.data)
+								let u = _this.userinfo
+								if(res.data[1]){
+									// 上传微信信息
+									apis.info.creat(res.data[0].id, u.nickName, u.avatarUrl, u.gender, u.province, u.city, u.country)
+									.then(res=>{
+										console.log(res)
+										if(res.statusCode === 200){
+											// 保存用户数据到 vuex
+											_this.getInfo(res.data);
+											console.log('vuex',_this.userInfo)
+											_this.$api.msg('注册成功') ;
+											_this.logining = true;
+											uni.navigateBack();  
+										}else{
+											_this.$api.msg('注册失败，请联系客服');
+											_this.logining = false;
+										}
+									})
+								}else _this.$api.msg('电话号码被占用')			
+							})
+						}
+					}else{
+						_this.$api.msg('没有权限')
+					}
+				  }
+				}) 
 			}
 		},
 

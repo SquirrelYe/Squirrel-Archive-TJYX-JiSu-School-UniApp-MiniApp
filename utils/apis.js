@@ -1,6 +1,6 @@
 const http = require('./req/index')
 let req = http.req
-module.exports = {
+export default  {
     test:{
         login(n, p) { return req.post('/ent/user', { 'judge': 5, 'name': n, 'pass': p }) },
     },
@@ -11,6 +11,8 @@ module.exports = {
         update(id, c) { return req.post('/ent/user', { 'judge': 3, 'id': id, 'condition': c }) },
         login(n, p) { return req.post('/ent/user', { 'judge': 5, 'name': n, 'pass': p }) },
         creatAdmin(n, p, m, c, s) { return req.post('/ent/user', { 'judge': 1, 'name': n, 'pass': p, 'mail': m, 'phone': c, 'school_id': s, 'type': 1, 'condition': 0 }) },
+		cusCreate(m,o,p,s) { return req.post('/ent/user', { 'judge': 7, 'phone':m, 'openid':o, 'pass': p ,'school_id': s}) },
+		cusLogin(m, p) { return req.post('/ent/user', { 'judge': 8, 'phone':m, 'pass': p }) },
 
         findAndCountAll(o, l) { return req.post('/ass/user', { 'judge': 0, 'offset': o, 'limit': l }) },
         findOneById(id) { return req.post('/ass/user', { 'judge': 1, 'id': id }) },
@@ -29,9 +31,11 @@ module.exports = {
         update(id, n, d, p) { return req.post('/ent/school', { 'judge': 3, 'id': id, 'name': n, 'detail': d, 'province': p }) },
  
         findAndCountAllLikeByName(n) { return req.post('/ent/school', { 'judge':4, 'name': n }) },
+        findAndCountAllOnlyName(n) { return req.post('/ent/school', { 'judge':5 }) },
     },
     // 认证信息
     authen: {
+		creat(u,n,s,x,p,c,r) { return req.post('/ent/authen', { 'judge': 1, 'user_id': u,'name': n,'school_id':s,'xuehao':x,'phone':p,'card':c,'rz_icon':r }) },
         delete(id) { return req.post('/ent/authen', { 'judge': 2, 'id': id }) },
         update(id, c) { return req.post('/ent/authen', { 'judge': 3, 'id': id, 'condition': c }) },
 
@@ -43,6 +47,7 @@ module.exports = {
     },
     // 用户详细信息
     info: {
+		creat(u,n,a,g,p,c,co){ return req.post('/ent/info', { 'judge': 1, 'user_id': u, 'nickName': n, 'avatarUrl': a, 'gender': g,'province': p,'city': c,'country': co}) },
         delete(id) { return req.post('/ent/info', { 'judge': 2, 'id': id }) },
 
         findAndCountAll(o, l) { return req.post('/ass/info', { 'judge': 0, 'offset': o, 'limit': l }) },

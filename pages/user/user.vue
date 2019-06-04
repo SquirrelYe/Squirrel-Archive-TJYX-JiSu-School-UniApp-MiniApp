@@ -3,14 +3,13 @@
 		<view class="user-section">
 			<image class="bg" src="/static/user/back.jpg"></image>
 			<view class="user-info-box">
-				<view class="portrait-box"><image class="portrait" :src="userInfo.portrait || '/static/missing-face.png'" @click="navTo('/pages/set/set')"></image></view>
-				<view class="info-box">
-					<text class="username">{{ userInfo.nickname || '游客' }}</text>
-				</view>
+				<view class="portrait-box"><image class="portrait" :src="userInfo.avatarUrl || '/static/missing-face.png'" @click="navTo('/pages/set/set')"></image></view>
+				<view class="info-box"> <text class="username">{{ userInfo.nickName || '游客' }}</text> </view>				
 			</view>
 			<view class="vip-card-box">
 				<image class="card-bg" src="/static/vip-card-bg.png" mode="aspectFit"></image>
-				<view class="b-btn" @click="navTo('/pages/set/dashi/dashi')">立即申请</view>
+				<view class="b-btn" @click="navTo('/pages/set/dashi/dashi')" v-if="user.authen.condition == 1">校园大使</view>
+				<view class="b-btn" @click="navTo('/pages/set/dashi/dashi')" v-else >立即申请</view>
 				<view class="tit">
 					<text class="yticon icon-iLinkapp-"></text>
 					校园大使
@@ -36,15 +35,15 @@
 
 			<view class="tj-sction">
 				<view class="tj-item">
-					<text class="num">128.8</text>
+					<text class="num">{{ user.stock.money || 0 }}</text>
 					<text>余额</text>
 				</view>
 				<view class="tj-item">
-					<text class="num">0</text>
+					<text class="num">{{  user.stock.ticket || 0 }}</text>
 					<text>优惠券</text>
 				</view>
 				<view class="tj-item">
-					<text class="num">20</text>
+					<text class="num">{{  user.stock.jifen || 0 }}</text>
 					<text>积分</text>
 				</view>
 			</view>
@@ -75,7 +74,7 @@
 				<list-cell icon="icon-shezhi1" iconColor="#e07472" title="设置" @eventClick="navTo('/pages/set/set')"></list-cell>
 				<list-cell icon="icon-bangzhu" iconColor="#54b4ef" title="关于我们" @eventClick="about()" border=""></list-cell>
 			</view>
-		</view>
+		</view>		
 	</view>
 </template>
 <script>
@@ -90,10 +89,10 @@ export default {
 		return {
 			coverTransform: 'translateY(0px)',
 			coverTransition: '0s',
-			moving: false
+			moving: false,
 		};
 	},
-	onLoad() {},
+	onLoad() { },
 	// #ifndef MP
 	onNavigationBarButtonTap(e) {
 		const index = e.index;
@@ -108,14 +107,12 @@ export default {
 				index
 			});
 			// #endif
-			uni.navigateTo({
-				url: '/pages/notice/notice'
-			});
+			uni.navigateTo({ url: '/pages/notice/notice' });
 		}
 	},
 	// #endif
 	computed: {
-		...mapState(['hasLogin', 'userInfo'])
+		...mapState(['hasLogin', 'userInfo', 'user'])
 	},
 	methods: {
 		/**
@@ -138,13 +135,13 @@ export default {
 				duration: 2000
 			});
 		},
-		about(){
+		about() {
 			uni.showToast({
-				title:"哈哈,就不给你看~",
-				icon:"none"
-			})
+				title: '哈哈,就不给你看~',
+				icon: 'none'
+			});
 		},
-
+		
 		/**
 		 *  会员卡下拉和回弹
 		 *  1.关闭bounce避免ios端下拉冲突

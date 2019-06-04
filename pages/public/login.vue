@@ -36,7 +36,7 @@
 					/>
 				</view>
 			</view>
-			<button class="confirm-btn" @click="toLogin" :disabled="logining">登录</button>
+			<button class="confirm-btn" @click="toLogin" :disabled="logining" open-type="getUserInfo" @getuserinfo="bindGetUserInfo">登录</button>
 		</view>
 		<view class="register-section">
 			还没有账号?
@@ -46,20 +46,29 @@
 </template>
 
 <script>
-	import {  
-        mapMutations  
-    } from 'vuex';
-	
+	import { mapMutations } from 'vuex';	
 	export default{
 		data(){
 			return {
 				mobile: '',
 				password: '',
-				logining: false
+				logining: false,
+				userinfo: ''
 			}
 		},
-		onLoad(){
-			
+		onLoad(){ 
+			let _this = this
+			// 查看是否授权
+			wx.getSetting({
+			  success (res){
+				if (res.authSetting['scope.userInfo']) {
+				  // 已经授权，可以直接调用 getUserInfo 获取头像昵称
+				  wx.getUserInfo({
+					success: function(res) { _this.userinfo = res.userInfo }
+				  })
+				}
+			  }
+			}) 
 		},
 		methods: {
 			...mapMutations(['login']),
@@ -67,36 +76,36 @@
 				const key = e.currentTarget.dataset.key;
 				this[key] = e.detail.value;
 			},
-			navBack(){
-				uni.navigateBack();
-			},
-			toRegist(){
-				uni.navigateTo({url:'/pages/public/register'})
-			},
+			// 获取用户信息
+			bindGetUserInfo(e) { console.log(e.detail.userInfo); this.userinfo = e.detail.userInfo },
+			navBack(){ uni.navigateBack(); },
+			toRegist(){ uni.navigateTo({url:'/pages/public/register'}) },
 			async toLogin(){
-				this.logining = true;
-				const {mobile, password} = this;
-				/* 数据验证模块
-				if(!this.$api.match({
-					mobile,
-					password
-				})){
-					this.logining = false;
-					return;
-				}
-				*/
-				const sendData = {
-					mobile,
-					password
-				};
-				const result = await this.$api.json('userInfo');
-				if(result.status === 1){
-					this.login(result.data);
-                    uni.navigateBack();  
-				}else{
-					this.$api.msg(result.msg);
-					this.logining = false;
-				}
+				let _this = this
+				// 查看是否授权
+				wx.getSetting({
+				  success (res){
+						if (res.authSetting['scope.userInfo']) {						
+							const {mobile, password, userinfo} = _this;
+							// 登录
+							_this.$apis.user.cusLogin(mobile,password)
+							.then(res=>{
+								if(res.statusCode === 200){
+									// console.log(userinfo, res.data.token, res.data)
+									let obj = { 'userinfo':userinfo, 'token':res.data.token, 'user':res.data}
+									_this.login(obj);
+									_this.logining = true;
+									uni.navigateBack();  
+								}else{ }
+							})
+							.catch(err=>{								
+								_this.$api.msg('账号或密码错误');
+								_this.logining = false;
+							})
+							
+						}
+					}
+				})
 			}
 		},
 

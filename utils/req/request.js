@@ -40,7 +40,7 @@ export default class Request {
 				response = Request.requestComFun(response)
 				if (statusCode === 200) { // 成功
 					resolve(response)
-				} else {
+				} else {					
 					reject(response)
 				}
 			}

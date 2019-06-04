@@ -8,15 +8,12 @@ export default {
 		...mapMutations(['login'])
 	},
 	onLaunch: function() {
+		let hasLogin = uni.getStorageSync('hasLogin') || '';
 		let userInfo = uni.getStorageSync('userInfo') || '';
-		if (userInfo.id) {
+		let user = uni.getStorageSync('user') || '';
+		if (hasLogin) {
 			//更新登陆状态
-			uni.getStorage({
-				key: 'userInfo',
-				success: res => {
-					this.login(res.data);
-				}
-			});
+			console.log(userInfo,user)
 		}
 	},
 	onShow: function() {
