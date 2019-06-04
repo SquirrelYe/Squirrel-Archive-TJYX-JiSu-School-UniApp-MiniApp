@@ -14,11 +14,12 @@
 	export default {
 		data() {
 			return {
-				qr:['/static/qr.png']
+				qr:''
 			}
 		},
 		onLoad(){
-			
+			let host = this.$host
+			this.qr = [`${host}/www/card/card.png`]
 		},
 		methods: {			
 			ViewImage(e) {

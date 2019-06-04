@@ -13,10 +13,8 @@
 					<text>煦园驿站</text>
 				</view>
 			</view>
-		</view> -->
-		
+		</view> -->		
 		<text style="display:block;padding: 16upx 30upx 10upx;lihe-height: 1.6;color: #fa436a;font-size: 24upx;">选择你的收货地址，校园大使会将包裹送至此地址。</text>
-
 		<!-- 地址 -->
 		<navigator url="/pages/address/address?source=1" class="address-section">
 			<view class="order-content">
@@ -24,9 +22,9 @@
 				<view class="cen">
 					<view class="top">
 						<text class="name">{{ addressData.name }}</text>
-						<text class="mobile">{{ addressData.mobile }}</text>
+						<text class="mobile">{{ addressData.phone }}</text>
 					</view>
-					<text class="address">{{ addressData.address }} {{ addressData.area }}</text>
+					<text class="address">{{ addressData.school }} {{ addressData.dom }}</text>
 				</view>
 				<text class="yticon icon-you"></text>
 			</view>
@@ -40,7 +38,10 @@
 			<text class="tit">佣金</text>
 			<input class="input" type="number" v-model="address.price" placeholder="一公斤以内1.5元,1-2公斤2.5元,2-4公斤4元,其他自定" placeholder-class="placeholder text-sm" />
 		</view>
-
+		<view class="row b-b">
+			<text class="tit">取件地址</text>
+			<input class="input" type="number" v-model="address.from" placeholder="简要描述取件地址" placeholder-class="placeholder text-sm" />
+		</view>
 		<view class="cu-bar bg-white"><view class="action">身份认证</view></view>
 		<view class="cu-form-group">
 			<view class="grid col-4 grid-square flex-sub">
@@ -57,11 +58,9 @@
 				<view class="padding-xs solids" @tap="ChooseImage" v-if="imgList.length == 0"><text class="cuIcon-cameraadd"></text></view>
 				<text class="text-sm placeholder" v-if="imgList.length == 0">请提交一卡通信息</text>
 			</view>
-		</view>
-		
+		</view>		
 		<view class="cu-bar bg-white"><view class="action">快递短信</view></view>
 		<view class="cu-form-group"><textarea maxlength="-1" v-model="address.msg" :placeholder="msg" placeholder-class="placeholder text-sm"></textarea></view>
-
 		<button class="add-btn" @click="confirm">提交</button>
 	</view>
 </template>
@@ -71,17 +70,15 @@ export default {
 	data() {
 		return {
 			address: {
-				judge: -1,
 				price: '',
+				from:'',
 				msg: ''
 			},
 			addressData: {
 				name: '点击选择收货地址',
-				mobile: '',
-				addressName: '',
-				address: '',
-				area: '',
-				default: false
+				phone: '',
+				school: '',
+				dom: '',
 			},
 			msg: '请将快递短信粘贴在这里^_^',
 			imgList: []
@@ -89,21 +86,6 @@ export default {
 	},
 	onLoad(option) {},
 	methods: {
-		switchkd(id) {
-			this.address.judge = id;
-		},
-		switchChange(e) {
-			this.addressData.default = e.detail;
-		},
-		//地图选择地址
-		chooseLocation() {
-			uni.chooseLocation({
-				success: data => {
-					this.addressData.addressName = data.name;
-					this.addressData.address = data.name;
-				}
-			});
-		},
 		ChooseImage() {
 			if (this.imgList.length === 1) {
 				uni.showToast({
@@ -144,40 +126,22 @@ export default {
 				}
 			});
 		},
-
 		//提交
 		confirm() {
-			let data = this.address;
-			console.log(this.imgList.length)
-			if (data.judge == -1) {
-				this.$api.msg('请选择驿站位置');
-				return;
-			}
-			if (this.addressData.name == '点击选择收货地址') {
-				this.$api.msg('请选择收货位置');
-				return;
-			}
-			// if (!/(^1[5|6|7|8|9][0-9]{8}$)/.test(data.xuehao)) {
-			// 	this.$api.msg('请输入正确的学号');
-			// 	return;
-			// }
-			if (!data.price || data.price < 2) {
-				this.$api.msg('请输入正确佣金');
-				return;
-			}
-			if (this.imgList.length < 1) {
-				this.$api.msg('请上传一卡通信息');
-				return;
-			}
-			if (!data.msg) {
-				this.$api.msg('请输入取件信息');
-				return;
-			}
+			const {price ,from, msg} = this.address;
+			if (this.addressData.name == '点击选择收货地址') { this.$api.msg('请选择收货位置'); return; }
+			if (!price || price < 1.5) { this.$api.msg('请填写正确佣金'); return; }
+			if (!from) { this.$api.msg('请填写正确取件地址'); return; }
+			if (this.imgList.length < 1) { this.$api.msg('请上传一卡通身份信息'); return; }
+			if (!msg) { this.$api.msg('请填写取件信息'); return; }
+			
+			console.log(price ,from, msg, this.imgList.length, this.addressData)
+			// 封装传递数据
+			let obj = JSON.stringify({ from: from, location_id: this.addressData.id, total:1, money:price, key:msg})
 			// 提交代取信息
 			uni.navigateTo({
-				url: '../money/pay'
+				url: `../money/pay?order=${obj}`
 			});
-			console.log(this.address, this.addressData);
 		}
 	}
 };

@@ -14,9 +14,7 @@ import apis from './utils/apis'
  */
 const msg = (title, duration=1500, mask=false, icon='none')=>{
 	//统一提示方便全局修改
-	if(Boolean(title) === false){
-		return;
-	}
+	if(Boolean(title) === false){ return; }
 	uni.showToast({
 		title,
 		duration,
@@ -44,12 +42,14 @@ const prePage = ()=>{
 
 
 Vue.config.productionTip = false
+Vue.prototype.$edition = '1.0.0';
 Vue.prototype.$fire = new Vue();
 Vue.prototype.$store = store;
 Vue.prototype.$api = {msg, json, prePage};
 Vue.prototype.$regex = regex;
 Vue.prototype.$apis = apis;
-Vue.prototype.$host = 'http://127.0.0.1:11110';
+Vue.prototype.$host = 'http://127.0.0.1:11130';   
+// Vue.prototype.$host = 'https://jisu.yexuan.site/api';
 
 App.mpType = 'app'
 

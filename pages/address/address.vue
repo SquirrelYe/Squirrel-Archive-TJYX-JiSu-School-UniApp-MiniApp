@@ -3,52 +3,36 @@
 		<view class="list b-b" v-for="(item, index) in addressList" :key="index" @click="checkAddress(item)">
 			<view class="wrapper">
 				<view class="address-box">
-					<text v-if="item.default" class="tag">默认</text>
-					<text class="address">{{item.addressName}} {{item.area}}</text>
+					<!-- <text v-if="item.default" class="tag">默认</text> -->
+					<text class="address">{{item.school}} {{item.dom}}</text>
 				</view>
 				<view class="u-box">
 					<text class="name">{{item.name}}</text>
-					<text class="mobile">{{item.mobile}}</text>
+					<text class="mobile">{{item.phone}}</text>
 				</view>
 			</view>
 			<text class="yticon icon-bianji" @click.stop="addAddress('edit', item)"></text>
 		</view>
-		<text style="display:block;padding: 16upx 30upx 10upx;lihe-height: 1.6;color: #fa436a;font-size: 24upx;">
-			重要：添加和修改地址回调仅增加了一条数据做演示，实际开发中将回调改为请求后端接口刷新一下列表即可
-		</text>
-		
+		<text style="display:block;padding: 16upx 30upx 10upx;lihe-height: 1.6;color: #fa436a;font-size: 24upx;"></text>
 		<button class="add-btn" @click="addAddress('add')">新增地址</button>
 	</view>
 </template>
 
 <script>
+	import { mapState, mapMutations } from 'vuex';
 	export default {
 		data() {
 			return {
 				source: 0,
-				addressList: [
-					{
-						name: '叶泫',
-						mobile: '17695796264',
-						addressName: '天津城建大学启能斋',
-						address: '天津西青',
-						area: '张家窝镇',
-						default: true
-					},{
-						name: '李连鑫',
-						mobile: '13043296672',
-						addressName: '天津城建大学启能斋',
-						address: '天津西青',
-						area: '张家窝镇',
-						default: false,
-					}
-				]
+				addressList: [ ]
 			}
 		},
 		onLoad(option){
 			console.log(option.source);
 			this.source = option.source;
+			this.$apis.location.findOneByUser(this.user.id).then(res=>{ console.log('地址信息',res.data); this.addressList = res.data.rows; })
 		},
+		computed:{ ...mapState(['user']) },
 		methods: {
 			//选择地址
 			checkAddress(item){
@@ -66,8 +50,7 @@
 			//添加或修改成功之后回调
 			refreshList(data, type){
 				//添加或修改后事件，这里直接在最前面添加了一条数据，实际应用中直接刷新地址列表即可
-				this.addressList.unshift(data);
-				
+				this.$apis.location.findOneByUser(this.user.id).then(res=>{ console.log('刷新地址信息',res.data); this.addressList = res.data.rows; })
 				console.log(data, type);
 			}
 		}

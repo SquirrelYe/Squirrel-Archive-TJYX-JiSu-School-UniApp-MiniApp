@@ -1,54 +1,63 @@
 <template>
 	<view>
-		<view class="notice-item">
-			<text class="time">11:30</text>
+		<view class="notice-item" v-for="(item, index) in category" :key="index" @click="check(item)">
+			<text class="time">{{item.updated_at.split('T')[0]}}</text>
 			<view class="content">
-				<text class="title">新品上市，全场满199减50</text>
+				<text class="title">{{item.title}}</text>
 				<view class="img-wrapper">
-					<image class="pic" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1556465765776&di=57bb5ff70dc4f67dcdb856e5d123c9e7&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F01fd015aa4d95fa801206d96069229.jpg%401280w_1l_2o_100sh.jpg"></image>
+					<image class="pic" :src="item.icon"></image>
+					<view class="cover" v-if="item.condition === -1"> 活动结束 </view>
 				</view>
 				<text class="introduce">
-					虽然做了一件好事，但很有可能因此招来他人的无端猜测，例如被质疑是否藏有其他利己动机等，乃至谴责。即便如此，还是要做好事。
+					{{item.detail}}
 				</text>
 			</view>
-		</view>
-		<view class="notice-item">
-			<text class="time">昨天 12:30</text>
-			<view class="content">
-				<text class="title">新品上市，全场满199减50</text>
-				<view class="img-wrapper">
-					<image class="pic" src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3761064275,227090144&fm=26&gp=0.jpg"></image>
-					<view class="cover">
-						活动结束
-					</view>
-				</view>
-			</view>
-		</view>
-		<view class="notice-item">
-			<text class="time">2019-07-26 12:30</text>
-			<view class="content">
-				<text class="title">新品上市，全场满199减50</text>
-				<view class="img-wrapper">
-					<image class="pic" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1556465765776&di=57bb5ff70dc4f67dcdb856e5d123c9e7&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F01fd015aa4d95fa801206d96069229.jpg%401280w_1l_2o_100sh.jpg"></image>
-					<view class="cover">
-						活动结束
-					</view>
-				</view>
-				<text class="introduce">新品上市全场2折起，新品上市全场2折起，新品上市全场2折起，新品上市全场2折起，新品上市全场2折起</text>
-			</view>
-		</view>
+		</view>		
 	</view>
 </template>
 
 <script>
+	import { mapState } from 'vuex';
 	export default {
 		data() {
 			return {
-
+				category:[],
+				off:0,
+				lim:2
 			}
 		},
+		computed:{ ...mapState(['user']) },
+		onLoad() { this.init(0) },
+		onShow() { this.init(0)},
+		onPullDownRefresh() {
+			this.off = 0; this.lim = 2;
+			this.init(1)
+		},
+		onReachBottom() {
+			let add = this.lim
+			this.off += add; this.lim += add;
+			console.log(this.off,this.lim)
+			this.init(2)
+		},
 		methods: {
-
+			// 初始化页面  judge { 0.初始化、 1.下拉刷新、 2.上拉加载}
+			init(judge){ 
+				const {school_id, type} = this.user
+				this.$apis.activity.findAllBySchoolType(school_id,type,this.off,this.lim).then(res=>{ 
+					console.log(res.data); 
+					if(judge === 0){ this.category = res.data.rows; }
+					if(judge === 1){ this.$api.msg('刷新成功'); uni.stopPullDownRefresh(); this.category = res.data.rows; }
+					if(judge === 2){
+						if(res.data.rows.length != 0){
+							// this.$api.msg('加载成功') 
+							this.category = this.category.concat(res.data.rows) ; 
+							console.log(this.category)
+						}else this.$api.msg('没有更多啦~') 
+					}					
+				})
+			},
+			// 选择活动信息
+			check(item){ console.log('选择的活动信息',item) }
 		}
 	}
 </script>

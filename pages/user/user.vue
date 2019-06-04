@@ -70,7 +70,7 @@
 			<view class="history-section icon">
 				<list-cell icon="icon-iconfontweixin" iconColor="#e07472" title="我的钱包" @eventClick="navTo('/pages/user/wallet/wallet')" tips="你的小金库"></list-cell>
 				<list-cell icon="icon-dizhi" iconColor="#5fcda2" title="地址管理" @eventClick="navTo('/pages/address/address')"></list-cell>
-				<list-cell icon="icon-share" iconColor="#9789f7" title="分享" tips="人人为我，我为人人" @eventClick="share()"></list-cell>
+				<list-cell icon="icon-share" iconColor="#9789f7" open-type="share" title="分享" tips="人人为我，我为人人" @eventClick="share()"></list-cell>
 				<list-cell icon="icon-shezhi1" iconColor="#e07472" title="设置" @eventClick="navTo('/pages/set/set')"></list-cell>
 				<list-cell icon="icon-bangzhu" iconColor="#54b4ef" title="关于我们" @eventClick="about()" border=""></list-cell>
 			</view>
@@ -111,29 +111,21 @@ export default {
 		}
 	},
 	// #endif
-	computed: {
-		...mapState(['hasLogin', 'userInfo', 'user'])
-	},
+	computed: { ...mapState(['hasLogin', 'userInfo', 'user']) },
 	methods: {
 		/**
 		 * 统一跳转接口,拦截未登录路由
 		 * navigator标签现在默认没有转场动画，所以用view
 		 */
 		navTo(url) {
-			if (!this.hasLogin) {
-				url = '/pages/public/login';
-			}
-			uni.navigateTo({
-				url
-			});
+			if (!this.hasLogin) { url = '/pages/public/login'; }
+			uni.navigateTo({ url });
 		},
 		// 分享
 		share() {
-			console.log('share');
-			uni.showToast({
-				title: '分享',
-				duration: 2000
-			});
+			wx.showShareMenu({
+			  withShareTicket: true
+			})
 		},
 		about() {
 			uni.showToast({

@@ -4,7 +4,6 @@
 		<!-- #ifdef MP -->
 		<!-- <view class="mp-search-box"><input class="ser-input" type="text" value="输入关键字搜索" disabled /></view> -->
 		<!-- #endif -->
-
 		<!-- 头部轮播 -->
 		<view class="carousel-section">
 			<!-- 标题栏和状态栏占位符 -->
@@ -46,9 +45,6 @@
 				<text>旅游</text>
 			</view>
 		</view>
-
-		<!-- <view class="ad-1"><image src="/static/temp/ad1.jpg" mode="scaleToFill"></image></view> -->
-
 		<!-- 分类推荐楼层 -->
 		<view class="f-header m-t">
 			<image src="/static/temp/h1.png"></image>
@@ -80,8 +76,7 @@
 </template>
 
 <script>
-import apis from '../../utils/apis'
-
+import { mapState } from 'vuex';
 export default {
 	data() {
 		return {
@@ -93,30 +88,12 @@ export default {
 			hot:'http://bpic.588ku.com/back_pic/05/84/39/655c6f6566bbec3.jpg',
 		};
 	},
-
-	onLoad() {
-		this.loadData();
-	},
+	computed: { ...mapState(['hasLogin', 'userInfo', 'user']) },
+	onLoad() { this.loadData(); },
 	methods: {
 		navToPage(url){
-			
-			apis.test.login('yx',123)
-			.then(res=>{
-				console.log(res.data)
-				uni.navigateTo({ url })
-			})
-			// uni.setNavigationBarTitle({
-			// 	title: '新的标题'
-			// });
-			// uni.showActionSheet({
-			// 	itemList: ['A', 'B', 'C','A', 'B', 'C'],
-			// 	success: function (res) {
-			// 		console.log('选中了第' + (res.tapIndex + 1) + '个按钮');
-			// 	},
-			// 	fail: function (res) {
-			// 		console.log(res.errMsg);
-			// 	}
-			// });
+			if (!this.hasLogin) { url = '/pages/public/login'; }
+			uni.navigateTo({ url });
 		},
 		/**
 		 * 请求静态数据只是为了代码不那么乱
@@ -127,7 +104,6 @@ export default {
 			this.titleNViewBackground = carouselList[0].background;
 			this.swiperLength = carouselList.length;
 			this.carouselList = carouselList;
-
 			let goodsList = await this.$api.json('goodsList');
 			this.goodsList = goodsList || [];
 		},
@@ -145,32 +121,7 @@ export default {
 				url: `/pages/product/product?id=${id}`
 			});
 		}
-	},
-	// #ifndef MP
-	// 标题栏input搜索框点击
-	onNavigationBarSearchInputClicked: async function(e) {
-		this.$api.msg('点击了搜索框');
-	},
-	//点击导航栏 buttons 时触发
-	onNavigationBarButtonTap(e) {
-		const index = e.index;
-		if (index === 0) {
-			this.$api.msg('点击了扫描');
-		} else if (index === 1) {
-			// #ifdef APP-PLUS
-			const pages = getCurrentPages();
-			const page = pages[pages.length - 1];
-			const currentWebview = page.$getAppWebview();
-			currentWebview.hideTitleNViewButtonRedDot({
-				index
-			});
-			// #endif
-			uni.navigateTo({
-				url: '/pages/notice/notice'
-			});
-		}
 	}
-	// #endif
 };
 </script>
 
@@ -328,67 +279,6 @@ page {
 		height: 100%;
 	}
 }
-/* 秒杀专区 */
-.seckill-section {
-	padding: 4upx 30upx 24upx;
-	background: #fff;
-	.s-header {
-		display: flex;
-		align-items: center;
-		height: 92upx;
-		line-height: 1;
-		.s-img {
-			width: 140upx;
-			height: 30upx;
-		}
-		.tip {
-			font-size: $font-base;
-			color: $font-color-light;
-			margin: 0 20upx 0 40upx;
-		}
-		.timer {
-			display: inline-block;
-			width: 40upx;
-			height: 36upx;
-			text-align: center;
-			line-height: 36upx;
-			margin-right: 14upx;
-			font-size: $font-sm + 2upx;
-			color: #fff;
-			border-radius: 2px;
-			background: rgba(0, 0, 0, 0.8);
-		}
-		.icon-you {
-			font-size: $font-lg;
-			color: $font-color-light;
-			flex: 1;
-			text-align: right;
-		}
-	}
-	.floor-list {
-		white-space: nowrap;
-	}
-	.scoll-wrapper {
-		display: flex;
-		align-items: flex-start;
-	}
-	.floor-item {
-		width: 150upx;
-		margin-right: 20upx;
-		font-size: $font-sm + 2upx;
-		color: $font-color-dark;
-		line-height: 1.8;
-		image {
-			width: 150upx;
-			height: 150upx;
-			border-radius: 6upx;
-		}
-		.price {
-			color: $uni-color-primary;
-		}
-	}
-}
-
 .f-header {
 	display: flex;
 	align-items: center;
@@ -418,72 +308,6 @@ page {
 	.icon-you {
 		font-size: $font-lg + 2upx;
 		color: $font-color-light;
-	}
-}
-/* 团购楼层 */
-.group-section {
-	background: #fff;
-	.g-swiper {
-		height: 650upx;
-		padding-bottom: 30upx;
-	}
-	.g-swiper-item {
-		width: 100%;
-		padding: 0 30upx;
-		display: flex;
-	}
-	image {
-		width: 100%;
-		height: 460upx;
-		border-radius: 4px;
-	}
-	.g-item {
-		display: flex;
-		flex-direction: column;
-		overflow: hidden;
-	}
-	.left {
-		flex: 1.2;
-		margin-right: 24upx;
-		.t-box {
-			padding-top: 20upx;
-		}
-	}
-	.right {
-		flex: 0.8;
-		flex-direction: column-reverse;
-		.t-box {
-			padding-bottom: 20upx;
-		}
-	}
-	.t-box {
-		height: 160upx;
-		font-size: $font-base + 2upx;
-		color: $font-color-dark;
-		line-height: 1.6;
-	}
-	.price {
-		color: $uni-color-primary;
-	}
-	.m-price {
-		font-size: $font-sm + 2upx;
-		text-decoration: line-through;
-		color: $font-color-light;
-		margin-left: 8upx;
-	}
-	.pro-box {
-		display: flex;
-		align-items: center;
-		margin-top: 10upx;
-		font-size: $font-sm;
-		color: $font-base;
-		padding-right: 10upx;
-	}
-	.progress-box {
-		flex: 1;
-		border-radius: 10px;
-		overflow: hidden;
-		margin-right: 8upx;
 	}
 }
 /* 分类推荐楼层 */
@@ -555,43 +379,6 @@ page {
 		text:first-child {
 			margin-bottom: 4upx;
 		}
-	}
-}
-/* 猜你喜欢 */
-.guess-section {
-	display: flex;
-	flex-wrap: wrap;
-	padding: 0 30upx;
-	background: #fff;
-	.guess-item {
-		display: flex;
-		flex-direction: column;
-		width: 48%;
-		padding-bottom: 40upx;
-		&:nth-child(2n + 1) {
-			margin-right: 4%;
-		}
-	}
-	.image-wrapper {
-		width: 100%;
-		height: 330upx;
-		border-radius: 3px;
-		overflow: hidden;
-		image {
-			width: 100%;
-			height: 100%;
-			opacity: 1;
-		}
-	}
-	.title {
-		font-size: $font-lg;
-		color: $font-color-dark;
-		line-height: 80upx;
-	}
-	.price {
-		font-size: $font-lg;
-		color: $uni-color-primary;
-		line-height: 1;
 	}
 }
 </style>

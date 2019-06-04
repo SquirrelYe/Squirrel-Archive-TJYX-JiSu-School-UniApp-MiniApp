@@ -130,7 +130,7 @@
 						else {
 							console.log(userinfo, mobile, password, index, schoolObj[index],openid,AccessTaken)							
 							// 调用注册接口
-							apis.user.cusCreate(mobile,openid,password, schoolObj[index].id)
+							apis.user.cusCreate(mobile,openid,userinfo.nickName,password, schoolObj[index].id)
 							.then(res=>{
 								console.log(res.data)
 								let u = _this.userinfo

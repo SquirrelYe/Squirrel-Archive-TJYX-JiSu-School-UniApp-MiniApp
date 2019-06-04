@@ -11,7 +11,7 @@ export default  {
         update(id, c) { return req.post('/ent/user', { 'judge': 3, 'id': id, 'condition': c }) },
         login(n, p) { return req.post('/ent/user', { 'judge': 5, 'name': n, 'pass': p }) },
         creatAdmin(n, p, m, c, s) { return req.post('/ent/user', { 'judge': 1, 'name': n, 'pass': p, 'mail': m, 'phone': c, 'school_id': s, 'type': 1, 'condition': 0 }) },
-		cusCreate(m,o,p,s) { return req.post('/ent/user', { 'judge': 7, 'phone':m, 'openid':o, 'pass': p ,'school_id': s}) },
+		cusCreate(m,o,n,p,s) { return req.post('/ent/user', { 'judge': 7, 'phone':m, 'openid':o, 'name':n, 'pass': p ,'school_id': s}) },
 		cusLogin(m, p) { return req.post('/ent/user', { 'judge': 8, 'phone':m, 'pass': p }) },
 
         findAndCountAll(o, l) { return req.post('/ass/user', { 'judge': 0, 'offset': o, 'limit': l }) },
@@ -56,7 +56,9 @@ export default  {
     },
     // 地址信息
     location: {
+		create(u,n,p,s,d,de) { return req.post('/ent/location', { 'judge': 1, 'user_id': u,'name':n,'phone':p,'school':s,'dom':d,'detail':de }) },
         delete(id) { return req.post('/ent/location', { 'judge': 2, 'id': id }) },
+		update(id,n,p,s,d) { return req.post('/ent/location', { 'judge': 3,'id':id,'name':n,'phone':p,'school':s,'dom':d }) },
 
         findAndCountAll(o, l) { return req.post('/ass/location', { 'judge': 0, 'offset': o, 'limit': l }) },
         findOneById(id) { return req.post('/ass/location', { 'judge': 1, 'id': id }) },
@@ -85,6 +87,7 @@ export default  {
         findOneByUser(u, o, l) { return req.post('/ass/logistic', { 'judge': 2, 'user_id': u, 'offset': o, 'limit': l }) },
         findAndCountAllLikeByNameSchool(n, s) { return req.post('/ass/logistic', { 'judge': 3, 'school_id': s, 'name': n }) },
         findAllBySchool(s, o, l) { return req.post('/ass/logistic', { 'judge': 4, 'school_id': s, 'offset': o, 'limit': l }) },
+        findAllBySchoolCondition(s, c, o, l) { return req.post('/ass/logistic', { 'judge': 5, 'school_id': s,'condition': c, 'offset': o, 'limit': l }) },
     },
     // 快递代发
     lsend: {
@@ -265,11 +268,11 @@ export default  {
     },
     // 活动
     activity: {
-        findAllBySchool(s, o, l) { return req.post('/ent/activity', { 'judge': 0, 'school_id': s, 'offset': o, 'limit': l }) },
         create(t,ti,i,d,c,s) { return req.post('/ent/activity', { 'judge': 1, 'type': t, 'title': ti, 'icon': i,'detail': d,'condition': c,'school_id': s }) },
         delete(id) { return req.post('/ent/activity', { 'judge': 2, 'id': id }) },
         update(id, c) { return req.post('/ent/activity', { 'judge': 3, 'id': id, 'condition': c }) },
         findAndCountAllLikeByTitleSchool(t,s) { return req.post('/ent/activity', { 'judge': 4, 'title': t, 'school_id': s }) },
+        findAllBySchoolType(s, t, o, l) { return req.post('/ent/activity', { 'judge': 5, 'school_id': s, 'type':t, 'offset': o, 'limit': l }) },
     },
 
 }

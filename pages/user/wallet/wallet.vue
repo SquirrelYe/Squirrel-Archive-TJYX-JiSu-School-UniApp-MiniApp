@@ -2,15 +2,15 @@
 	<view class="container">
         <view class="tj-sction">
             <view class="tj-item">
-                <text class="num">128.8</text>
+                <text class="num">{{ user.stock.money || 0 }}</text>
                 <text>余额</text>
             </view>
             <view class="tj-item">
-                <text class="num">0</text>
+                <text class="num">{{  user.stock.ticket || 0 }}</text>
                 <text>优惠券</text>
             </view>
             <view class="tj-item">
-                <text class="num">20</text>
+                <text class="num">{{  user.stock.jifen || 0 }}</text>
                 <text>积分</text>
             </view>
         </view>
@@ -39,62 +39,36 @@
 </template>
 
 <script>
-	import { mapState } from 'vuex';
+	import { mapState, mapMutations } from 'vuex';
 	export default {
 		data() {
 			return {
 				modalName: null,
-				checkbox: [{
-					value: 0,
-					name: '10元',
-					checked: false,
-					hot: false,
-				}, {
-					value: 1,
-					name: '20元',
-					checked: false,
-					hot: false,
-				}, {
-					value: 2,
-					name: '30元',
-					checked: true,
-					hot: true,
-				}, {
-					value: 3,
-					name: '60元',
-					checked: false,
-					hot: true,
-				}, {
-					value: 4,
-					name: '80元',
-					checked: false,
-					hot: false,
-				}, {
-					value: 5,
-					name: '100元',
-					checked: false,
-					hot: false,
-				}]
+				checkbox: [
+					{ value: 0, name: '10元', checked: false, hot: false, }, 
+					{ value: 1, name: '20元', checked: false, hot: false, }, 
+					{ value: 2, name: '30元', checked: true, hot: true, }, 
+					{ value: 3, name: '60元', checked: false, hot: true, }, 
+					{ value: 4, name: '80元', checked: false, hot: false, }, 
+					{ value: 5, name: '100元', checked: false, hot: false, }]
 			};
 		},
+		computed: {
+			...mapState(['user']),
+		},
 		methods:{
-            showModal(e) {
-				this.modalName = e.currentTarget.dataset.target
-			},
-			hideModal(e) {
-				this.modalName = null
-            },
+            showModal(e) { this.modalName = e.currentTarget.dataset.target },
+			hideModal(e) { this.modalName = null },
             choose(){
+				// 调用微信支付接口
+				// 更新资产
+				console.log('微信支付')
                 this.hideModal()
-				uni.showToast({
-					title:'微信支付',
-					duration:2000
-				})
             },
 			ChooseCheckbox(e) {
 				let items = this.checkbox;
                 let values = e.currentTarget.dataset.value;
-                console.log(values)
+                console.log(this.checkbox[values])
 				for (let i = 0; i < items.length; ++i) {
 					if (items[i].value == values) {
 						items[i].checked = true;

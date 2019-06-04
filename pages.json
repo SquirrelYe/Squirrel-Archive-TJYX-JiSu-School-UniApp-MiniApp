@@ -202,18 +202,16 @@
             "path" : "pages/flow/flow",
             "style" : {
 				"navigationBarTitleText": "校园快递",
-				"app-plus": {
-					"bounce": "none"
-				}
+				"enablePullDownRefresh":true,
+				"onReachBottomDistance":50
 			}
         }
         ,{
             "path" : "pages/category/category",
             "style" : {
-				"navigationBarTitleText": "活动",
-				"app-plus": {
-					"bounce": "none"
-				}
+				"enablePullDownRefresh": true,
+				"onReachBottomDistance":50,
+				"navigationBarTitleText": "活动"
 			}
         }
         ,{

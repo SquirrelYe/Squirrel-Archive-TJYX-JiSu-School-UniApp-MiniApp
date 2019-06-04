@@ -1,22 +1,21 @@
 <template>
 	<view class="content">
 		<view class="navbar" :style="{ position: headerPosition, top: headerTop }">
-			<view class="nav-item" :class="{ current: filterIndex === 0 }" @click="tabClick(0)">全部订单</view>
-			<view class="nav-item" :class="{ current: filterIndex === 1 }" @click="tabClick(1)">未领单</view>
-			<view class="nav-item" :class="{ current: filterIndex === 2 }" @click="tabClick(2)">已领单</view>
-			<view class="nav-item" :class="{ current: filterIndex === 3 }" @click="tabClick(3)">待送达</view>
-			<view class="nav-item" :class="{ current: filterIndex === 4 }" @click="tabClick(4)">已完成</view>
+			<view class="nav-item" :class="{ current: filterIndex === -1 }" @click="tabClick(-1)">全部订单</view>
+			<view class="nav-item" :class="{ current: filterIndex === 0 }" @click="tabClick(0)">未领单</view>
+			<view class="nav-item" :class="{ current: filterIndex === 1 }" @click="tabClick(1)">已领单</view>
+			<view class="nav-item" :class="{ current: filterIndex === 2 }" @click="tabClick(2)">待送达</view>
+			<view class="nav-item" :class="{ current: filterIndex === 3 }" @click="tabClick(3)">已完成</view>
 		</view>
 		<view class="goods-list">
-			<view v-for="(item, index) in goodsList" :key="index" class="goods-item" @click="navToDetailPage(item)">
-				<view class="image-wrapper"><image :src="item.image" mode="aspectFill"></image></view>
-				<!-- <text class="title clamp">{{ item.title }}</text> -->
-				<text class="text-xs item-center">取件地址：西门驿站</text>
-				<text class="text-xs item-center">送货地址：启能斋520宿舍</text>
-				<text class="title item-center">衣服，不大</text>
+			<view v-for="(item, index) in logisticList" :key="index" class="goods-item" @click="confirm()">
+				<view class="image-wrapper"><image :src="item.cus.info.avatarUrl" lazy-load mode="aspectFill"></image></view>
+				<text class="text-xs item-center">取件地址: {{item.from}}</text>
+				<text class="text-xs item-center">送货地址：{{item.location.dom}}</text>
 				<view class="price-box">
-					<text>风继续吹</text>
-					<text>数量 3 ￥ 3</text>
+					<text>{{item.cus.info.nickName}}</text>
+					<text>￥ {{item.money}}</text> 
+					<!-- 数量 3 -->
 				</view>
 			</view>
 		</view>
@@ -25,111 +24,77 @@
 
 <script>
 import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
+import { mapState } from 'vuex';
 export default {
-	components: {
-		uniLoadMore
-	},
+	components: { uniLoadMore },
 	data() {
 		return {
 			headerPosition: 'fixed',
 			headerTop: '0px',
 			loadingType: 'more', //加载更多状态
-			filterIndex: 0,
-			goodsList: []
+			filterIndex: -1,
+			logisticList: [],
+			// 分页
+			off:0,
+			lim:6
 		};
 	},
-
-	onLoad(options) {
-		// #ifdef H5
-		this.headerTop = document.getElementsByTagName('uni-page-head')[0].offsetHeight + 'px';
-		// #endif
-		this.loadData();
-	},
+	computed: { ...mapState(['user']) },
+	onLoad(options) { this.init(0); },
 	onPageScroll(e) {
 		//兼容iOS端下拉时顶部漂移
-		if (e.scrollTop >= 0) {
-			this.headerPosition = 'fixed';
-		} else {
-			this.headerPosition = 'absolute';
-		}
+		if (e.scrollTop >= 0) this.headerPosition = 'fixed'; 
+		else this.headerPosition = 'absolute'; 
 	},
-	//下拉刷新
 	onPullDownRefresh() {
-		this.loadData('refresh');
+		this.off = 0; this.lim = 6;
+		this.init(1)
 	},
-	//加载更多
 	onReachBottom() {
-		this.loadData();
+		let add = this.lim
+		this.off += add; this.lim += add;
+		console.log(this.off,this.lim)
+		this.init(2)
 	},
 	methods: {
-		//加载商品 ，带下拉刷新和上滑加载
-		async loadData(type = 'add', loading) {
-			//没有更多直接返回
-			if (type === 'add') {
-				if (this.loadingType === 'nomore') {
-					return;
-				}
-				this.loadingType = 'loading';
-			} else {
-				this.loadingType = 'more';
-			}
-
-			let goodsList = await this.$api.json('goodsList');
-			if (type === 'refresh') {
-				this.goodsList = [];
-			}
-			//筛选，测试数据直接前端筛选了
-			if (this.filterIndex === 1) {
-				goodsList.sort((a, b) => b.sales - a.sales);
-			}
-			if (this.filterIndex === 2) {
-				goodsList.sort((a, b) => {
-					if (this.priceOrder == 1) {
-						return a.price - b.price;
-					}
-					return b.price - a.price;
-				});
-			}
-
-			this.goodsList = this.goodsList.concat(goodsList);
-
-			//判断是否还有下一页，有是more  没有是nomore(测试数据判断大于20就没有了)
-			this.loadingType = this.goodsList.length > 20 ? 'nomore' : 'more';
-			if (type === 'refresh') {
-				if (loading == 1) {
-					uni.hideLoading();
-				} else {
-					uni.stopPullDownRefresh();
-				}
+		// 初始化页面  judge { 0.初始化、 1.下拉刷新、 2.上拉加载}
+		async init(judge){
+			const { school_id } = this.user
+			console.log('单元定位',this.filterIndex)
+			let res
+			// 显示全部
+			if(this.filterIndex === -1) res = await this.$apis.logistic.findAllBySchool(school_id,this.off,this.lim);
+			// 按状态显示
+			else res = await this.$apis.logistic.findAllBySchoolCondition(school_id, this.filterIndex,this.off,this.lim)
+			
+			console.log(res.data)
+			if(judge === 0){ uni.hideLoading(); this.logisticList = res.data.rows; }
+			if(judge === 1){ this.$api.msg('刷新成功'); uni.stopPullDownRefresh(); this.logisticList = res.data.rows; }
+			if(judge === 2){
+				if(res.data.rows.length != 0){
+					// this.$api.msg('加载成功') 
+					this.logisticList = this.logisticList.concat(res.data.rows) ; 
+					console.log(this.logisticList)
+				}else this.$api.msg('没有更多啦~') 
 			}
 		},
 		//筛选点击
 		tabClick(index) {
-			if (this.filterIndex === index && index !== 2) {
-				return;
-			}
+			if (this.filterIndex === index) return; 
 			this.filterIndex = index;
-			if (index === 2) {
-				this.priceOrder = this.priceOrder === 1 ? 2 : 1;
-			} else {
-				this.priceOrder = 0;
-			}
 			uni.pageScrollTo({
 				duration: 300,
 				scrollTop: 0
 			});
-			this.loadData('refresh', 1);
-			uni.showLoading({
-				title: '正在加载'
-			});
+			this.off = 0; this.lim = 6;
+			uni.showLoading({ title: '正在加载' });
+			this.init(0);
 		},
 		//详情
-		navToDetailPage(item) {
-			//测试数据没有写id，用title代替
-			let id = item.title;
-			uni.navigateTo({
-				url: `/pages/flow/logistic_detail/logistic_detail`
-			});
+		confirm() {
+			// 校园大使才能查看详细信息
+			// uni.navigateTo({ url: `/pages/flow/logistic_detail/logistic_detail` });
+			this.$api.msg('校园大使才能查看喔')
 		},
 	}
 };
@@ -237,7 +202,7 @@ page,
 	.image-wrapper {
 		width: 100%;
 		height: 330upx;
-		border-radius: 3px;
+		border-radius: 10px;
 		overflow: hidden;
 		image {
 			width: 100%;
