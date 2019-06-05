@@ -40,7 +40,6 @@ const prePage = ()=>{
 	return prePage.$vm;
 }
 
-
 Vue.config.productionTip = false
 Vue.prototype.$edition = '1.0.0';
 Vue.prototype.$fire = new Vue();

@@ -39,7 +39,7 @@
 			<input class="input" type="number" v-model="address.price" placeholder="一公斤以内1.5元,1-2公斤2.5元,2-4公斤4元,其他自定" placeholder-class="placeholder text-sm" />
 		</view>
 		<view class="row b-b">
-			<text class="tit">取件地址</text>
+			<text class="tit">地址</text>
 			<input class="input" type="number" v-model="address.from" placeholder="简要描述取件地址" placeholder-class="placeholder text-sm" />
 		</view>
 		<view class="cu-bar bg-white"><view class="action">身份认证</view></view>
@@ -47,11 +47,11 @@
 			<view class="grid col-4 grid-square flex-sub">
 				<view
 					class="padding-xs bg-img"
-					:style="[{ backgroundImage: 'url(' + imgList[index] + ')' }]"
+					:style="[{backgroundImage:'url(' + host+'/'+imgList[index] +')'}]" 
 					v-for="(item, index) in imgList"
 					:key="index"
 					@tap="ViewImage"
-					:data-url="imgList[index]"
+					:data-url="host+'/'+imgList[index]"
 				>
 				<view class="cu-tag bg-red" @tap.stop="DelImg" :data-index="index"><text class="cuIcon-close"></text></view>
 				</view>
@@ -69,6 +69,7 @@
 export default {
 	data() {
 		return {
+			host:'',
 			address: {
 				price: '',
 				from:'',
@@ -84,7 +85,9 @@ export default {
 			imgList: []
 		};
 	},
-	onLoad(option) {},
+	onLoad(option) {
+		this.host = this.$host
+	},
 	methods: {
 		ChooseImage() {
 			if (this.imgList.length === 1) {
@@ -98,18 +101,29 @@ export default {
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
 					sourceType: ['album'], //从相册选择
 					success: res => {
-						if (this.imgList.length != 0) {
-							this.imgList = this.imgList.concat(res.tempFilePaths);
-						} else {
-							this.imgList = res.tempFilePaths;
-						}
+						uni.uploadFile({
+							url: 'http://127.0.0.1:11130/upload',
+							filePath: res.tempFilePaths[0],
+							name: 'file',
+							formData: { },
+							success: (file) => {
+								let data = JSON.parse(file.data)
+								console.log(data)
+								// let img = `${this.$host}/${data.info}`;
+								if(data.status === 1){
+									this.imgList.push(data.info)
+								}else this.$api.msg('照片上传错误');								
+							}
+						});		
 					}
 				});
 			}
 		},
 		ViewImage(e) {
+			let arr = []
+			for (let img in this.imgList) { arr.push(`${this.host}/${this.imgList[img]}`) }
 			uni.previewImage({
-				urls: this.imgList,
+				urls: arr,
 				current: e.currentTarget.dataset.url
 			});
 		},
@@ -135,13 +149,11 @@ export default {
 			if (this.imgList.length < 1) { this.$api.msg('请上传一卡通身份信息'); return; }
 			if (!msg) { this.$api.msg('请填写取件信息'); return; }
 			
-			console.log(price ,from, msg, this.imgList.length, this.addressData)
+			console.log(price ,from, msg, this.imgList, this.addressData)
 			// 封装传递数据
 			let obj = JSON.stringify({ from: from, location_id: this.addressData.id, total:1, money:price, key:msg})
 			// 提交代取信息
-			uni.navigateTo({
-				url: `../money/pay?order=${obj}`
-			});
+			uni.navigateTo({ url: `../money/pay?type=1&order=${obj}` });
 		}
 	}
 };

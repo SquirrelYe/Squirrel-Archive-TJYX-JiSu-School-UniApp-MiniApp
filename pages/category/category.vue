@@ -28,7 +28,7 @@
 		},
 		computed:{ ...mapState(['user']) },
 		onLoad() { this.init(0) },
-		onShow() { this.init(0)},
+		onShow() { this.off = 0; this.lim = 2; this.init(0)},
 		onPullDownRefresh() {
 			this.off = 0; this.lim = 2;
 			this.init(1)

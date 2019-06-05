@@ -35,15 +35,15 @@
 
 			<view class="tj-sction">
 				<view class="tj-item">
-					<text class="num">{{ user.stock.money || 0 }}</text>
+					<text class="num">{{ stock.money || 0 }}</text>
 					<text>余额</text>
 				</view>
 				<view class="tj-item">
-					<text class="num">{{  user.stock.ticket || 0 }}</text>
+					<text class="num">{{  stock.ticket || 0 }}</text>
 					<text>优惠券</text>
 				</view>
 				<view class="tj-item">
-					<text class="num">{{  user.stock.jifen || 0 }}</text>
+					<text class="num">{{ stock.jifen || 0 }}</text>
 					<text>积分</text>
 				</view>
 			</view>
@@ -61,9 +61,9 @@
 					<text class="yticon icon-yishouhuo"></text>
 					<text>待收货</text>
 				</view>
-				<view class="order-item" @click="navTo('/pages/order/order?state=4')" hover-class="common-hover" :hover-stay-time="50">
+				<view class="order-item" @click="navTo('/pages/order/order?state=3')" hover-class="common-hover" :hover-stay-time="50">
 					<text class="yticon icon-shouhoutuikuan"></text>
-					<text>退款/售后</text>
+					<text>待评价</text>
 				</view>
 			</view>
 			<!-- 浏览历史 -->
@@ -87,12 +87,14 @@ export default {
 	components: { listCell },
 	data() {
 		return {
+			stock:{},
 			coverTransform: 'translateY(0px)',
 			coverTransition: '0s',
 			moving: false,
 		};
 	},
-	onLoad() { },
+	onLoad() {  this.getStock() },
+	onShow() { this.getStock() },
 	// #ifndef MP
 	onNavigationBarButtonTap(e) {
 		const index = e.index;
@@ -103,9 +105,7 @@ export default {
 			const pages = getCurrentPages();
 			const page = pages[pages.length - 1];
 			const currentWebview = page.$getAppWebview();
-			currentWebview.hideTitleNViewButtonRedDot({
-				index
-			});
+			currentWebview.hideTitleNViewButtonRedDot({ index });
 			// #endif
 			uni.navigateTo({ url: '/pages/notice/notice' });
 		}
@@ -113,27 +113,19 @@ export default {
 	// #endif
 	computed: { ...mapState(['hasLogin', 'userInfo', 'user']) },
 	methods: {
+		// 获取资金信息
+		getStock(){ this.$apis.stock.findByUserId(this.user.id).then(res=>{ console.log('账户资金信息',res.data); this.stock = res.data }) },
 		/**
 		 * 统一跳转接口,拦截未登录路由
 		 * navigator标签现在默认没有转场动画，所以用view
 		 */
 		navTo(url) {
 			if (!this.hasLogin) { url = '/pages/public/login'; }
-			uni.navigateTo({ url });
+			else uni.navigateTo({ url });
 		},
 		// 分享
-		share() {
-			wx.showShareMenu({
-			  withShareTicket: true
-			})
-		},
-		about() {
-			uni.showToast({
-				title: '哈哈,就不给你看~',
-				icon: 'none'
-			});
-		},
-		
+		share() { console.log('分享') },
+		about() { this.$api.msg('嘻嘻嘻~') },		
 		/**
 		 *  会员卡下拉和回弹
 		 *  1.关闭bounce避免ios端下拉冲突

@@ -78,6 +78,7 @@ export default  {
     },
     // 快递代取
     logistic: {
+		create(u,f,l,t,m,k,s) { return req.post('/ent/logistic', { 'judge': 1, 'user_id': u, 'from':f, 'location_id':l, 'total':t , 'money':m ,'key':k,'school_id':s }) },
         delete(id) { return req.post('/ent/logistic', { 'judge': 2, 'id': id }) },
         update(id, c) { return req.post('/ent/logistic', { 'judge': 3, 'id': id, 'condition': c }) },
         addTake(id, t, c) { return req.post('/ent/logistic', { 'judge': 3, 'id': id, 'take':t, 'condition': c }) },
@@ -221,20 +222,24 @@ export default  {
         findAndCountAll(o, l) { return req.post('/ass/fitem', { 'judge': 0, 'offset': o, 'limit': l }) },
         findOneById(id) { return req.post('/ass/fitem', { 'judge': 1, 'id': id }) },
         findByFruitId(f, o, l) { return req.post('/ass/fitem', { 'judge': 2, 'mfruit_id': f, 'offset': o, 'limit': l }) },
-        findAllBySchool(s, o, l) { return req.post('/ass/fitem', { 'judge': 3, 'school_id': s, 'offset': o, 'limit': l }) },
+        findAllBySchool(s, o, l) { return req.post('/ass/fitem', { 'judge': 3, 'schoo bl_id': s, 'offset': o, 'limit': l }) },
         findAndCountAllLikeByNameSchool(n, s) { return req.post('/ass/fitem', { 'judge': 4, 'name': n , 'school_id': s}) }  
     },
     // 购物车
     cart: {
+		createLog(u,t,n,log,c,loc,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'logistic_id': log, 'condition': c, 'location_id': loc,'judgec': j }) },
+		createLsend(u,t,n,ls,c,loc,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'lsend_id': ls, 'condition': c, 'location_id': loc,'judgec': j }) },
         delete(id) { return req.post('/ent/cart', { 'judge': 2, 'id': id }) },
         updateJudge(id , j) { return req.post('/ent/cart', { 'judge': 3, 'id': id,'judgec':j }) },
 
         findAndCountAll(o, l) { return req.post('/ass/cart', { 'judge': 0, 'offset': o, 'limit': l }) },
         findOneById(id) { return req.post('/ass/cart', { 'judge': 1, 'id': id }) },
-        findByUserId(u, o, l) { return req.post('/ass/cart', { 'judge': 2, 'user_id': u, 'offset': o, 'limit': l }) },
+        findTranByUserId(u, o, l) { return req.post('/ass/cart', { 'judge': 2, 'user_id': u, 'offset': o, 'limit': l }) },
+        findCartByUserId(u, o, l) { return req.post('/ass/cart', { 'judge': 7, 'user_id': u, 'offset': o, 'limit': l }) },
         findByExam(e, o, l) { return req.post('/ass/cart', { 'judge': 3, 'eitem_id': e, 'offset': o, 'limit': l }) },
         findByJourney(j, o, l) { return req.post('/ass/cart', { 'judge': 4, 'jitem_id': j, 'offset': o, 'limit': l }) },
         findByFruit(f, o, l) { return req.post('/ass/cart', { 'judge': 5, 'fitem_id': f, 'offset': o, 'limit': l }) },
+        findByCondition(u, c, o, l) { return req.post('/ass/cart', { 'judge': 6, 'user_id': u,'judgec': c, 'offset': o, 'limit': l }) },
     },
     // 总订单交易
     tran: {
@@ -250,6 +255,7 @@ export default  {
     // 资金信息
     stock: {
         delete(id) { return req.post('/ent/stock', { 'judge': 2, 'id': id }) },
+		updateMoney(id,m) { return req.post('/ent/stock', { 'judge': 3, 'id': id, 'money': m }) },
 
         findAndCountAll(o, l) { return req.post('/ass/stock', { 'judge': 0, 'offset': o, 'limit': l }) },
         findOneById(id) { return req.post('/ass/stock', { 'judge': 1, 'id': id }) },

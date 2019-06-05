@@ -2,15 +2,15 @@
 	<view class="container">
         <view class="tj-sction">
             <view class="tj-item">
-                <text class="num">{{ user.stock.money || 0 }}</text>
+                <text class="num">{{ stock.money || 0 }}</text>
                 <text>余额</text>
             </view>
             <view class="tj-item">
-                <text class="num">{{  user.stock.ticket || 0 }}</text>
+                <text class="num">{{  stock.ticket || 0 }}</text>
                 <text>优惠券</text>
             </view>
             <view class="tj-item">
-                <text class="num">{{  user.stock.jifen || 0 }}</text>
+                <text class="num">{{  stock.jifen || 0 }}</text>
                 <text>积分</text>
             </view>
         </view>
@@ -43,6 +43,7 @@
 	export default {
 		data() {
 			return {
+				stock:{},
 				modalName: null,
 				checkbox: [
 					{ value: 0, name: '10元', checked: false, hot: false, }, 
@@ -53,8 +54,9 @@
 					{ value: 5, name: '100元', checked: false, hot: false, }]
 			};
 		},
-		computed: {
-			...mapState(['user']),
+		computed: { ...mapState(['user']) },
+		onLoad() {
+			this.$apis.stock.findByUserId(this.user.id).then(res=>{ console.log('账户资金信息',res.data); this.stock = res.data })  // 获取资金信息	
 		},
 		methods:{
             showModal(e) { this.modalName = e.currentTarget.dataset.target },

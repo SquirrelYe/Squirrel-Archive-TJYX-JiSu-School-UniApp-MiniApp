@@ -153,9 +153,8 @@
 			"path": "pages/order/order",
 			"style": {
 				"navigationBarTitleText": "我的订单",
-				"app-plus": {
-					"bounce": "none"
-				}
+				"enablePullDownRefresh":true,
+				"onReachBottomDistance":50
 			}
 		}, {
 			"path": "pages/money/money",
