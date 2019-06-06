@@ -75,9 +75,7 @@ import { mapState, mapMutations } from 'vuex';
 				]
 			}
 		},
-		computed:{
-			...mapState(['user'])
-		},
+		computed:{ ...mapState(['user']) },
 		onLoad(){
 			this.host = this.$host
 			console.log(this.user.authen)

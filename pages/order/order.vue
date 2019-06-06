@@ -16,12 +16,39 @@
 							<text class="state" :style="{ color: item.stateTipColor }">{{ item.stateTip }}</text>
 							<!-- <text v-if="item.condition === -1" class="del-btn yticon icon-iconfontshanchu1" @click="deleteOrder(index)"></text> -->
 						</view>
-						<!-- ①、快递代取 -->
+						<!-- ①、快递代取 type -1 -->
 						<view class="goods-box-single" v-if="item.type == -1">
 							<image class="goods-img" :src="user.info.avatarUrl" mode="aspectFill"></image>
 							<view class="right">
 								<text class="title clamp">{{ item.logistic.key }}</text>
 								<text class="attr-box">快递代取 x {{ item.number }}</text>
+								<text class="price">{{ item.price }}</text>
+							</view>
+						</view>
+						<!-- ①、考试订单 type 0 -->
+						<view class="goods-box-single" v-if="item.type == 0">
+							<image class="goods-img" :src="host+'/'+item.eitem.logo" mode="aspectFill"></image>
+							<view class="right">
+								<text class="title clamp">{{ item.eitem.title }}</text>
+								<text class="attr-box">{{item.eitem.name}} x {{ item.number }}</text>
+								<text class="price">{{ item.price }}</text>
+							</view>
+						</view>
+						<!-- ②、旅游订单 type 1 -->
+						<view class="goods-box-single" v-if="item.type == 1">
+							<image class="goods-img" :src="host+'/'+item.jitem.logo" mode="aspectFill"></image>
+							<view class="right">
+								<text class="title clamp">{{ item.jitem.title }}</text>
+								<text class="attr-box">{{item.jitem.name}} x {{ item.number }}</text>
+								<text class="price">{{ item.price }}</text>
+							</view>
+						</view>
+						<!-- ③、水果订单 type 2 -->
+						<view class="goods-box-single" v-if="item.type == 2">
+							<image class="goods-img" :src="host+'/'+item.fitem.logo" mode="aspectFill"></image>
+							<view class="right">
+								<text class="title clamp">{{ item.fitem.title }}</text>
+								<text class="attr-box">{{item.fitem.name}} x {{ item.number }}</text>
 								<text class="price">{{ item.price }}</text>
 							</view>
 						</view>
@@ -51,8 +78,10 @@ export default {
 				{ state: 1, text: '待发货', loadingType: 'more', orderList: [] },
 				{ state: 2, text: '待收货', loadingType: 'more', orderList: [] },
 				{ state: 3, text: '待评价', loadingType: 'more', orderList: [] },
+				{ state: 4, text: '已完成', loadingType: 'more', orderList: [] } ,
 				{ state: -1, text: '取消', loadingType: 'more', orderList: [] } ,
 			],
+			host:'',
 			// 分页数据
 			off:0,
 			lim:4
@@ -60,6 +89,7 @@ export default {
 	},
 	computed: { ...mapState(['user']) },
 	onLoad(options) {
+		this.host = this.$host
 		this.tabCurrentIndex = options.state || 0;
 		this.loadData(this.tabCurrentIndex,0);
 	},
@@ -81,8 +111,8 @@ export default {
 			// 显示全部
 			if(index == 0) res = await this.$apis.cart.findTranByUserId(id,this.off,this.lim);
 			// 按状态显示
-			else if(index == 4) res = await this.$apis.cart.findByCondition(id, -1,this.off,this.lim)
-			else res = await this.$apis.cart.findByCondition(id, index,this.off,this.lim)
+			else if(index == 5) res = await this.$apis.cart.findByCondition(id, -1,this.off,this.lim)
+			else res = await this.$apis.cart.findByCondition(id, index-1 ,this.off,this.lim)
 			console.log(res.data)
 			
 			let orderList = res.data.rows.filter(item=>{
@@ -95,6 +125,7 @@ export default {
 				if(orderList.length == 0){					
 					//loaded新字段用于表示数据加载完毕，如果为空可以显示空白页
 					this.$set(navItem, 'loaded', true);
+					navItem.orderList = null
 				}else{
 					navItem.orderList = orderList;
 					this.$set(navItem, 'loaded', false);
@@ -128,10 +159,14 @@ export default {
 		// 查看详情
 		enter(item){
 			console.log('查看详情',item)
-			if(item.type == -1){
-				let loc = JSON.stringify(item.location)
+			let t = item.type
+			let loc = JSON.stringify(item.location)
+			if(t == -1){   // 代取快递
 				let log = JSON.stringify(item.logistic)
 				uni.navigateTo({ url: `/pages/flow/logistic_detail/logistic_detail?loc=${loc}&log=${log}` });	
+			}else if(t == 0||t == 1||t == 2){	// 考试、旅游、水果
+				let citem = JSON.stringify(item)
+				uni.navigateTo({ url: `/pages/order/order_detail/order_detail?type=${t}&loc=${loc}&item=${citem}` });	
 			}
 			
 		},

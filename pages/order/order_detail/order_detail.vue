@@ -2,7 +2,7 @@
 	<view>
 		<view class="bg-white padding margin-top-xs">
 			<view class="cu-steps">
-				<view class="cu-item" :class="index <= log.condition ? 'text-orange' : ''" v-for="(item, index) in basicsList" :key="index">
+				<view class="cu-item" :class="index <= data.judgec ? 'text-orange' : ''" v-for="(item, index) in basicsList" :key="index">
 					<text :class="index > basics ? 'cuIcon-title' : 'cuIcon-' + item.icon"></text>
 					{{ item.name }}
 				</view>
@@ -10,19 +10,15 @@
 		</view>
 		<view class="cu-form-group">
 			<view class="title">订单状态</view>
-			<view class="title">{{log.conditionTip}}</view>
+			<view class="title">{{judgec.conditionTip}}</view>
 		</view>
-		<view class="cu-form-group" v-if="log.condition != 0" @click="call(log.user.phone)">
-			<view class="title">校园大使</view>
-			<view class="title">{{log.user.name}}</view>
-		</view>	
+		<view class="cu-form-group">
+			<view class="title">信息</view>
+			<view class="title">{{item.title}}</view>
+		</view>
 		<view class="cu-form-group">
 			<view class="title">收货人</view>
 			<view class="title">{{loc.name}}</view>
-		</view>
-		<view class="cu-form-group">
-			<view class="title">取件地址</view>
-			<view class="title">{{log.from}}</view>
 		</view>
 		<view class="cu-form-group">
 			<view class="title">收货地址</view>
@@ -34,11 +30,11 @@
 		</view>
 		<view class="cu-form-group">
 			<view class="title">数量</view>
-			<view class="title">{{log.total}}</view>
+			<view class="title">{{data.number}}</view>
 		</view>
 		<view class="cu-form-group">
 			<view class="title">价格</view>
-			<view class="title">￥{{log.money}}</view>
+			<view class="title">￥{{data.price}}</view>
 		</view>
 		<view class="cu-form-group align-start">
 			<textarea maxlength="-1" disabled :placeholder="log.key"></textarea>
@@ -52,38 +48,37 @@ export default {
 		return {
 			basics: 3,
 			basicsList: [
-				{ icon: 'usefullfill', name: '未领单' },
-				{ icon: 'radioboxfill', name: '已领单' },
-				{ icon: 'subscription', name: '待送达' },
-				{ icon: 'roundcheckfill', name: '已完成' }
+				{ icon: 'usefullfill', name: '未发货' },
+				{ icon: 'radioboxfill', name: '已发货' },
+				{ icon: 'subscription', name: '已完成' },
+				{ icon: 'roundcheckfill', name: '已评价' }
 			],
+			data:{},
 			loc:{},
-			log:{}
+			item:{},
+			judgec:''
 		};
 	},
 	onLoad(options) {
 		console.log(options)
+		let type = options.type
+		let item = JSON.parse(options.item)
+		this.data = item
 		this.loc = JSON.parse(options.loc)
-		let log = JSON.parse(options.log)
-		//添加不同状态下订单的表现形式
-		this.log = Object.assign(log, this.orderConditionExp(log.condition));
+		if(type == 0) { this.item = item.eitem; this.judgec = this.orderConditionExp(item.judgec) } // 考试
+		if(type == 1) { this.item = item.jitem; this.judgec = this.orderConditionExp(item.judgec) } // 旅游
+		if(type == 2) { this.item = item.fitem; this.judgec = this.orderConditionExp(item.judgec) } // 水果
 	},
 	methods: {
-		// 拨打校园大使
-		call(phone){
-			uni.makePhoneCall({
-				phoneNumber:phone
-			})
-		},
 		// 格式化订单状态
-		orderConditionExp(condition){
+		orderConditionExp(judgec){
 			let conditionTip = '';
-			switch(+condition){
-				case 0: conditionTip = '未接单'; break;
-				case 1: conditionTip = '已接单'; break;
-				case 2: conditionTip = '已取件'; break;
-				case 3: conditionTip = '已送达'; break;
-				case 4: conditionTip = '已评价'; break;
+			switch(+judgec){
+				case 0: conditionTip = '未发货'; break;
+				case 1: conditionTip = '已发货'; break;
+				case 2: conditionTip = '已完成'; break;
+				case 3: conditionTip = '已评价'; break;
+				case -1: conditionTip = '订单取消'; break;
 			}
 			return {conditionTip};
 		},	

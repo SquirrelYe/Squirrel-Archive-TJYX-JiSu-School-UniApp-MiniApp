@@ -292,6 +292,12 @@
 				"navigationBarTitleText": "商品评价"
 			}
         }
+        ,{
+            "path" : "pages/order/order_detail/order_detail",
+            "style" : {
+				"navigationBarTitleText": "订单详情"
+			}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
