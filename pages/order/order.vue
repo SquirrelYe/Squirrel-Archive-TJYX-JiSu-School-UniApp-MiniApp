@@ -18,7 +18,7 @@
 						</view>
 						<!-- ①、快递代取 type -1 -->
 						<view class="goods-box-single" v-if="item.type == -1">
-							<image class="goods-img" :src="user.info.avatarUrl" mode="aspectFill"></image>
+							<image class="goods-img" lazy-load :src="user.info.avatarUrl" mode="aspectFill"></image>
 							<view class="right">
 								<text class="title clamp">{{ item.logistic.key }}</text>
 								<text class="attr-box">快递代取 x {{ item.number }}</text>
@@ -27,7 +27,7 @@
 						</view>
 						<!-- ①、考试订单 type 0 -->
 						<view class="goods-box-single" v-if="item.type == 0">
-							<image class="goods-img" :src="host+'/'+item.eitem.logo" mode="aspectFill"></image>
+							<image class="goods-img" lazy-load :src="host+'/'+item.eitem.logo" mode="aspectFill"></image>
 							<view class="right">
 								<text class="title clamp">{{ item.eitem.title }}</text>
 								<text class="attr-box">{{item.eitem.name}} x {{ item.number }}</text>
@@ -36,7 +36,7 @@
 						</view>
 						<!-- ②、旅游订单 type 1 -->
 						<view class="goods-box-single" v-if="item.type == 1">
-							<image class="goods-img" :src="host+'/'+item.jitem.logo" mode="aspectFill"></image>
+							<image class="goods-img" lazy-load :src="host+'/'+item.jitem.logo" mode="aspectFill"></image>
 							<view class="right">
 								<text class="title clamp">{{ item.jitem.title }}</text>
 								<text class="attr-box">{{item.jitem.name}} x {{ item.number }}</text>
@@ -45,7 +45,7 @@
 						</view>
 						<!-- ③、水果订单 type 2 -->
 						<view class="goods-box-single" v-if="item.type == 2">
-							<image class="goods-img" :src="host+'/'+item.fitem.logo" mode="aspectFill"></image>
+							<image class="goods-img" lazy-load :src="host+'/'+item.fitem.logo" mode="aspectFill"></image>
 							<view class="right">
 								<text class="title clamp">{{ item.fitem.title }}</text>
 								<text class="attr-box">{{item.fitem.name}} x {{ item.number }}</text>

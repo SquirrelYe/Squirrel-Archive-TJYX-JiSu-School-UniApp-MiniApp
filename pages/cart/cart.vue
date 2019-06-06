@@ -18,30 +18,26 @@
 				<block v-for="(item, index) in cartList" :key="item.id">
 					<view class="cart-item" :class="{ 'b-b': index !== cartList.length - 1 }">
 						<view class="image-wrapper">
-							<image
-								:src="item.image"
-								:class="[item.loaded]"
-								mode="aspectFill"
-								lazy-load
-								@load="onImageLoad('cartList', index)"
-								@error="onImageError('cartList', index)"
-							></image>
-							<view class="yticon icon-xuanzhong2 checkbox" :class="{ checked: item.checked }" @click="check('item', index)"></view>
+							<image v-if="item.type == 0" :src="host+'/'+item.eitem.logo" :class="[item.loaded]" mode="aspectFill" lazy-load @load="onImageLoad('cartList', index)" @error="onImageError('cartList', index)" ></image>
+							<image v-if="item.type == 1" :src="host+'/'+item.jitem.logo" :class="[item.loaded]" mode="aspectFill" lazy-load @load="onImageLoad('cartList', index)" @error="onImageError('cartList', index)" ></image>
+							<image v-if="item.type == 2" :src="host+'/'+item.fitem.logo" :class="[item.loaded]" mode="aspectFill" lazy-load @load="onImageLoad('cartList', index)" @error="onImageError('cartList', index)" ></image>
+							<view class="yticon icon-xuanzhong2 checkbox" :class="{ checked: item.checked }" @click="check(item)"></view>
 						</view>
 						<view class="item-right">
-							<text class="clamp title">{{ item.title }}</text>
-							<text class="attr">{{ item.attr_val }}</text>
+							<block v-if="item.type == 0">
+								<text class="clamp title">{{ item.eitem.title }}</text>
+								<text class="attr">{{ item.eitem.name }}</text>
+							</block>
+							<block v-if="item.type == 1">
+								<text class="clamp title">{{ item.jitem.title }}</text>
+								<text class="attr">{{ item.jitem.name }}</text>
+							</block>
+							<block v-if="item.type == 2">
+								<text class="clamp title">{{ item.fitem.title }}</text>
+								<text class="attr">{{ item.fitem.name }}</text>
+							</block>
 							<text class="price">¥{{ item.price }}</text>
-							<uni-number-box
-								class="step"
-								:min="1"
-								:max="item.stock"
-								:value="item.number > item.stock ? item.stock : item.number"
-								:isMax="item.number >= item.stock ? true : false"
-								:isMin="item.number === 1"
-								:index="index"
-								@eventChange="numberChange"
-							></uni-number-box>
+							<uni-number-box class="step" :min="1" :value="item.number" :isMin="item.number === 1" :index="index" @eventChange="numberChange" ></uni-number-box>
 						</view>
 						<text class="del-btn yticon icon-fork" @click="deleteCartItem(index)"></text>
 					</view>
@@ -50,8 +46,8 @@
 			<!-- 底部菜单栏 -->
 			<view class="action-section">
 				<view class="checkbox">
-					<image :src="allChecked ? '/static/selected.png' : '/static/select.png'" mode="aspectFit" @click="check('all')"></image>
-					<view class="clear-btn" :class="{ show: allChecked }" @click="clearCart">清空</view>
+					<image :src="show ? '/static/selected.png' : '/static/select.png'" mode="aspectFit"></image>
+					<!-- <view class="clear-btn" :class="{ show: allChecked }" @click="clearCart">清空</view> -->
 				</view>
 				<view class="total-box">
 					<text class="price">¥{{ total }}</text>
@@ -66,69 +62,74 @@
 import { mapState } from 'vuex';
 import uniNumberBox from '@/components/uni-number-box.vue';
 export default {
-	components: {
-		uniNumberBox
-	},
+	components: { uniNumberBox },
 	data() {
 		return {
+			host:'',
 			total: 0, //总价格
-			allChecked: false, //全选状态  true|false
-			empty: false, //空白页现实  true|false
-			cartList: []
+			empty: true, //空白页显示  true|false
+			cartList: [],
+			show:false,
+			// 分页数据
+			off:0,
+			lim:5
 		};
 	},
-	onLoad() {
-		this.loadData();
-	},
-	watch: {
-		//显示空白页
+	computed: { ...mapState(['hasLogin','user']) },
+	onLoad() { this.loadData(0); this.host = this.$host },
+	onShow() {  this.cartList = []; this.loadData(0); this.show = false},
+	watch: { //显示空白页
 		cartList(e) {
 			let empty = e.length === 0 ? true : false;
-			if (this.empty !== empty) {
-				this.empty = empty;
-			}
+			if (this.empty !== empty) this.empty = empty;
 		}
 	},
-	computed: {
-		...mapState(['hasLogin'])
+	onPullDownRefresh() {
+		console.log('下拉刷新')
+		this.off = 0; this.lim = 5;
+		this.cartList = []
+		this.loadData(1);
+	},
+	onReachBottom() {		
+		let add = this.lim
+		this.off += add; this.lim += add;		
+		console.log('上拉加载',this.off,this.lim)		
+		this.loadData(2)		
 	},
 	methods: {
+		init() {  this.cartList = []; this.loadData(0);},
 		//请求数据
-		async loadData() {
-			let list = await this.$api.json('cartList');
-			let cartList = list.map(item => {
-				item.checked = true;
+		async loadData(judge) {
+			const { id } = this.user;
+			let list = await this.$apis.cart.findCartByUserId(id,this.off,this.lim)
+			let cartList = list.data.rows.map(item => {
+				item.checked = false;
 				return item;
 			});
-			this.cartList = cartList;
-			this.calcTotal(); //计算总价
+			if(judge == 0){ this.cartList = cartList; }
+			if(judge == 1){ uni.stopPullDownRefresh(); this.cartList = cartList;}
+			if(judge == 2){ 
+				if(cartList.length != 0){
+					this.cartList = this.cartList.concat(cartList);
+				}else this.$api.msg('天啊，没有更多呐~');
+			}
 		},
 		//监听image加载完成
-		onImageLoad(key, index) {
-			this.$set(this[key][index], 'loaded', 'loaded');
-		},
+		onImageLoad(key, index) { this.$set(this[key][index], 'loaded', 'loaded'); },
 		//监听image加载失败
-		onImageError(key, index) {
-			this[key][index].image = '/static/errorImage.jpg';
-		},
-		navToLogin() {
-			uni.navigateTo({
-				url: '/pages/public/login'
-			});
-		},
+		onImageError(key, index) { this[key][index].image = '/static/errorImage.jpg'; },
+		// 登录
+		navToLogin() { uni.navigateTo({ url: '/pages/public/login' }); },
 		//选中状态处理
-		check(type, index) {
-			if (type === 'item') {
-				this.cartList[index].checked = !this.cartList[index].checked;
-			} else {
-				const checked = !this.allChecked;
-				const list = this.cartList;
-				list.forEach(item => {
-					item.checked = checked;
-				});
-				this.allChecked = checked;
-			}
-			this.calcTotal(type);
+		check(item) {
+			const list = this.cartList;
+			list.forEach(citem => {
+				if(item == citem){
+					citem.checked = !citem.checked ;
+					this.show = citem.checked;
+				}else citem.checked =false ;
+			});
+			this.calcTotal();
 		},
 		//数量
 		numberChange(data) {
@@ -141,17 +142,19 @@ export default {
 			let row = list[index];
 			let id = row.id;
 
-			this.cartList.splice(index, 1);
-			this.calcTotal();
-			uni.hideLoading();
-		},
-		//清空
-		clearCart() {
 			uni.showModal({
-				content: '清空购物车？',
+				content: '真的要删除吗？',
 				success: e => {
 					if (e.confirm) {
-						this.cartList = [];
+						// 删除购物车
+						this.$apis.cart.delete(id)
+						.then(res=>{
+							if(res.data.affectRows == 1){
+								this.$api.msg('删除成功^_^')
+								this.init()							
+								this.calcTotal();
+							}
+						})
 					}
 				}
 			});
@@ -159,41 +162,25 @@ export default {
 		//计算总价
 		calcTotal() {
 			let list = this.cartList;
-			if (list.length === 0) {
-				this.empty = true;
-				return;
-			}
+			if (list.length === 0) { this.empty = true; return; }
 			let total = 0;
-			let checked = true;
 			list.forEach(item => {
-				if (item.checked === true) {
-					total += item.price * item.number;
-				} else if (checked === true) {
-					checked = false;
-				}
+				if (item.checked === true) total += item.price * item.number;
 			});
-			this.allChecked = checked;
 			this.total = Number(total.toFixed(2));
 		},
 		//创建订单
 		createOrder() {
 			let list = this.cartList;
-			let goodsData = [];
-			list.forEach(item => {
-				if (item.checked) {
-					goodsData.push({
-						attr_val: item.attr_val,
-						number: item.number
-					});
-				}
-			});
+			let good = {};
+			if(this.show){				
+				list.forEach(item => { if(item.checked) good = item });
+				console.log(good)
+				// 生成订单信息传递到支付平台	kind : 0.直接购买、1.购物车付款		
+				uni.navigateTo({ url: `/pages/order/createOrder?kind=1&data=${JSON.stringify({ good: good })}` })
+			}else this.$api.msg('天啊，你还没有选择呐~');
 
-			uni.navigateTo({
-				url: `/pages/order/createOrder?data=${JSON.stringify({
-					goodsData: goodsData
-				})}`
-			});
-			this.$api.msg('跳转下一页 sendData');
+			
 		}
 	}
 };

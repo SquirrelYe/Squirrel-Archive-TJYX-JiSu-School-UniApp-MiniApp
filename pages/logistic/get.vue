@@ -1,19 +1,5 @@
 <template>
 	<view class="content">
-		<!-- <view class="container b-b">
-			<view class="cate-section">
-				<view class="cate-item" @click="switchkd(0)">
-					<image src="/static/submit/select_down.png" v-if="address.judge === 0"></image>
-					<image src="/static/submit/select.png" v-else></image>
-					<text>西门驿站</text>
-				</view>
-				<view class="cate-item" @click="switchkd(1)">
-					<image src="/static/submit/select_down.png" v-if="address.judge === 1"></image>
-					<image src="/static/submit/select.png" v-else></image>
-					<text>煦园驿站</text>
-				</view>
-			</view>
-		</view> -->		
 		<text style="display:block;padding: 16upx 30upx 10upx;lihe-height: 1.6;color: #fa436a;font-size: 24upx;">选择你的收货地址，校园大使会将包裹送至此地址。</text>
 		<!-- 地址 -->
 		<navigator url="/pages/address/address?source=1" class="address-section">
@@ -152,7 +138,8 @@ export default {
 			console.log(price ,from, msg, this.imgList, this.addressData)
 			// 封装传递数据
 			let obj = JSON.stringify({ from: from, location_id: this.addressData.id, total:1, money:price, key:msg})
-			// 提交代取信息
+			// 提交支付信息
+			// 支付类别 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、旅游下单，水果下单
 			uni.navigateTo({ url: `../money/pay?type=1&order=${obj}` });
 		}
 	}

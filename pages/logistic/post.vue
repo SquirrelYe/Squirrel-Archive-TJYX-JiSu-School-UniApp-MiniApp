@@ -9,9 +9,9 @@
 				<view class="cen">
 					<view class="top">
 						<text class="name">{{ addressData.name }}</text>
-						<text class="mobile">{{ addressData.mobile }}</text>
+						<text class="mobile">{{ addressData.phone }}</text>
 					</view>
-					<text class="address">{{ addressData.address }} {{ addressData.area }}</text>
+					<text class="address">{{ addressData.school }} {{ addressData.dom }}</text>
 				</view>
 				<text class="yticon icon-you"></text>
 			</view>
@@ -24,11 +24,11 @@
 
 		<view class="row b-b margin-top">
 			<text class="tit">收货人</text>
-			<input class="input" type="text" v-model="address.name" placeholder="请输入收货人" placeholder-class="placeholder text-sm" />
+			<input class="input" type="text" v-model="address.name" placeholder="请输入收货人~" placeholder-class="placeholder text-sm" />
 		</view>
 		<view class="row b-b">
-			<text class="tit">手机号码</text>
-			<input class="input" type="number" v-model="address.phone" placeholder="请输入收货人手机号" placeholder-class="placeholder text-sm" />
+			<text class="tit">联系</text>
+			<input class="input" type="number" v-model="address.phone" placeholder="请输入收货人联系号码^_^" placeholder-class="placeholder text-sm" />
 		</view>
 		<view class="cu-form-group"><textarea maxlength="-1" v-model="address.msg" :placeholder="msg" placeholder-class="placeholder text-sm"></textarea></view>
 
@@ -37,59 +37,43 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 export default {
 	data() {
 		return {
 			address:{
-				name:'',
+				name:null,
 				phone:null,
-				msg:''
+				msg:null
 			},
 			addressData: {
-				name: '点击选择取货地址',
-				mobile: '',
-				addressName: '',
-				address: '',
-				area: '',
-				default: false,
+				name: '点击选择收货地址',
+				phone: '',
+				school: '',
+				dom: '',
 			},
 			msg: '详细地址：精确到道路、门牌号、小区、楼栋号、单元室等'
 		};
 	},
+	computed: { ...mapState(['user']) },
 	onLoad(option) {},
 	methods: {
-		switchkd(id){
-			this.address.judge = id
-		},
-		switchChange(e) {
-			this.addressData.default = e.detail;
-		},
-		//地图选择地址
-		chooseLocation() {
-			uni.chooseLocation({
-				success: data => {
-					this.addressData.addressName = data.name;
-					this.addressData.address = data.name;
-				}
-			});
-		},
-
 		//提交
-		confirm() {
-			let data = this.address;
-			if (this.addressData.name == '点击选择收货地址') {
-				this.$api.msg('请选择收货位置');
-				return;
-			}
-			if (!data.sum || data.sum<=0) {
-				this.$api.msg('请输入正确寄件数量');
-				return;
-			}
-			// 提交代取信息
-			uni.navigateTo({
-				url:"../money/pay"
-			})
-			console.log(this.address , this.addressData)
+		async confirm() {
+			const { name,phone,msg } = this.address
+			let loc_id = this.addressData.id
+			const { id,school_id } = this.user
+			if (!loc_id) { this.$api.msg('请选择收货位置~'); return; }
+			if (!name) { this.$api.msg('请填写收货人~'); return; }
+			if (!this.$regex.phoneP.test(phone)) {this.$api.msg('电话号码不合法~') ; return; }
+			if (!msg) { this.$api.msg('请填写收件人地址~'); return; }
+			// 创建订单
+			let lsend = await this.$apis.lsend.create(id,loc_id,0,msg,school_id)
+			let tran = await this.$apis.cart.createLsend(id,-2,1,lsend.data.id,0,loc_id,0)
+			// u,t,n,ls,c,loc,j
+			console.log(lsend,tran)
+			if(lsend && tran){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
+			else this.$api.msg('订单创建失败')
 		}
 	}
 };

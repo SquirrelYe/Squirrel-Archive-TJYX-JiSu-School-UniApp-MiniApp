@@ -39,7 +39,8 @@
 	export default {
 		data() {
 			return {
-				type:0,
+				kind:null,	// 订单种类 0.直接购买、1.购物车付款
+				type:null,  // 支付类别 0.资金充值、1.发布代取快递，2.快递代发、3.考试下单、4.旅游下单、5.水果下单
 				order:{},
 				stock:{},
 				payType: 1,
@@ -47,10 +48,11 @@
 			};
 		},
 		computed: { ...mapState(['user']) },
-		onLoad(options) {  // 支付类别 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、4、旅游下单，5、水果下单
-			console.log(options)
+		onLoad(options) { 
+			this.kind = options.kind || 0
 			this.type = options.type
 			this.order = JSON.parse(options.order)
+			console.log(this.type, this.order)
 			this.$apis.stock.findByUserId(this.user.id).then(res=>{ console.log('账户资金信息',res.data); this.stock = res.data })  // 获取资金信息
 		},
 		methods: {
@@ -85,35 +87,47 @@
 				}
 				// 预付款支付
 				else{
-					const { from,key,location_id,money,total } = this.order
 					// 预付款支付
+					const { money,location_id } = this.order;
 					let stock = await this.$apis.stock.findByUserId(id)
 					if( money<=stock.data.money ){  // 账户余额足够
 						// 扣款
 						let m = stock.data.money - money;
 						let final = await this.$apis.stock.updateMoney(stock.data.id,m)
-						// 写入订单						
-						if(this.type == 0){  //  0、资金充值 
-						}						
+						// 写入订单					
 						if(this.type == 1){ //  1、发布代取快递
+							const { from,key,location_id,total } = this.order
 							let log = await this.$apis.logistic.create(id,from,location_id,total,money,key,school_id)
-							let tran = await this.$apis.cart.createLog(id,-1,1,log.data.id,1,location_id,2)
+							let tran = await this.$apis.cart.createLog(id,-1,1,money,log.data.id,1,location_id,2)
 							console.log(log,tran)
-							if(log && tran){
-								this.$api.msg('订单创建成功')
-								uni.redirectTo({ url: '/pages/money/paySuccess' })
-							}else this.$api.msg('订单创建失败')
+							if(log && tran){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
+							else this.$api.msg('订单创建失败')
 						}						
 						if(this.type == 2){ //  2、快递代发 
 						}						
 						if(this.type == 3){ //  3、考试下单 
+							if(this.kind == 0){}
+							if(this.kind == 1) this.pay()
 						}						
 						if(this.type == 4){ //  4、旅游下单 
+							if(this.kind == 0){}
+							if(this.kind == 1) this.pay()
 						}						
 						if(this.type == 5){ //  5、水果下单 
+							if(this.kind == 0){}
+							if(this.kind == 1) this.pay()
 						}
 					}else  this.$api.msg('可用余额不足')					
 				}
+			},
+			// 下单逻辑
+			async pay(){
+				const { location_id } = this.order;
+				const { id,other,number } = this.order.good
+				let res = await this.$apis.cart.updateCart(id,number,location_id,other,1,0)  // 1.已付款，0.未发货
+				console.log(res.data)
+				if(res.data[0] == 1){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
+				else this.$api.msg('订单创建失败')
 			}
 		}
 	}
