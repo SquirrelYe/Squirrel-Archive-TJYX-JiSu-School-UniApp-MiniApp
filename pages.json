@@ -300,6 +300,12 @@
 				"navigationBarTitleText": "订单详情"
 			}
         }
+        ,{
+            "path" : "pages/flow/lsend_detail/lsend_detail",
+            "style" : {
+				"navigationBarTitleText": "快递代发"
+			}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

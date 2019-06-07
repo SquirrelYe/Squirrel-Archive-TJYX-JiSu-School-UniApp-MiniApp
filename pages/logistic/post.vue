@@ -68,11 +68,16 @@ export default {
 			if (!this.$regex.phoneP.test(phone)) {this.$api.msg('电话号码不合法~') ; return; }
 			if (!msg) { this.$api.msg('请填写收件人地址~'); return; }
 			// 创建订单
-			let lsend = await this.$apis.lsend.create(id,loc_id,0,msg,school_id)
+			let lsend = await this.$apis.lsend.create(id,loc_id,0,name,phone,msg,school_id)
 			let tran = await this.$apis.cart.createLsend(id,-2,1,lsend.data.id,0,loc_id,0)
 			// u,t,n,ls,c,loc,j
 			console.log(lsend,tran)
-			if(lsend && tran){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
+			if(lsend && tran){ 
+				uni.showModal({
+					content: '订单创建成功,等待校园大使接单后前往购物车支付哈^_^',
+					success: e => { if (e.confirm) uni.switchTab({ url: '/pages/cart/cart' })}
+				});				
+			}
 			else this.$api.msg('订单创建失败')
 		}
 	}

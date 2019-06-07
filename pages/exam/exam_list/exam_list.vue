@@ -2,34 +2,34 @@
 	<view class="container">
 		<view class="carousel">
 			<swiper indicator-dots circular="true" duration="400">
-				<swiper-item class="swiper-item" v-for="(item, index) in imgList" :key="index">
-					<view class="image-wrapper"><image :src="item.src" class="loaded" mode="aspectFill"></image></view>
+				<swiper-item class="swiper-item" :key="index">  <!--  v-for="(item, index) in imgList" -->
+					<view class="image-wrapper"><image :src="host+'/'+item.logo" class="loaded" mode="aspectFill"></image></view>
 				</swiper-item>
 			</swiper>
 		</view>
 
 		<view class="introduce-section">
-			<text class="title">煦园二楼普通话考试报名</text>
+			<text class="title">{{item.title}}</text>
 			<view class="price-box">
 				<text class="price-tip">¥</text>
-				<text class="price">341.6</text>
+				<text class="price">{{item.price}}</text>
 			</view>
-			<view class="bot-row">
+			<!-- <view class="bot-row">
 				<text>销量: 108</text>
 				<text>库存: 4690</text>
 				<view class="share-btn text-red" @click="share">
-					分享
-					<text class="yticon icon-share text-red"></text>
+					分享 <text class="yticon icon-share text-red"></text>
 				</view>
-			</view>
+			</view> -->
 		</view>
 
 		<view class="c-list">
 			<view class="c-row b-b">
 				<text class="tit">服务</text>
 				<view class="bz-list con">
-					<text>7天无理由退换货 ·</text>
-					<text>假一赔十 ·</text>
+					<text>金牌服务 ·</text>
+					<text>校园大使 ·</text>
+					<text>放心购买</text>
 				</view>
 			</view>
 		</view>
@@ -39,7 +39,7 @@
 			<view class="e-header">
 				<text class="tit">评价</text>
 				<text>(86)</text>
-				<text class="tip">好评率 100%</text>
+				<text class="tip">查看更多</text>
 				<text class="yticon icon-you"></text>
 			</view>
 			<view class="eva-box">
@@ -57,7 +57,11 @@
 
 		<view class="detail-desc">
 			<view class="d-header"><text>图文详情</text></view>
-			<rich-text :nodes="desc"></rich-text>
+			<rich-text >
+				<div style="width:100%">
+					<img style="width:100%;display:block;" :src="host+'/'+item.detail" />
+				</div>				
+			</rich-text>
 		</view>
 
 		<!-- 底部操作菜单 -->
@@ -77,7 +81,7 @@
 
 			<view class="action-btn-group">
 				<button type="primary" class=" action-btn no-border buy-now-btn" @click="buy">立即购买</button>
-				<button type="primary" class=" action-btn no-border add-cart-btn">加入购物车</button>
+				<button type="primary" class=" action-btn no-border add-cart-btn" @click="toCart">加入购物车</button>
 			</view>
 		</view>
 
@@ -88,43 +92,52 @@
 
 <script>
 import share from '@/components/share';
+import { mapState } from 'vuex';
 export default {
 	components: { share },
 	data() {
 		return {
-			specClass: 'none',
-			specSelected: [],
+			host:'',
 			favorite: true,
+			item:{},
 			shareList: [],
-			imgList: [ { src: 'http://p0.so.qhimgs1.com/sdr/400__/t019d95cb5414c0afb0.jpg' } ],
+			// 图文详情  <rich-text :nodes="desc"></rich-text>
 			desc: `
 					<div style="width:100%">
-						<img style="width:100%;display:block;" src="http://p0.so.qhimgs1.com/sdr/400__/t019d95cb5414c0afb0.jpg" />
+						<img style="width:100%;display:block;" :src="host+'/'+item.detail" />
 					</div>
-				`,
+				`
 		};
 	},
+	computed: { ...mapState(['user']) },
 	async onLoad(options) {
-		//接收传值,id里面放的是标题，因为测试数据并没写id
-		let id = options.id;
-		if (id) {
-			this.$api.msg(`点击了${id}`);
-		}
-		this.shareList = await this.$api.json('shareList');
+		this.host = this.$host
+		this.shareList = await this.$api.json('shareList');  // 载入分享
+		//接收传值
+		this.item = JSON.parse(options.item)
+		console.log(this.item)
 	},
 	methods: {
 		//分享
-		share() {
-			this.$refs.share.toggleMask();
-		},
+		share() { this.$refs.share.toggleMask(); },
 		//收藏
-		toFavorite() {
-			this.favorite = !this.favorite;
-		},
+		toFavorite() { this.favorite = !this.favorite; },
+		// 购买
 		buy() {
-			uni.navigateTo({
-				url: `/pages/order/createOrder`
-			});
+			let data = JSON.stringify(this.item)
+			let obj = JSON.stringify({ number: 1,price:this.item.price,other:null })
+			// 支付类别 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、旅游下单，水果下单
+			uni.navigateTo({ url: `/pages/order/createOrder?kind=0&type=3&data=${data}&other=${obj}` })
+		},
+		// 加入购物车
+		async toCart() {
+			uni.showLoading()
+			let ecart = await this.$apis.cart.createExamCart(this.user.id,0,1,this.item.price,this.item.id,0,0)   // u,t,n,p,e,c,j
+			console.log(ecart.data)
+			if(ecart.data){
+				uni.hideLoading();
+				uni.switchTab({ url:'../../cart/cart' })
+			}
 		},
 		// 评价
 		toCallBack(){

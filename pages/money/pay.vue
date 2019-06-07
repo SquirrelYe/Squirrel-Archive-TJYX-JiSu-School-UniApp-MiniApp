@@ -60,7 +60,7 @@
 			changePayType(type) { this.payType = type; },
 			//确认支付
 			async confirm() {
-				console.log(this.user, this.order)
+				console.log('订单信息-->',this.user, this.order)
 				const { id,school_id } = this.user
 				//  支付类别 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、4、旅游下单，5、水果下单
 				// ①、调用微信支付接口
@@ -90,6 +90,7 @@
 					// 预付款支付
 					const { money,location_id } = this.order;
 					let stock = await this.$apis.stock.findByUserId(id)
+					
 					if( money<=stock.data.money ){  // 账户余额足够
 						// 扣款
 						let m = stock.data.money - money;
@@ -104,9 +105,24 @@
 							else this.$api.msg('订单创建失败')
 						}						
 						if(this.type == 2){ //  2、快递代发 
+							// if(this.kind == 0){} 不存在状态，均由购物车支付完成
+							if(this.kind == 1){
+								const { id } = this.order.good
+								// 更新订单状态
+								let lsend = await this.$apis.cart.updateCondition(id,1)
+								if(lsend.data[0] == 1){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
+								else this.$api.msg('订单创建失败')
+							}
 						}						
-						if(this.type == 3){ //  3、考试下单 
-							if(this.kind == 0){}
+						if(this.type == 3){ //  3、考试下单 	
+							if(this.kind == 0){
+								const { price }	= this.order.item
+								const { other } = this.order.good
+								let exam = await this.$apis.cart.createExam(id,0,1,price,this.order.item.id,1,location_id,other,0)	// u,t,n,p,e,c,loc,o,j
+								console.log(exam.data)
+								if(exam.data){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
+								else this.$api.msg('订单创建失败')
+							}
 							if(this.kind == 1) this.pay()
 						}						
 						if(this.type == 4){ //  4、旅游下单 

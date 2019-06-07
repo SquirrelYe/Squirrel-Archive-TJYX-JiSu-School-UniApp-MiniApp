@@ -18,27 +18,37 @@
 				<block v-for="(item, index) in cartList" :key="item.id">
 					<view class="cart-item" :class="{ 'b-b': index !== cartList.length - 1 }">
 						<view class="image-wrapper">
+							<image v-if="item.type == -2" :src="user.info.avatarUrl" :class="[item.loaded]" mode="aspectFill" lazy-load @load="onImageLoad('cartList', index)" @error="onImageError('cartList', index)" ></image>
 							<image v-if="item.type == 0" :src="host+'/'+item.eitem.logo" :class="[item.loaded]" mode="aspectFill" lazy-load @load="onImageLoad('cartList', index)" @error="onImageError('cartList', index)" ></image>
 							<image v-if="item.type == 1" :src="host+'/'+item.jitem.logo" :class="[item.loaded]" mode="aspectFill" lazy-load @load="onImageLoad('cartList', index)" @error="onImageError('cartList', index)" ></image>
 							<image v-if="item.type == 2" :src="host+'/'+item.fitem.logo" :class="[item.loaded]" mode="aspectFill" lazy-load @load="onImageLoad('cartList', index)" @error="onImageError('cartList', index)" ></image>
 							<view class="yticon icon-xuanzhong2 checkbox" :class="{ checked: item.checked }" @click="check(item)"></view>
 						</view>
 						<view class="item-right">
+							<block v-if="item.type == -2">
+								<text class="clamp title">快递代发</text>
+								<text class="attr">{{item.lsend.name}}</text>
+								<text class="price" v-if="item.price">¥{{ item.price }}  重量:{{item.lsend.weight}}kg</text>
+								<text v-else>等待校园大使上门^_^</text>
+							</block>
 							<block v-if="item.type == 0">
 								<text class="clamp title">{{ item.eitem.title }}</text>
 								<text class="attr">{{ item.eitem.name }}</text>
+								<text class="price">¥{{ item.price }}</text>
+								<uni-number-box class="step" :min="1" :value="item.number" :isMin="item.number === 1" :index="index" @eventChange="numberChange" ></uni-number-box>
 							</block>
 							<block v-if="item.type == 1">
 								<text class="clamp title">{{ item.jitem.title }}</text>
 								<text class="attr">{{ item.jitem.name }}</text>
+								<text class="price">¥{{ item.price }}</text>
+								<uni-number-box class="step" :min="1" :value="item.number" :isMin="item.number === 1" :index="index" @eventChange="numberChange" ></uni-number-box>
 							</block>
 							<block v-if="item.type == 2">
 								<text class="clamp title">{{ item.fitem.title }}</text>
 								<text class="attr">{{ item.fitem.name }}</text>
-							</block>
-							<text class="price">¥{{ item.price }}</text>
-							<uni-number-box class="step" :min="1" :value="item.number" :isMin="item.number === 1" :index="index" @eventChange="numberChange" ></uni-number-box>
-						</view>
+								<text class="price">¥{{ item.price }}</text>
+								<uni-number-box class="step" :min="1" :value="item.number" :isMin="item.number === 1" :index="index" @eventChange="numberChange" ></uni-number-box>
+							</block></view>
 						<text class="del-btn yticon icon-fork" @click="deleteCartItem(index)"></text>
 					</view>
 				</block>
@@ -77,7 +87,7 @@ export default {
 	},
 	computed: { ...mapState(['hasLogin','user']) },
 	onLoad() { this.loadData(0); this.host = this.$host },
-	onShow() {  this.cartList = []; this.loadData(0); this.show = false},
+	onShow() {  this.cartList = []; this.off = 0; this.lim = 5; this.loadData(0); this.show = false},
 	watch: { //显示空白页
 		cartList(e) {
 			let empty = e.length === 0 ? true : false;
@@ -86,9 +96,7 @@ export default {
 	},
 	onPullDownRefresh() {
 		console.log('下拉刷新')
-		this.off = 0; this.lim = 5;
-		this.cartList = []
-		this.loadData(1);
+		this.off = 0; this.lim = 5; this.cartList = [] ;this.loadData(1);this.show = false;
 	},
 	onReachBottom() {		
 		let add = this.lim
@@ -176,8 +184,17 @@ export default {
 			if(this.show){				
 				list.forEach(item => { if(item.checked) good = item });
 				console.log(good)
-				// 生成订单信息传递到支付平台	kind : 0.直接购买、1.购物车付款		
-				uni.navigateTo({ url: `/pages/order/createOrder?kind=1&data=${JSON.stringify({ good: good })}` })
+				// 生成订单信息传递到支付平台	kind : 0.直接购买、1.购物车付款	
+				// 类别*（-3、开卡，-2、代发，-1、代取，0.考试，1.旅游，2.水果）
+				// 支付类别 type 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、旅游下单，水果下单
+				if(good.type == -2) {
+					if(good.lsend.condition != 1) this.$api.msg('请等待校园大使上门喔~')
+					else{						
+						let obj = JSON.stringify({ location_id: good.location_id,good:good, money:good.price})
+						uni.navigateTo({ url: `../money/pay?kind=1&type=2&order=${obj}` });
+					}
+				}
+				else  uni.navigateTo({ url: `/pages/order/createOrder?kind=1&data=${JSON.stringify({ good: good })}` })
 			}else this.$api.msg('天啊，你还没有选择呐~');
 
 			

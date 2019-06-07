@@ -92,7 +92,7 @@ export default  {
     },
     // 快递代发
     lsend: {
-		create(u,l,c,a,s) { return req.post('/ent/lsend', { 'judge': 1, 'user_id': u,'location_id': l,'condition': c,'arrive': a,'school_id': s }) },
+		create(u,l,c,n,p,a,s) { return req.post('/ent/lsend', { 'judge': 1, 'user_id': u,'location_id': l,'condition': c,'name': n,'phone': p,'arrive': a,'school_id': s }) },
         delete(id) { return req.post('/ent/lsend', { 'judge': 2, 'id': id }) },
         update(id, c) { return req.post('/ent/lsend', { 'judge': 3, 'id': id, 'condition': c }) },
         updateTake(id,t) { return req.post('/ent/lsend', { 'judge': 3, 'id': id, 'take': t }) },
@@ -230,11 +230,16 @@ export default  {
     cart: {
 		createLog(u,t,n,p,log,c,loc,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'logistic_id': log, 'condition': c, 'location_id': loc,'judgec': j }) },
 		createLsend(u,t,n,ls,c,loc,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'lsend_id': ls, 'condition': c, 'location_id': loc,'judgec': j }) },
- 		createExam(u,t,n,p,e,c,loc,o,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'eitem': e, 'condition': c, 'location_id': loc,'other':o,'judgec': j }) },
- 		createJourney(u,t,n,p,ji,c,loc,o,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'jitem': ji, 'condition': c, 'location_id': loc,'other':o,'judgec': j }) },
- 		createFruit(u,t,n,p,f,c,loc,o,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'fitem': f, 'condition': c, 'location_id': loc,'other':o,'judgec': j }) },
+ 		createExam(u,t,n,p,e,c,loc,o,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'eitem_id': e, 'condition': c, 'location_id': loc,'other':o,'judgec': j }) },
+ 		createJourney(u,t,n,p,ji,c,loc,o,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'jitem_id': ji, 'condition': c, 'location_id': loc,'other':o,'judgec': j }) },
+ 		createFruit(u,t,n,p,f,c,loc,o,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'fitem_id': f, 'condition': c, 'location_id': loc,'other':o,'judgec': j }) },
 		
+		createExamCart(u,t,n,p,e,c,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'eitem_id': e, 'condition': c,'judgec': j }) },
+ 		createJourneyCart(u,t,n,p,ji,c,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'jitem_id': ji, 'condition': c,'judgec': j }) },
+ 		createFruitCart(u,t,n,p,f,c,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'fitem_id': f, 'condition': c,'judgec': j }) },
+	
 		delete(id) { return req.post('/ent/cart', { 'judge': 2, 'id': id }) },
+        updateCondition(id ,c) { return req.post('/ent/cart', { 'judge': 3, 'id': id,'condition':c }) },
         updateJudge(id , j) { return req.post('/ent/cart', { 'judge': 3, 'id': id,'judgec':j }) },
         updateCart(id,n,loc,o,c,j) { return req.post('/ent/cart', { 'judge': 3, 'id':id,'number':n,'location_id':loc,'other':o,'condition':c,'judgec':j }) },
 

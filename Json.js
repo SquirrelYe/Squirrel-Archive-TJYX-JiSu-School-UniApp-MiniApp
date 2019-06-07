@@ -148,26 +148,11 @@ const detailData = {
 		}
 	]
 }
-const shareList = [{
-		type: 1,
-		icon: '/static/temp/share_wechat.png',
-		text: '微信好友'
-	},
-	{
-		type: 2,
-		icon: '/static/temp/share_moment.png',
-		text: '朋友圈'
-	},
-	{
-		type: 3,
-		icon: '/static/temp/share_qq.png',
-		text: 'QQ好友'
-	},
-	{
-		type: 4,
-		icon: '/static/temp/share_qqzone.png',
-		text: 'QQ空间'
-	}
+const shareList = [
+	{ type: 1, icon: '/static/temp/share_wechat.png', text: '微信好友' },
+	{ type: 2, icon: '/static/temp/share_moment.png', text: '朋友圈' },
+	{ type: 3, icon: '/static/temp/share_qq.png', text: 'QQ好友' },
+	{ type: 4, icon: '/static/temp/share_qqzone.png', text: 'QQ空间' } ,
 ]
 const lazyLoadList = [{
 		src: 'http://img0.imgtn.bdimg.com/it/u=2396068252,4277062836&fm=26&gp=0.jpg'

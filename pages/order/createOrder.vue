@@ -116,7 +116,8 @@
 		data() {
 			return {
 				host:'',
-				kind:null,   //kind : 0.直接购买、1.购物车付款		
+				kind:null,   //kind : 0.直接购买、1.购物车付款	
+				type:null,  // 支付类别 3、考试下单、旅游下单，水果下单 (仅限直接购买使用)
 				good:{},
 				item:{},
 				maskState: 0, //优惠券面板显示状态
@@ -134,7 +135,9 @@
 			this.kind = option.kind
 			if(this.kind == 0){
 				// 直接下单
-				
+				this.item = JSON.parse(option.data)
+				this.good = JSON.parse(option.other)	
+				this.type = option.type
 			}else if(this.kind == 1){				
 				// 购物车付款 ---> 商品数据
 				this.good = JSON.parse(option.data).good;
@@ -166,8 +169,12 @@
 					else{					
 						console.log(this.addressData,this.item)
 						// 提交支付信息
-						if(this.kind == 0){
-							
+						// 支付类别 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、旅游下单，水果下单
+						if(this.kind == 0){							
+							let obj = JSON.stringify({ location_id: this.addressData.id, good:this.good, item:this.item, money:this.good.price * this.good.number})
+							this.isSubmit = true  // 标记已经提交订单
+							// 提交代取信息
+							uni.redirectTo({ url: `../money/pay?kind=${this.kind}&type=${this.type}&order=${obj}` });
 						}else if(this.kind == 1){						
 							// 封装传递数据
 							let type = this.typeExp(this.good.type)

@@ -140,7 +140,7 @@ export default {
 			let obj = JSON.stringify({ from: from, location_id: this.addressData.id, total:1, money:price, key:msg})
 			// 提交支付信息
 			// 支付类别 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、旅游下单，水果下单
-			uni.navigateTo({ url: `../money/pay?type=1&order=${obj}` });
+			uni.navigateTo({ url: `../money/pay?kind=0&type=1&order=${obj}` });
 		}
 	}
 };

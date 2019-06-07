@@ -16,7 +16,16 @@
 							<text class="state" :style="{ color: item.stateTipColor }">{{ item.stateTip }}</text>
 							<!-- <text v-if="item.condition === -1" class="del-btn yticon icon-iconfontshanchu1" @click="deleteOrder(index)"></text> -->
 						</view>
-						<!-- ①、快递代取 type -1 -->
+						<!-- 0、快递代发 type -2 -->
+						<view class="goods-box-single" v-if="item.type == -2">
+							<image class="goods-img" lazy-load :src="user.info.avatarUrl" mode="aspectFill"></image>
+							<view class="right">
+								<text class="title clamp">代发快递</text>
+								<text class="attr-box">快递代发 x {{ item.number }}</text>
+								<text class="price">{{ item.price }}</text>
+							</view>
+						</view>
+						<!-- 1、快递代取 type -1 -->
 						<view class="goods-box-single" v-if="item.type == -1">
 							<image class="goods-img" lazy-load :src="user.info.avatarUrl" mode="aspectFill"></image>
 							<view class="right">
@@ -25,7 +34,7 @@
 								<text class="price">{{ item.price }}</text>
 							</view>
 						</view>
-						<!-- ①、考试订单 type 0 -->
+						<!-- 2、考试订单 type 0 -->
 						<view class="goods-box-single" v-if="item.type == 0">
 							<image class="goods-img" lazy-load :src="host+'/'+item.eitem.logo" mode="aspectFill"></image>
 							<view class="right">
@@ -34,7 +43,7 @@
 								<text class="price">{{ item.price }}</text>
 							</view>
 						</view>
-						<!-- ②、旅游订单 type 1 -->
+						<!-- 3、旅游订单 type 1 -->
 						<view class="goods-box-single" v-if="item.type == 1">
 							<image class="goods-img" lazy-load :src="host+'/'+item.jitem.logo" mode="aspectFill"></image>
 							<view class="right">
@@ -43,7 +52,7 @@
 								<text class="price">{{ item.price }}</text>
 							</view>
 						</view>
-						<!-- ③、水果订单 type 2 -->
+						<!-- 4、水果订单 type 2 -->
 						<view class="goods-box-single" v-if="item.type == 2">
 							<image class="goods-img" lazy-load :src="host+'/'+item.fitem.logo" mode="aspectFill"></image>
 							<view class="right">
@@ -164,7 +173,11 @@ export default {
 			if(t == -1){   // 代取快递
 				let log = JSON.stringify(item.logistic)
 				uni.navigateTo({ url: `/pages/flow/logistic_detail/logistic_detail?loc=${loc}&log=${log}` });	
-			}else if(t == 0||t == 1||t == 2){	// 考试、旅游、水果
+			}else if(t == -2){	// 代发快递
+				let lsend = JSON.stringify(item.lsend)
+				uni.navigateTo({ url: `/pages/flow/lsend_detail/lsend_detail?loc=${loc}&lsend=${lsend}` });	
+			}
+			else if(t == 0||t == 1||t == 2){	// 考试、旅游、水果
 				let citem = JSON.stringify(item)
 				uni.navigateTo({ url: `/pages/order/order_detail/order_detail?type=${t}&loc=${loc}&item=${citem}` });	
 			}
