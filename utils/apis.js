@@ -4,7 +4,11 @@ export default  {
     test:{
         login(n, p) { return req.post('/ent/user', { 'judge': 5, 'name': n, 'pass': p }) },
     },
-
+	// 首页加载
+	index:{
+		findAndCountAllBySchool(sid) { return req.post('/ass/index', { 'judge': 0, 'school_id': sid }) },
+		findById(id) { return req.post('/ass/index', { 'judge': 1, 'id': id }) },
+	},
     // 参赛者信息
     user: {
         delete(id) { return req.post('/ent/user', { 'judge': 2, 'id': id }) },
@@ -223,7 +227,7 @@ export default  {
         findAndCountAll(o, l) { return req.post('/ass/fitem', { 'judge': 0, 'offset': o, 'limit': l }) },
         findOneById(id) { return req.post('/ass/fitem', { 'judge': 1, 'id': id }) },
         findByFruitId(f, o, l) { return req.post('/ass/fitem', { 'judge': 2, 'mfruit_id': f, 'offset': o, 'limit': l }) },
-        findAllBySchool(s, o, l) { return req.post('/ass/fitem', { 'judge': 3, 'schoo bl_id': s, 'offset': o, 'limit': l }) },
+        findAllBySchool(s, o, l) { return req.post('/ass/fitem', { 'judge': 3, 'school_id': s, 'offset': o, 'limit': l }) },
         findAndCountAllLikeByNameSchool(n, s) { return req.post('/ass/fitem', { 'judge': 4, 'name': n , 'school_id': s}) }  
     },
     // 购物车
@@ -251,6 +255,10 @@ export default  {
         findByJourney(j, o, l) { return req.post('/ass/cart', { 'judge': 4, 'jitem_id': j, 'offset': o, 'limit': l }) },
         findByFruit(f, o, l) { return req.post('/ass/cart', { 'judge': 5, 'fitem_id': f, 'offset': o, 'limit': l }) },
         findByCondition(u, c, o, l) { return req.post('/ass/cart', { 'judge': 6, 'user_id': u,'judgec': c, 'offset': o, 'limit': l }) },
+		
+		findExamCallBack(eid,o,l) { return req.post('/ass/cart', { 'judge': 8, 'eitem_id': eid, 'offset': o, 'limit': l }) },
+		findJourneyCallBack(jid,o,l) { return req.post('/ass/cart', { 'judge': 9, 'jitem_id': jid, 'offset': o, 'limit': l }) },
+		findFruitCallBack(fid,o,l) { return req.post('/ass/cart', { 'judge': 10, 'fitem_id': fid, 'offset': o, 'limit': l }) },
     },
     // 总订单交易
     tran: {

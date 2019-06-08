@@ -57,6 +57,10 @@
 		</view>
 		<!-- 金额明细 -->
 		<view class="yt-list">
+			<view class="yt-list-cell b-b" v-if="kind == 0">
+				<text class="cell-tit clamp">商品数量</text>
+				<input class="cell-tip" style="width: 60upx;" type="number" v-model="good.number"/>
+			</view>
 			<view class="yt-list-cell b-b">
 				<text class="cell-tit clamp">商品金额</text>
 				<text class="cell-tip">￥{{good.price * good.number}}</text>
@@ -165,7 +169,8 @@
 			submit(){
 				if(this.isSubmit) this.$api.msg('请不要重复提交喔~');
 				else{
-					if(!this.addressData.id) this.$api.msg('啊哦，没有选择收货地址~');
+					if(!this.addressData.id){ this.$api.msg('啊哦，没有选择收货地址~'); return; }
+					if(!this.good.number || this.good.number == 0){ this.$api.msg('啊哦，数量不对喔~'); return; }					
 					else{					
 						console.log(this.addressData,this.item)
 						// 提交支付信息

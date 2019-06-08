@@ -35,21 +35,28 @@
 		</view>
 
 		<!-- 评价 -->
-		<view class="eva-section" @click="toCallBack()">
+		<view class="eva-section" v-if="callbackNumber == 0">
 			<view class="e-header">
 				<text class="tit">评价</text>
-				<text>(86)</text>
+				<text>(暂无评价)</text>
+				<text class="tip">没有更多了</text>
+			</view>
+		</view>
+		<view class="eva-section" @click="toCallBack()" v-else>
+			<view class="e-header">
+				<text class="tit">评价</text>
+				<text>({{callbackNumber}})</text>
 				<text class="tip">查看更多</text>
 				<text class="yticon icon-you"></text>
 			</view>
-			<view class="eva-box">
-				<image class="portrait" src="http://img3.imgtn.bdimg.com/it/u=1150341365,1327279810&fm=26&gp=0.jpg" mode="aspectFill"></image>
+			<view class="eva-box"  v-for="(item,index) in callbackList" :key="index">
+				<image class="portrait" :src="user.info.avatarUrl" mode="aspectFill"></image>
 				<view class="right">
-					<text class="name">风继续吹</text>
-					<text class="con">一下子就考过了，很开心</text>
+					<text class="name">{{item.user.name}}</text>
+					<text class="con">{{item.callback}}</text>
 					<view class="bot">
-						<text class="attr">购买类型：标准</text>
-						<text class="time">2019-04-01 19:21</text>
+						<text class="attr">购买类型：{{item.eitem.name}}</text>
+						<text class="time">{{item.date}}</text>
 					</view>
 				</view>
 			</view>
@@ -101,6 +108,8 @@ export default {
 			favorite: true,
 			item:{},
 			shareList: [],
+			callbackNumber:null,
+			callbackList:[],
 			// 图文详情  <rich-text :nodes="desc"></rich-text>
 			desc: `
 					<div style="width:100%">
@@ -112,10 +121,13 @@ export default {
 	computed: { ...mapState(['user']) },
 	async onLoad(options) {
 		this.host = this.$host
-		this.shareList = await this.$api.json('shareList');  // 载入分享
 		//接收传值
 		this.item = JSON.parse(options.item)
-		console.log(this.item)
+		let call = await this.$apis.cart.findExamCallBack(this.item.id,0,1)
+		this.callbackNumber = call.data.count
+		this.callbackList = call.data.rows.filter(item=>{ item = Object.assign(item, this.orderTimeExp(item.updated_at)); return item; });	
+		this.shareList = await this.$api.json('shareList');  // 载入分享
+		console.log(this.item,this.callbackList)
 	},
 	methods: {
 		//分享
@@ -126,7 +138,7 @@ export default {
 		buy() {
 			let data = JSON.stringify(this.item)
 			let obj = JSON.stringify({ number: 1,price:this.item.price,other:null })
-			// 支付类别 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、旅游下单，水果下单
+			// 支付类别 支付类别 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、4、旅游下单，5、水果下单
 			uni.navigateTo({ url: `/pages/order/createOrder?kind=0&type=3&data=${data}&other=${obj}` })
 		},
 		// 加入购物车
@@ -135,15 +147,22 @@ export default {
 			let ecart = await this.$apis.cart.createExamCart(this.user.id,0,1,this.item.price,this.item.id,0,0)   // u,t,n,p,e,c,j
 			console.log(ecart.data)
 			if(ecart.data){
-				uni.hideLoading();
-				uni.switchTab({ url:'../../cart/cart' })
+				// 延时显示
+				let _this = this
+				setTimeout(function(){
+					uni.hideLoading();
+					_this.$api.msg('加入购物车成功~');
+					// uni.switchTab({ url:'../../cart/cart' })
+				},600)
 			}
 		},
 		// 评价
-		toCallBack(){
-			uni.navigateTo({
-				url:"../exam_callback/exam_callback"
-			})
+		toCallBack(){ uni.navigateTo({ url:`../exam_callback/exam_callback?id=${this.item.id}` }) },
+		//时间格式化
+		orderTimeExp(time){
+			let tmp = time.split('T')
+			let date = tmp[0] + '  '+ tmp[1].split(':')[0]+ ':' + tmp[1].split(':')[1]
+			return {date};
 		}
 	}
 };

@@ -255,7 +255,9 @@
         ,{
             "path" : "pages/exam/exam_callback/exam_callback",
             "style" : {
-				"navigationBarTitleText": "商品评价"
+				"navigationBarTitleText": "商品评价",
+				"enablePullDownRefresh":true,
+				"onReachBottomDistance":50
 			}
         }
         ,{
@@ -273,7 +275,9 @@
         ,{
             "path" : "pages/fruit/fruit_callback/fruit_callback",
             "style" : {
-				"navigationBarTitleText": "商品评价"
+				"navigationBarTitleText": "商品评价",
+				"enablePullDownRefresh":true,
+				"onReachBottomDistance":50
 			}
         }
         ,{
@@ -291,7 +295,9 @@
         ,{
             "path" : "pages/journey/journey_callback/journey_callback",
             "style" : {
-				"navigationBarTitleText": "商品评价"
+				"navigationBarTitleText": "商品评价",
+				"enablePullDownRefresh":true,
+				"onReachBottomDistance":50
 			}
         }
         ,{

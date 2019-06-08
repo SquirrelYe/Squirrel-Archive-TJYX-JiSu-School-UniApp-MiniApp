@@ -1,14 +1,14 @@
 <template>
 	<view class="content">
 		<scroll-view scroll-y class="left-aside">
-			<view v-for="item in flist" :key="item.id" class="f-item b-b" :class="{ active: item.id === currentId }" @click="tabtap(item)">{{ item.name }}</view>
+			<view v-for="item in flist" :key="item.id" class="f-item b-b" :class="{ active: item.id === currentId }" @click="tabtap(item)">{{ item.title }}</view>
 		</scroll-view>
 		<scroll-view scroll-with-animation scroll-y class="right-aside" @scroll="asideScroll" :scroll-top="tabScrollTop">
 			<view v-for="item in slist" :key="item.id" class="s-list" :id="'main-' + item.id">
-				<text class="s-item">{{ item.name }}</text>
+				<text class="s-item">{{ item.title }}</text>
 				<view class="t-list">
-					<view @click="navToList(item.id, titem.id)" v-if="titem.pid === item.id" class="t-item" v-for="titem in tlist" :key="titem.id">
-						<image :src="titem.picture"></image>
+					<view @click="navToList(titem)" v-if="titem.mfruit_id === item.id" class="t-item" v-for="titem in tlist" :key="titem.id">
+						<image :src="host+'/'+titem.logo"></image>
 						<text>{{ titem.name }}</text>
 					</view>
 				</view>
@@ -18,75 +18,49 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 export default {
 	data() {
 		return {
+			host:'',
 			sizeCalcState: false,
 			tabScrollTop: 0,
 			currentId: 1,
 			flist: [],
 			slist: [],
 			tlist: [],
-			cateList: [
-				// 一级菜单
-				{ id: 1, name: '为你推荐' },
-				{ id: 2, name: '商家一' },
-				{ id: 3, name: '商家二' },
-				{ id: 4, name: '商家三' },
-				// 二级菜单
-				{ id: 5, pid: 1, name: '最近热门' },
-				{ id: 6, pid: 1, name: '最近热销' },
-				{ id: 7, pid: 2, name: '进口水果' },
-				{ id: 8, pid: 3, name: '野生水果' },
-				{ id: 9, pid: 4, name: '便宜水果' },
-				// 三级菜单
-				{ id: 13, pid: 5, name: '推荐1', picture: '/static/temp/fruit.png' },
-				{ id: 14, pid: 5, name: '推荐2', picture: '/static/temp/fruit.png' },
-				{ id: 15, pid: 5, name: '推荐3', picture: '/static/temp/fruit.png' },
-				{ id: 16, pid: 5, name: '推荐4', picture: '/static/temp/fruit.png' },
-				{ id: 14, pid: 6, name: '热销1', picture: '/static/temp/fruit.png' },				
-				{ id: 19, pid: 7, name: '进口1', picture: '/static/temp/fruit.png' },
-				{ id: 20, pid: 8, name: '野生1', picture: '/static/temp/fruit.png' },
-				{ id: 21, pid: 9, name: '便宜1', picture: '/static/temp/fruit.png' },
-			]
 		};
 	},
-	onLoad() {
-		this.loadData();
-	},
+	computed: { ...mapState(['user']) },
+	onLoad() { this.loadData(); this.host = this.$host },
 	methods: {
 		async loadData() {
-			// let list = await this.$api.json('cateList');
-			let list =this.cateList
-			list.forEach(item => {
-				if (!item.pid) {
-					this.flist.push(item); //pid为父级id, 没有pid或者pid=0是一级分类
-				} else if (!item.picture) {
-					this.slist.push(item); //没有图的是2级分类
-				} else {
-					this.tlist.push(item); //3级分类
-				}
-			});
+			const { school_id } = this.user;
+			// 菜单状态*（0.正常、-1.关闭）
+			let exam = await this.$apis.fruit.findAllBySchool(school_id,0,100)
+			exam.data.rows.forEach(item => { if(item.condition ==0 ) this.flist.push(item) })
+			let mexam = await this.$apis.mfruit.findAllBySchool(school_id,0,100)
+			mexam.data.rows.forEach(item => { if(item.condition ==0 && item.fruit.condition ==0 ) this.slist.push(item) })
+			let eitem = await this.$apis.fitem.findAllBySchool(school_id,0,100)
+			eitem.data.rows.forEach(item => { if(item.condition ==0 ) this.tlist.push(item) })
+			// 初始化选中
+			this.currentId = this.flist[0].id
+			console.log(this.flist,this.slist,this.tlist)
 		},
 		//一级分类点击
 		tabtap(item) {
-			if (!this.sizeCalcState) {
-				this.calcSize();
-			}
-
+			if (!this.sizeCalcState) { this.calcSize(); }
 			this.currentId = item.id;
-			let index = this.slist.findIndex(sitem => sitem.pid === item.id);
+			let index = this.slist.findIndex(sitem => sitem.fruit_id === item.id);
 			this.tabScrollTop = this.slist[index].top;
 		},
 		//右侧栏滚动
 		asideScroll(e) {
-			if (!this.sizeCalcState) {
-				this.calcSize();
-			}
+			if (!this.sizeCalcState) { this.calcSize(); }
 			let scrollTop = e.detail.scrollTop;
 			let tabs = this.slist.filter(item => item.top <= scrollTop).reverse();
 			if (tabs.length > 0) {
-				this.currentId = tabs[0].pid;
+				this.currentId = tabs[0].fruit_id;
 			}
 		},
 		//计算右侧栏每个tab的高度等信息
@@ -95,9 +69,7 @@ export default {
 			this.slist.forEach(item => {
 				let view = uni.createSelectorQuery().select('#main-' + item.id);
 				view.fields(
-					{
-						size: true
-					},
+					{ size: true },
 					data => {
 						item.top = h;
 						h += data.height;
@@ -107,11 +79,8 @@ export default {
 			});
 			this.sizeCalcState = true;
 		},
-		navToList(sid, tid) {
-			uni.navigateTo({
-				url: `/pages/fruit/fruit_list/fruit_list?fid=${this.currentId}&sid=${sid}&tid=${tid}`
-			});
-		}
+		// 进入详情页
+		navToList(titem) { uni.navigateTo({ url: `/pages/fruit/fruit_list/fruit_list?item=${JSON.stringify(titem)}` }); }
 	}
 };
 </script>

@@ -2,20 +2,14 @@
 	<view class="container">
 		<!-- 评价 -->
 		<view class="eva-section">
-			<!-- <view class="e-header">
-				<text class="tit">评价</text>
-				<text>(86)</text>
-				<text class="tip">好评率 100%</text>
-				<text class="yticon icon-you"></text>
-			</view> -->
-			<view class="eva-box">
-				<image class="portrait" src="http://img3.imgtn.bdimg.com/it/u=1150341365,1327279810&fm=26&gp=0.jpg" mode="aspectFill"></image>
+			<view class="eva-box"  v-for="(item,index) in callbackList" :key="index">
+				<image class="portrait" :src="user.info.avatarUrl" mode="aspectFill"></image>
 				<view class="right">
-					<text class="name">风继续吹</text>
-					<text class="con">一下子就考过了，很开心</text>
+					<text class="name">{{item.user.name}}</text>
+					<text class="con">{{item.callback}}</text>
 					<view class="bot">
-						<text class="attr">购买类型：标准</text>
-						<text class="time">2019-04-01 19:21</text>
+						<text class="attr">购买类型：{{item.eitem.name}}</text>
+						<text class="time">{{item.date}}</text>
 					</view>
 				</view>
 			</view>
@@ -24,20 +18,56 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 export default {
 	data() {
 		return {
-			
+			id:null,
+			callbackNumber:null,
+			callbackList:[],
+			// 上拉加载
+			off:0,
+			limit:7
 		};
 	},
+	computed: { ...mapState(['user']) },
 	async onLoad(options) {
-		//接收传值,id里面放的是标题，因为测试数据并没写id
-		let id = options.id;
-		if (id) {
-			this.$api.msg(`点击了${id}`);
-		}
+		// 接收传值,id里面放的是考试项目id
+		this.id = options.id;	
+		this.load(0)
 	},
-	methods: {}
+	onPullDownRefresh() { this.init(); this.load(0) },
+	onReachBottom() {
+		console.log('上拉加载')
+		let n = this.limit
+		this.off+=n; this.limit+=n;
+		this.load(1)
+	},
+	methods: {
+		// 分页初始化
+		init(){ this.off = 0; this.limit =7},
+		// loadData
+		async load(judge){  // judge 0.初始化、1.上拉加载
+			console.log('定位',this.off,this.limit)
+			let call = await this.$apis.cart.findExamCallBack(this.id,this.off,this.limit)
+			this.callbackNumber = call.data.count
+			if(judge ==0) {
+				this.callbackList = call.data.rows.filter(item=>{ item = Object.assign(item, this.orderTimeExp(item.updated_at)); return item; });
+				uni.stopPullDownRefresh();
+			}
+			if(judge ==1) {
+				let item =  call.data.rows.filter(item=>{ item = Object.assign(item, this.orderTimeExp(item.updated_at)); return item; });
+				if(item.length == 0) { this.$api.msg('没有更多啦~'); return; }
+				this.callbackList = this.callbackList.concat(item)
+			}
+		},
+		//时间格式化
+		orderTimeExp(time){
+			let tmp = time.split('T')
+			let date = tmp[0] + '  '+ tmp[1].split(':')[0]+ ':' + tmp[1].split(':')[1]
+			return {date};
+		}
+	}
 };
 </script>
 
@@ -53,7 +83,7 @@ page {
 	flex-direction: column;
 	padding: 20upx 30upx;
 	background: #fff;
-	margin-top: 16upx;
+	// margin-top: 16upx;
 	.e-header {
 		display: flex;
 		align-items: center;

@@ -2,55 +2,61 @@
 	<view class="container">
 		<view class="carousel">
 			<swiper indicator-dots circular="true" duration="400">
-				<swiper-item class="swiper-item" v-for="(item, index) in imgList" :key="index">
-					<view class="image-wrapper"><image :src="item.src" class="loaded" mode="aspectFill"></image></view>
+				<swiper-item class="swiper-item" :key="index">  <!--  v-for="(item, index) in imgList" -->
+					<view class="image-wrapper"><image :src="host+'/'+item.logo" class="loaded" mode="aspectFill"></image></view>
 				</swiper-item>
 			</swiper>
 		</view>
 
 		<view class="introduce-section">
-			<text class="title">进口水果 马来西亚进口水果 苹果🍎</text>
+			<text class="title">{{item.title}}</text>
 			<view class="price-box">
 				<text class="price-tip">¥</text>
-				<text class="price">6</text>
+				<text class="price">{{item.price}}</text>
 			</view>
-			<view class="bot-row">
+			<!-- <view class="bot-row">
 				<text>销量: 108</text>
 				<text>库存: 4690</text>
 				<view class="share-btn text-red" @click="share">
-					分享
-					<text class="yticon icon-share text-red"></text>
+					分享 <text class="yticon icon-share text-red"></text>
 				</view>
-			</view>
+			</view> -->
 		</view>
 
 		<view class="c-list">
 			<view class="c-row b-b">
 				<text class="tit">服务</text>
 				<view class="bz-list con">
-					<text>保证新鲜 ·</text>
-					<text>假一赔十 ·</text>
-					<text>香甜可口</text>
+					<text>金牌服务 ·</text>
+					<text>校园大使 ·</text>
+					<text>放心购买</text>
 				</view>
 			</view>
 		</view>
 
 		<!-- 评价 -->
-		<view class="eva-section" @click="toCallBack()">
+		<view class="eva-section" v-if="callbackNumber == 0">
 			<view class="e-header">
 				<text class="tit">评价</text>
-				<text>(86)</text>
-				<text class="tip">好评率 100%</text>
+				<text>(暂无评价)</text>
+				<text class="tip">没有更多了</text>
+			</view>
+		</view>
+		<view class="eva-section" @click="toCallBack()" v-else>
+			<view class="e-header">
+				<text class="tit">评价</text>
+				<text>({{callbackNumber}})</text>
+				<text class="tip">查看更多</text>
 				<text class="yticon icon-you"></text>
 			</view>
-			<view class="eva-box">
-				<image class="portrait" src="http://img3.imgtn.bdimg.com/it/u=1150341365,1327279810&fm=26&gp=0.jpg" mode="aspectFill"></image>
+			<view class="eva-box"  v-for="(item,index) in callbackList" :key="index">
+				<image class="portrait" :src="user.info.avatarUrl" mode="aspectFill"></image>
 				<view class="right">
-					<text class="name">风继续吹</text>
-					<text class="con">很好吃，很开心</text>
+					<text class="name">{{item.user.name}}</text>
+					<text class="con">{{item.callback}}</text>
 					<view class="bot">
-						<text class="attr">购买类型：标准</text>
-						<text class="time">2019-04-01 19:21</text>
+						<text class="attr">购买类型：{{item.fitem.name}}</text>
+						<text class="time">{{item.date}}</text>
 					</view>
 				</view>
 			</view>
@@ -58,7 +64,11 @@
 
 		<view class="detail-desc">
 			<view class="d-header"><text>图文详情</text></view>
-			<rich-text :nodes="desc"></rich-text>
+			<rich-text >
+				<div style="width:100%">
+					<img style="width:100%;display:block;" :src="host+'/'+item.detail" />
+				</div>				
+			</rich-text>
 		</view>
 
 		<!-- 底部操作菜单 -->
@@ -78,7 +88,7 @@
 
 			<view class="action-btn-group">
 				<button type="primary" class=" action-btn no-border buy-now-btn" @click="buy">立即购买</button>
-				<button type="primary" class=" action-btn no-border add-cart-btn">加入购物车</button>
+				<button type="primary" class=" action-btn no-border add-cart-btn" @click="toCart">加入购物车</button>
 			</view>
 		</view>
 
@@ -89,49 +99,71 @@
 
 <script>
 import share from '@/components/share';
+import { mapState } from 'vuex';
 export default {
 	components: { share },
 	data() {
 		return {
-			specClass: 'none',
-			specSelected: [],
+			host:'',
 			favorite: true,
+			item:{},
 			shareList: [],
-			imgList: [ { src: 'http://img.39yst.com/uploads/2015/0506/1430884300195.jpg' } ],
+			callbackNumber:null,
+			callbackList:[],
+			// 图文详情  <rich-text :nodes="desc"></rich-text>
 			desc: `
 					<div style="width:100%">
-						<img style="width:100%;display:block;" src="http://img.39yst.com/uploads/2015/0506/1430884300195.jpg" />
+						<img style="width:100%;display:block;" :src="host+'/'+item.detail" />
 					</div>
-				`,
+				`
 		};
 	},
+	computed: { ...mapState(['user']) },
 	async onLoad(options) {
-		//接收传值,id里面放的是标题，因为测试数据并没写id
-		let id = options.id;
-		if (id) {
-			this.$api.msg(`点击了${id}`);
-		}
-		this.shareList = await this.$api.json('shareList');
+		this.host = this.$host
+		//接收传值
+		this.item = JSON.parse(options.item)
+		let call = await this.$apis.cart.findFruitCallBack(this.item.id,0,1)
+		this.callbackNumber = call.data.count
+		this.callbackList = call.data.rows.filter(item=>{ item = Object.assign(item, this.orderTimeExp(item.updated_at)); return item; });	
+		this.shareList = await this.$api.json('shareList');  // 载入分享
+		console.log(this.item,this.callbackList)
 	},
 	methods: {
 		//分享
-		share() {
-			this.$refs.share.toggleMask();
-		},
+		share() { this.$refs.share.toggleMask(); },
 		//收藏
-		toFavorite() {
-			this.favorite = !this.favorite;
-		},
+		toFavorite() { this.favorite = !this.favorite; },
+		// 购买
 		buy() {
-			uni.navigateTo({
-				url: `/pages/order/createOrder`
-			});
+			let data = JSON.stringify(this.item)
+			let obj = JSON.stringify({ number: 1,price:this.item.price,other:null })
+			// 支付类别 支付类别 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、4、旅游下单，5、水果下单
+			uni.navigateTo({ url: `/pages/order/createOrder?kind=0&type=5&data=${data}&other=${obj}` })
+		},
+		// 加入购物车
+		async toCart() {
+			uni.showLoading()
+			// 类别*（-3、开卡，-2、代发，-1、代取，0.考试，1.旅游，2.水果）
+			let fcart = await this.$apis.cart.createFruitCart(this.user.id,2,1,this.item.price,this.item.id,0,0)   // u,t,n,p,e,c,j
+			console.log(fcart.data)
+			if(fcart.data){
+				// 延时显示
+				let _this = this
+				setTimeout(function(){
+					uni.hideLoading();
+					_this.$api.msg('加入购物车成功~');
+					// uni.switchTab({ url:'../../cart/cart' })
+				},600)
+			}
 		},
 		// 评价
-		toCallBack(){
-			uni.navigateTo({
-				url:"../fruit_callback/fruit_callback"
-			})
+		toCallBack(){ uni.navigateTo({ url:`../fruit_callback/fruit_callback?id=${this.item.id}` }) },
+		//时间格式化
+		orderTimeExp(time){
+			let tmp = time.split('T')
+			let date = tmp[0] + '  '+ tmp[1].split(':')[0]+ ':' + tmp[1].split(':')[1]
+			return {date};
 		}
 	}
 };

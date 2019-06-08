@@ -117,8 +117,8 @@
 						if(this.type == 3){ //  3、考试下单 	
 							if(this.kind == 0){
 								const { price }	= this.order.item
-								const { other } = this.order.good
-								let exam = await this.$apis.cart.createExam(id,0,1,price,this.order.item.id,1,location_id,other,0)	// u,t,n,p,e,c,loc,o,j
+								const { other,number } = this.order.good
+								let exam = await this.$apis.cart.createExam(id,0,number,price,this.order.item.id,1,location_id,other,0)	// u,t,n,p,e,c,loc,o,j
 								console.log(exam.data)
 								if(exam.data){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
 								else this.$api.msg('订单创建失败')
@@ -126,11 +126,25 @@
 							if(this.kind == 1) this.pay()
 						}						
 						if(this.type == 4){ //  4、旅游下单 
-							if(this.kind == 0){}
+							if(this.kind == 0){								
+								const { price }	= this.order.item
+								const { other,number } = this.order.good
+								let journey = await this.$apis.cart.createJourney(id,1,number,price,this.order.item.id,1,location_id,other,0)	// u,t,n,p,ji,c,loc,o,j
+								console.log(journey.data)
+								if(journey.data){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
+								else this.$api.msg('订单创建失败')
+							}
 							if(this.kind == 1) this.pay()
 						}						
 						if(this.type == 5){ //  5、水果下单 
-							if(this.kind == 0){}
+							if(this.kind == 0){			
+								const { price }	= this.order.item
+								const { other,number } = this.order.good
+								let fruit = await this.$apis.cart.createFruit(id,2,number,price,this.order.item.id,1,location_id,other,0)	// u,t,n,p,f,c,loc,o,j
+								console.log(fruit.data)
+								if(fruit.data){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
+								else this.$api.msg('订单创建失败')
+							}
 							if(this.kind == 1) this.pay()
 						}
 					}else  this.$api.msg('可用余额不足')					

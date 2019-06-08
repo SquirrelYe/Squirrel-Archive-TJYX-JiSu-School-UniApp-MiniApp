@@ -9,10 +9,10 @@
 			<!-- 标题栏和状态栏占位符 -->
 			<view class="titleNview-placing"></view>
 			<!-- 背景色区域 -->
-			<view class="titleNview-background" :style="{ backgroundColor: titleNViewBackground }"></view>
+			<view class="titleNview-background"></view>
 			<swiper class="carousel" circular @change="swiperChange">
 				<swiper-item v-for="(item, index) in carouselList" :key="index" class="carousel-item" @click="navToDetailPage({ title: '轮播广告' })">
-					<image :src="item.src" />
+					<image :src="host+'/'+item.icon" />
 				</swiper-item>
 			</swiper>
 			<!-- 自定义swiper指示器 -->
@@ -45,8 +45,31 @@
 				<text>旅游</text>
 			</view>
 		</view>
+		
+		<view class="ad-1"><image :src="host+'/'+bigImg" mode="scaleToFill"></image></view>
+
+		<!-- 秒杀楼层 -->
+		<view class="seckill-section m-t">
+			<view class="s-header">
+				<image class="s-img" src="/static/temp/secskill-img.jpg" mode="widthFix"></image>
+				<!-- <text class="tip">8点场</text>
+				<text class="hour timer">07</text>
+				<text class="minute timer">13</text>
+				<text class="second timer">55</text>
+				<text class="yticon icon-you"></text> -->
+			</view>
+			<scroll-view class="floor-list" scroll-x>
+				<view class="scoll-wrapper">
+					<view v-for="(item, index) in goodsList" :key="index" class="floor-item" @click="navToDetailPage(item)">
+						<image :src="host+'/'+item.logo" mode="aspectFill"></image>
+						<text class="title clamp">{{ item.title }}</text>
+						<text class="price">￥{{ item.price }}</text> 
+					</view>
+				</view>
+			</scroll-view>
+		</view>
 		<!-- 分类推荐楼层 -->
-		<view class="f-header m-t">
+		<!-- <view class="f-header m-t">
 			<image src="/static/temp/h1.png"></image>
 			<view class="tit-box">
 				<text class="tit">热门推荐</text>
@@ -57,11 +80,11 @@
 			<view class="floor-img-box">
 				<image
 					class="floor-img"
-					:src="hot"
+					src="http://bpic.588ku.com/back_pic/05/84/39/655c6f6566bbec3.jpg"
 					mode="scaleToFill"
 				></image>
 			</view>
-			<!-- <scroll-view class="floor-list" scroll-x>
+			<scroll-view class="floor-list" scroll-x>
 				<view class="scoll-wrapper">
 					<view v-for="(item, index) in goodsList" :key="index" class="floor-item" @click="navToDetailPage(item)">
 						<image :src="item.image" mode="aspectFill"></image>
@@ -69,43 +92,51 @@
 						<text class="price">￥{{ item.price }}</text>
 					</view>
 				</view>
-			</scroll-view> -->
-		</view>
+			</scroll-view>
+		</view> -->
 
 	</view>
 </template>
-
 <script>
 import { mapState } from 'vuex';
 export default {
 	data() {
 		return {
-			titleNViewBackground: '',
+			host:'',
 			swiperCurrent: 0,
 			swiperLength: 0,
-			carouselList: [],
-			goodsList: [],
-			hot:'http://bpic.588ku.com/back_pic/05/84/39/655c6f6566bbec3.jpg',
+			carouselList: [],	// 滚动图片
+			bigImg:'/static/temp/ad1.jpg',		// 横置大图
+			goodsList:[],		// 限时秒杀
 		};
 	},
 	computed: { ...mapState(['hasLogin', 'userInfo', 'user']) },
-	onLoad() { this.loadData(); },
+	onLoad() { this.loadIndex(); this.host = this.$host; },
 	methods: {
 		navToPage(url){
 			if (!this.hasLogin) { url = '/pages/public/login'; }
 			uni.navigateTo({ url });
 		},
-		/**
-		 * 请求静态数据只是为了代码不那么乱
-		 * 分次请求未作整合
-		 */
-		async loadData() {
-			let carouselList = await this.$api.json('carouselList');
-			this.titleNViewBackground = carouselList[0].background;
-			this.swiperLength = carouselList.length;
-			this.carouselList = carouselList;
-			let goodsList = await this.$api.json('goodsList');
-			this.goodsList = goodsList || [];
+		// 加载首页设置
+		async loadIndex(){
+			let index = await this.$apis.index.findAndCountAllBySchool(this.user.school_id)
+			console.log('加载首页设置',index.data)
+			index.data.rows.forEach(item => {
+				// 0.滚动图片、1.横置大图、2.限时秒杀
+				if(item.type ==0) this.carouselList.push(item) 
+				if(item.type ==1) this.bigImg = item.icon  // 有且只有一张大图
+				if(item.type ==2){
+					let kind = item.kind // 0.考试、1.旅游、2.水果
+					// console.log(item)
+					if(kind == 0) this.goodsList.push(item.eitem) 
+					if(kind == 1) this.goodsList.push(item.jitem) 
+					if(kind == 2) this.goodsList.push(item.fitem) 	
+					console.log(this.goodsList)
+				}				
+			})
+			this.swiperLength = this.carouselList.length;
+			console.log('滚动图片',this.carouselList,'大图',this.bigImg,'限时秒杀',this.goodsList)
+			
 		},
 		//轮播图切换修改背景色
 		swiperChange(e) {
@@ -115,11 +146,12 @@ export default {
 		},
 		//详情页
 		navToDetailPage(item) {
+			console.log(item)
 			//测试数据没有写id，用title代替
-			let id = item.title;
-			uni.navigateTo({
-				url: `/pages/product/product?id=${id}`
-			});
+			// let id = item.title;
+			// uni.navigateTo({
+			// 	url: `/pages/product/product?id=${id}`
+			// });
 		}
 	}
 };
@@ -277,6 +309,66 @@ page {
 	image {
 		width: 100%;
 		height: 100%;
+	}
+}
+/* 秒杀专区 */
+.seckill-section {
+	padding: 4upx 30upx 24upx;
+	background: #fff;
+	.s-header {
+		display: flex;
+		align-items: center;
+		height: 92upx;
+		line-height: 1;
+		.s-img {
+			width: 140upx;
+			height: 30upx;
+		}
+		.tip {
+			font-size: $font-base;
+			color: $font-color-light;
+			margin: 0 20upx 0 40upx;
+		}
+		.timer {
+			display: inline-block;
+			width: 40upx;
+			height: 36upx;
+			text-align: center;
+			line-height: 36upx;
+			margin-right: 14upx;
+			font-size: $font-sm + 2upx;
+			color: #fff;
+			border-radius: 2px;
+			background: rgba(0, 0, 0, 0.8);
+		}
+		.icon-you {
+			font-size: $font-lg;
+			color: $font-color-light;
+			flex: 1;
+			text-align: right;
+		}
+	}
+	.floor-list {
+		white-space: nowrap;
+	}
+	.scoll-wrapper {
+		display: flex;
+		align-items: flex-start;
+	}
+	.floor-item {
+		width: 150upx;
+		margin-right: 20upx;
+		font-size: $font-sm + 2upx;
+		color: $font-color-dark;
+		line-height: 1.8;
+		image {
+			width: 150upx;
+			height: 150upx;
+			border-radius: 6upx;
+		}
+		.price {
+			color: $uni-color-primary;
+		}
 	}
 }
 .f-header {
