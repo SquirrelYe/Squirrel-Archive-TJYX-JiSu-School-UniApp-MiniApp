@@ -1,11 +1,19 @@
 <template>
-	<view>
+	<view>		
+		<!-- 空白页 -->
+		<view v-if="!hasLogin" class="empty">
+			<!-- <image src="/static/emptyCart.jpg" mode="aspectFit"></image> -->
+			<view class="empty-tips">
+				空空如也
+				<view class="navigator" @click="navToLogin">去登陆></view>
+			</view>
+		</view>
 		<view class="notice-item" v-for="(item, index) in category" :key="index" @click="check(item)">
 			<text class="time">{{item.updated_at.split('T')[0]}}</text>
 			<view class="content">
 				<text class="title">{{item.title}}</text>
 				<view class="img-wrapper">
-					<image class="pic" :src="item.icon"></image>
+					<image class="pic" :src="item.icon" lazy-load></image>
 					<view class="cover" v-if="item.condition === -1"> 活动结束 </view>
 				</view>
 				<text class="introduce">
@@ -23,14 +31,14 @@
 			return {
 				category:[],
 				off:0,
-				lim:2
+				lim:4
 			}
 		},
-		computed:{ ...mapState(['user']) },
+		computed:{ ...mapState(['hasLogin','user']) },
 		onLoad() { this.init(0) },
-		onShow() { this.off = 0; this.lim = 2; this.init(0)},
+		onShow() { this.off = 0; this.lim = 4; this.init(0)},
 		onPullDownRefresh() {
-			this.off = 0; this.lim = 2;
+			this.off = 0; this.lim = 4;
 			this.init(1)
 		},
 		onReachBottom() {
@@ -57,7 +65,9 @@
 				})
 			},
 			// 选择活动信息
-			check(item){ console.log('选择的活动信息',item) }
+			check(item){ console.log('选择的活动信息',item) },
+			// 登录
+			navToLogin() { uni.navigateTo({ url: '/pages/public/login' }); },
 		}
 	}
 </script>
@@ -66,6 +76,34 @@
 	page {
 		background-color: #f7f7f7;
 		padding-bottom: 30upx;
+	}
+	/* 空白页 */
+	.empty {
+		position: fixed;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100vh;
+		padding-bottom: 100upx;
+		display: flex;
+		justify-content: center;
+		flex-direction: column;
+		align-items: center;
+		background: #fff;
+		image {
+			width: 240upx;
+			height: 160upx;
+			margin-bottom: 30upx;
+		}
+		.empty-tips {
+			display: flex;
+			font-size: $font-sm + 2upx;
+			color: $font-color-disabled;
+			.navigator {
+				color: $uni-color-primary;
+				margin-left: 16upx;
+			}
+		}
 	}
 
 	.notice-item {

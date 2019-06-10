@@ -22,7 +22,7 @@
 				<text class="icon yticon icon-erjiye-yucunkuan"></text>
 				<view class="con">
 					<text class="tit">预存款支付</text>
-					<text>可用余额 ¥{{stock.money}}</text>
+					<text>可用余额 ¥{{stock.money || 0}}</text>
 				</view>
 				<label class="radio">
 					<radio value="" color="#fa436a" :checked='payType == 2' />

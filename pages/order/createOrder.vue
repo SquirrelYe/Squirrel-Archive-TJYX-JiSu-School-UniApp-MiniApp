@@ -165,6 +165,7 @@
 					this.maskState = state;
 				}, timer)
 			},
+			stopPrevent(){},
 			// 提交
 			submit(){
 				if(this.isSubmit) this.$api.msg('请不要重复提交喔~');
@@ -191,7 +192,6 @@
 					}
 				}
 			},
-			stopPrevent(){},
 			typeExp(type){
 				// 类别*（-3、开卡，-2、代发，-1、代取，0.考试，1.旅游，2.水果）
 				// 支付类别 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、旅游下单，水果下单

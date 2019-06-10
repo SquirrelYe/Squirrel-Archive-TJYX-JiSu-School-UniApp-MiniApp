@@ -98,9 +98,7 @@ import { mapState, mapMutations } from 'vuex';
 		},
 		methods: {
 			...mapMutations(['reLogin']),
-			switchChange(e){
-				this.authen.default = e.detail;
-			},			
+			switchChange(e){ this.authen.default = e.detail; },			
 			//地图选择地址
 			chooseLocation(){
 				// if(!this.isAuthen){
@@ -150,7 +148,7 @@ import { mapState, mapMutations } from 'vuex';
 					sourceType: ['album'], //从相册选择
 					success: (res) => {
 						uni.uploadFile({
-							url: 'http://127.0.0.1:11110/upload', //仅为示例，非真实的接口地址
+							url: `${this.host}/upload`, //仅为示例，非真实的接口地址
 							filePath: res.tempFilePaths[0],
 							name: 'file',
 							formData: { },

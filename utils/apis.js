@@ -273,6 +273,7 @@ export default  {
     },
     // 资金信息
     stock: {
+		create(u,m,c) { return req.post('/ent/stock', { 'judge': 1, 'user_id': u, 'money':m, 'condition':c }) },
         delete(id) { return req.post('/ent/stock', { 'judge': 2, 'id': id }) },
 		updateMoney(id,m) { return req.post('/ent/stock', { 'judge': 3, 'id': id, 'money': m }) },
 
@@ -299,5 +300,13 @@ export default  {
         findAndCountAllLikeByTitleSchool(t,s) { return req.post('/ent/activity', { 'judge': 4, 'title': t, 'school_id': s }) },
         findAllBySchoolType(s, t, o, l) { return req.post('/ent/activity', { 'judge': 5, 'school_id': s, 'type':t, 'offset': o, 'limit': l }) },
     },
+	// 收藏
+	favorite:{
+		createExam(t,e,u) { return req.post('/ent/favorite', { 'judge': 1, 'type': t, 'eitem_id': e, 'user_id': u }) },
+		createJourney(t,e,u) { return req.post('/ent/favorite', { 'judge': 1, 'type': t, 'eitem_id': e, 'user_id': u }) },
+		createFruit(t,e,u) { return req.post('/ent/favorite', { 'judge': 1, 'type': t, 'eitem_id': e, 'user_id': u }) },
+        delete(id) { return req.post('/ent/favorite', { 'judge': 2, 'id': id }) },
+        findAndCountAllByUser(u) { return req.post('/ass/favorite', { 'judge': 0, 'user_id': u }) },
+	}
 
 }

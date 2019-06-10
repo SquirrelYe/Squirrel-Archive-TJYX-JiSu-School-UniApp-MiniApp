@@ -26,7 +26,7 @@
 		</view>
 		<view class="row b-b">
 			<text class="tit">地址</text>
-			<input class="input" type="number" v-model="address.from" placeholder="简要描述取件地址" placeholder-class="placeholder text-sm" />
+			<input class="input" v-model="address.from" placeholder="简要描述取件地址" placeholder-class="placeholder text-sm" />
 		</view>
 		<view class="cu-bar bg-white"><view class="action">身份认证</view></view>
 		<view class="cu-form-group">
@@ -71,9 +71,7 @@ export default {
 			imgList: []
 		};
 	},
-	onLoad(option) {
-		this.host = this.$host
-	},
+	onLoad(option) { this.host = this.$host },
 	methods: {
 		ChooseImage() {
 			if (this.imgList.length === 1) {
@@ -88,7 +86,7 @@ export default {
 					sourceType: ['album'], //从相册选择
 					success: res => {
 						uni.uploadFile({
-							url: 'http://127.0.0.1:11130/upload',
+							url: `${this.host}/upload`,
 							filePath: res.tempFilePaths[0],
 							name: 'file',
 							formData: { },

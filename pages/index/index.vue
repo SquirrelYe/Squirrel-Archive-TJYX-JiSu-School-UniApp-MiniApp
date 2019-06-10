@@ -11,8 +11,8 @@
 			<!-- 背景色区域 -->
 			<view class="titleNview-background"></view>
 			<swiper class="carousel" circular @change="swiperChange">
-				<swiper-item v-for="(item, index) in carouselList" :key="index" class="carousel-item" @click="navToDetailPage({ title: '轮播广告' })">
-					<image :src="host+'/'+item.icon" />
+				<swiper-item v-for="(item, index) in carouselList" :key="index" class="carousel-item" @click="navToDetailPage(0,item)">
+					<image :src="host+'/'+item.icon" lazy-load/>
 				</swiper-item>
 			</swiper>
 			<!-- 自定义swiper指示器 -->
@@ -60,8 +60,8 @@
 			</view>
 			<scroll-view class="floor-list" scroll-x>
 				<view class="scoll-wrapper">
-					<view v-for="(item, index) in goodsList" :key="index" class="floor-item" @click="navToDetailPage(item)">
-						<image :src="host+'/'+item.logo" mode="aspectFill"></image>
+					<view v-for="(item, index) in goodsList" :key="index" class="floor-item" @click="navToDetailPage(2,item)">
+						<image :src="host+'/'+item.logo" mode="aspectFill" lazy-load></image>
 						<text class="title clamp">{{ item.title }}</text>
 						<text class="price">￥{{ item.price }}</text> 
 					</view>
@@ -112,16 +112,28 @@ export default {
 	},
 	computed: { ...mapState(['hasLogin', 'userInfo', 'user']) },
 	onLoad() { this.loadIndex(); this.host = this.$host; },
+	onShow() { this.init(); this.loadIndex(); },
 	methods: {
+		// 初始化数据
+		init(){
+			this.swiperCurrent = 0;
+			this.swiperLength = 0;
+			this.carouselList = [];
+			this.bigImg = '/static/temp/ad1.jpg';
+			this.goodsList = []
+		},
 		navToPage(url){
 			if (!this.hasLogin) { url = '/pages/public/login'; }
 			uni.navigateTo({ url });
 		},
 		// 加载首页设置
 		async loadIndex(){
-			let index = await this.$apis.index.findAndCountAllBySchool(this.user.school_id)
+			let sid = this.user.school_id || 4
+			let index = await this.$apis.index.findAndCountAllBySchool(sid)
 			console.log('加载首页设置',index.data)
+			uni.showLoading({ title:'加载中^_^' })
 			index.data.rows.forEach(item => {
+				// 备注：此处的数据未对condition进行过滤
 				// 0.滚动图片、1.横置大图、2.限时秒杀
 				if(item.type ==0) this.carouselList.push(item) 
 				if(item.type ==1) this.bigImg = item.icon  // 有且只有一张大图
@@ -134,6 +146,7 @@ export default {
 					console.log(this.goodsList)
 				}				
 			})
+			uni.hideLoading()
 			this.swiperLength = this.carouselList.length;
 			console.log('滚动图片',this.carouselList,'大图',this.bigImg,'限时秒杀',this.goodsList)
 			
@@ -145,13 +158,15 @@ export default {
 			this.titleNViewBackground = this.carouselList[index].background;
 		},
 		//详情页
-		navToDetailPage(item) {
+		navToDetailPage(judge,item) {
+			if (!this.hasLogin) { uni.navigateTo({ url:'/pages/public/login' }); }			
 			console.log(item)
-			//测试数据没有写id，用title代替
-			// let id = item.title;
-			// uni.navigateTo({
-			// 	url: `/pages/product/product?id=${id}`
-			// });
+			// 根据judge ,item 的三级数据的内容判断页面跳转 judge 0、滚动图片，1、大图，2、限时秒杀
+			if(judge ==2){				
+				if(item.mexam_id) uni.navigateTo({ url:`../exam/exam_list/exam_list?judge=1&id=${item.id}` })
+				if(item.mjourney_id) uni.navigateTo({ url:`../journey/journey_list/journey_list?judge=1&id=${item.id}` })
+				if(item.mfruit_id) uni.navigateTo({ url:`../fruit/fruit_list/fruit_list?judge=1&id=${item.id}` })
+			}
 		}
 	}
 };

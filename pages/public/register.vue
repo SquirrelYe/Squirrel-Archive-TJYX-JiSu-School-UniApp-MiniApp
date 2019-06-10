@@ -121,44 +121,44 @@
 				wx.getSetting({
 				  success (res){
 					if (res.authSetting['scope.userInfo']) {
-						const {userinfo, mobile, password ,schoolObj ,index, openid, AccessTaken} = _this;
-						// 校验
-						if(!openid) _this.$api.msg('获取唯一识别码失败') ;
-						else if ( !_this.$regex.phoneP.test(mobile)) _this.$api.msg('电话号码不合法') ;
-						else if ( !_this.$regex.passP.test(password)) _this.$api.msg('密码不合法') ;
-						else if ( index == -1 ) _this.$api.msg('未选择学校') ;
-						else {
-							console.log(userinfo, mobile, password, index, schoolObj[index],openid,AccessTaken)							
-							// 调用注册接口
-							apis.user.cusCreate(mobile,openid,userinfo.nickName,password, schoolObj[index].id)
-							.then(res=>{
-								console.log(res.data)
-								let u = _this.userinfo
-								if(res.data[1]){
-									// 上传微信信息
-									apis.info.creat(res.data[0].id, u.nickName, u.avatarUrl, u.gender, u.province, u.city, u.country)
-									.then(res=>{
-										console.log(res)
-										if(res.statusCode === 200){
-											// 保存用户数据到 vuex
-											_this.getInfo(res.data);
-											console.log('vuex',_this.userInfo)
-											_this.$api.msg('注册成功') ;
-											_this.logining = true;
-											uni.navigateBack();  
-										}else{
-											_this.$api.msg('注册失败，请联系客服');
-											_this.logining = false;
-										}
-									})
-								}else _this.$api.msg('电话号码被占用')			
-							})
-						}
+						_this.submit()
 					}else{
-						_this.$api.msg('没有权限')
+						_this.$api.msg('不能拒绝我喔~')
 					}
 				  }
 				}) 
+			},
+			// 注册信息提交
+			async submit(){
+				const {userinfo, mobile, password ,schoolObj ,index, openid, AccessTaken} = this;
+				// 校验
+				if(!openid) this.$api.msg('获取唯一识别码失败') ;
+				else if ( !this.$regex.phoneP.test(mobile)) this.$api.msg('电话号码不合法') ;
+				else if ( !this.$regex.passP.test(password)) this.$api.msg('密码不合法') ;
+				else if ( index == -1 ) this.$api.msg('未选择学校') ;
+				else {
+					console.log(userinfo, mobile, password, index, schoolObj[index],openid,AccessTaken)							
+					// 调用注册接口
+					let user = await apis.user.cusCreate(mobile,openid,userinfo.nickName,password, schoolObj[index].id)
+					if(user.data[1]){
+						// 初始化资产信息
+						let stock = await apis.stock.create(user.data[0].id,0,0)
+						// 上传微信信息
+						let u = this.userinfo;
+						let info = await apis.info.creat(user.data[0].id, u.nickName, u.avatarUrl, u.gender, u.province, u.city, u.country)
+						if(info.statusCode === 200){
+							// 保存用户数据到 vuex
+							// this.getInfo(info.data);
+							console.log('vuex',this.userInfo)
+							this.$api.msg('注册成功') ;
+							this.logining = true;
+							uni.navigateBack();  
+						}else{
+							this.$api.msg('注册失败，请联系客服');
+							this.logining = false;
+						}
+					}else _this.$api.msg('电话号码被占用')	
+				}
 			}
 		},
 

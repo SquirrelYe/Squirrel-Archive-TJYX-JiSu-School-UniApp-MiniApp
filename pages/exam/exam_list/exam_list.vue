@@ -3,7 +3,7 @@
 		<view class="carousel">
 			<swiper indicator-dots circular="true" duration="400">
 				<swiper-item class="swiper-item" :key="index">  <!--  v-for="(item, index) in imgList" -->
-					<view class="image-wrapper"><image :src="host+'/'+item.logo" class="loaded" mode="aspectFill"></image></view>
+					<view class="image-wrapper"><image :src="host+'/'+item.logo" class="loaded" lazy-load mode="aspectFill"></image></view>
 				</swiper-item>
 			</swiper>
 		</view>
@@ -50,7 +50,7 @@
 				<text class="yticon icon-you"></text>
 			</view>
 			<view class="eva-box"  v-for="(item,index) in callbackList" :key="index">
-				<image class="portrait" :src="user.info.avatarUrl" mode="aspectFill"></image>
+				<image class="portrait" :src="item.user.info.avatarUrl" mode="aspectFill"></image>
 				<view class="right">
 					<text class="name">{{item.user.name}}</text>
 					<text class="con">{{item.callback}}</text>
@@ -121,13 +121,20 @@ export default {
 	computed: { ...mapState(['user']) },
 	async onLoad(options) {
 		this.host = this.$host
-		//接收传值
-		this.item = JSON.parse(options.item)
-		let call = await this.$apis.cart.findExamCallBack(this.item.id,0,1)
-		this.callbackNumber = call.data.count
+		//接收传值  包含judge=1 的为首页面传过来的值,不包含则为列表页面传递（减少访问请求，减轻服务器压力）
+		if(options.judge == 1){
+			let id = options.id;
+			let exam = await this.$apis.eitem.findOneById(id);
+			var call = await this.$apis.cart.findExamCallBack(id,0,1)
+			this.item = exam.data
+		}else{
+			this.item = JSON.parse(options.item)
+			var call = await this.$apis.cart.findExamCallBack(this.item.id,0,1)
+		}
+		this.callbackNumber = call.data.count || 0
 		this.callbackList = call.data.rows.filter(item=>{ item = Object.assign(item, this.orderTimeExp(item.updated_at)); return item; });	
-		this.shareList = await this.$api.json('shareList');  // 载入分享
 		console.log(this.item,this.callbackList)
+		this.shareList = await this.$api.json('shareList');  // 载入分享		
 	},
 	methods: {
 		//分享

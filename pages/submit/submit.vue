@@ -15,21 +15,18 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 export default {
 	data() {
 		return {
 			
 		};
 	},
-
-	onLoad() {
-		
-	},
+	computed: { ...mapState(['hasLogin', 'userInfo', 'user']) },
 	methods: {
 		navToPage(url){
-			uni.navigateTo({  
-				url
-			})  
+			if (!this.hasLogin) { url = '/pages/public/login'; }
+			uni.navigateTo({ url });
 		}
 	}
 }

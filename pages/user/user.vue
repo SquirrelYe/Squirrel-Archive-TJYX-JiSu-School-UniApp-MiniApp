@@ -68,6 +68,15 @@
 			</view>
 			<!-- 浏览历史 -->
 			<view class="history-section icon">
+				<view class="sec-header">
+					<text class="yticon icon-xingxing"></text>
+					<text>我的收藏</text>
+				</view>
+				<scroll-view scroll-x class="h-list">
+					<block v-for="(item,index) in favList" :key='index'>
+						<image @longpress="delFav(item)"  :src="host+'/'+item.logo" mode="aspectFill"></image>
+					</block>
+				</scroll-view>
 				<list-cell icon="icon-iconfontweixin" iconColor="#e07472" title="我的钱包" @eventClick="navTo('/pages/user/wallet/wallet')" tips="你的小金库"></list-cell>
 				<list-cell icon="icon-dizhi" iconColor="#5fcda2" title="地址管理" @eventClick="navTo('/pages/address/address')"></list-cell>
 				<list-cell icon="icon-share" iconColor="#9789f7" open-type="share" title="分享" tips="人人为我，我为人人" @eventClick="share()"></list-cell>
@@ -87,14 +96,16 @@ export default {
 	components: { listCell },
 	data() {
 		return {
+			host:null,
 			stock:{},
 			coverTransform: 'translateY(0px)',
 			coverTransition: '0s',
 			moving: false,
+			favList:[]
 		};
 	},
-	onLoad() {  this.getStock() },
-	onShow() { this.getStock() },
+	onLoad() { this.host = this.$host  },
+	onShow() { this.getStock(); this.getFav() },
 	// #ifndef MP
 	onNavigationBarButtonTap(e) {
 		const index = e.index;
@@ -115,13 +126,28 @@ export default {
 	methods: {
 		// 获取资金信息
 		getStock(){ this.$apis.stock.findByUserId(this.user.id).then(res=>{ console.log('账户资金信息',res.data); this.stock = res.data }) },
+		// 获取收藏信息
+		async getFav(){
+			this.favList = []
+			let fav = await this.$apis.favorite.findAndCountAllByUser(this.user.id)
+			fav.data.rows.forEach(item => {
+				// 备注：此处的数据未对condition进行过滤
+				let type = item.type // 0.考试、1.旅游、2.水果
+				let obj = { 'pid': item.id}
+				// console.log(item)
+				if(type == 0) this.favList.push(Object.assign(item.eitem,obj)) 
+				if(type == 1) this.favList.push(Object.assign(item.jitem,obj)) 
+				if(type == 2) this.favList.push(Object.assign(item.fitem,obj)) 
+			})
+			console.log('收藏信息',fav.data,'过滤信息',this.favList)
+		},
 		/**
 		 * 统一跳转接口,拦截未登录路由
 		 * navigator标签现在默认没有转场动画，所以用view
 		 */
 		navTo(url) {
 			if (!this.hasLogin) { url = '/pages/public/login'; }
-			else uni.navigateTo({ url });
+			uni.navigateTo({ url });
 		},
 		// 分享
 		share() { console.log('分享') },
@@ -134,35 +160,42 @@ export default {
 		 *  3.回弹效果可修改曲线值来调整效果，推荐一个好用的bezier生成工具 http://cubic-bezier.com/
 		 */
 		coverTouchstart(e) {
-			if (pageAtTop === false) {
-				return;
-			}
+			if (pageAtTop === false) return; 
 			this.coverTransition = 'transform .1s linear';
 			startY = e.touches[0].clientY;
 		},
 		coverTouchmove(e) {
 			moveY = e.touches[0].clientY;
 			let moveDistance = moveY - startY;
-			if (moveDistance < 0) {
-				this.moving = false;
-				return;
-			}
+			if (moveDistance < 0) { this.moving = false; return; }
 			this.moving = true;
-			if (moveDistance >= 80 && moveDistance < 100) {
-				moveDistance = 80;
-			}
-
-			if (moveDistance > 0 && moveDistance <= 80) {
-				this.coverTransform = `translateY(${moveDistance}px)`;
-			}
+			if (moveDistance >= 80 && moveDistance < 100) { moveDistance = 80; }
+			if (moveDistance > 0 && moveDistance <= 80) { this.coverTransform = `translateY(${moveDistance}px)`; }
 		},
 		coverTouchend() {
-			if (this.moving === false) {
-				return;
-			}
+			if (this.moving === false) { return; }
 			this.moving = false;
 			this.coverTransition = 'transform 0.3s cubic-bezier(.21,1.93,.53,.64)';
 			this.coverTransform = 'translateY(0px)';
+		},
+		// 删除收藏
+		delFav(item){
+			console.log(item)
+			let _this = this
+			uni.showModal({
+				content: '确定要删除我么~',
+				success: (e)=>{
+					if(e.confirm){
+						_this.$apis.favorite.delete(item.pid)
+						.then(res=>{
+							if(res.data.affectRows == 1){
+								_this.$api.msg('删除成功^_^');
+								_this.getFav()
+							}else _this.$api.msg('啊哦，删除失败~');
+						})
+					}
+				}
+			});
 		}
 	}
 };
