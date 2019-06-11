@@ -63,7 +63,9 @@
 						</view>
 												
 						<view class="price-box">
-							共 <text class="num">{{item.number}}</text> 件商品 实付款 <text class="price">{{item.number * item.price}}</text>
+							共 <text class="num">{{item.number}}</text> 件商品 实付款 
+							<text class="price" v-if="item.ticket">{{item.number * item.price - item.ticket.short}}</text>
+							<text class="price" v-else>{{item.number * item.price}}</text>
 						</view>
 					</view>					
 					<uni-load-more :status="tabItem.loadingType"></uni-load-more>

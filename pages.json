@@ -312,6 +312,12 @@
 				"navigationBarTitleText": "快递代发"
 			}
         }
+        ,{
+            "path" : "pages/public/law/law",
+            "style" : {
+				"navigationBarTitleText": "法律条款"
+			}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

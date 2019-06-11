@@ -53,6 +53,11 @@
 		</view>
 		
 		<button class="add-btn" @click="confirm" v-if="first">提交</button>
+		
+		<view class="register-section">
+			 申请即同意
+			<text @tap="law" data-target="law">校园大使条款</text>
+		</view>
 	</view>
 </template>
 
@@ -185,6 +190,8 @@ import { mapState, mapMutations } from 'vuex';
 					}
 				})
 			},
+			// 校园大使条款
+			law(e){ uni.navigateTo({ url:"../../public/law/law?judge=1" }) }
 		}
 	}
 </script>
@@ -240,5 +247,18 @@ import { mapState, mapMutations } from 'vuex';
 		background-color: $base-color;
 		border-radius: 10upx;
 		box-shadow: 1px 2px 5px rgba(219, 63, 96, 0.4);
+	}
+	.register-section{
+		position:absolute;
+		left: 0;
+		bottom: 50upx;
+		width: 100%;
+		font-size: $font-sm+2upx;
+		color: $font-color-base;
+		text-align: center;
+		text{
+			color: $font-color-spec;
+			margin-left: 10upx;
+		}
 	}
 </style>

@@ -234,9 +234,10 @@ export default  {
     cart: {
 		createLog(u,t,n,p,log,c,loc,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'logistic_id': log, 'condition': c, 'location_id': loc,'judgec': j }) },
 		createLsend(u,t,n,ls,c,loc,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'lsend_id': ls, 'condition': c, 'location_id': loc,'judgec': j }) },
- 		createExam(u,t,n,p,e,c,loc,o,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'eitem_id': e, 'condition': c, 'location_id': loc,'other':o,'judgec': j }) },
- 		createJourney(u,t,n,p,ji,c,loc,o,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'jitem_id': ji, 'condition': c, 'location_id': loc,'other':o,'judgec': j }) },
- 		createFruit(u,t,n,p,f,c,loc,o,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'fitem_id': f, 'condition': c, 'location_id': loc,'other':o,'judgec': j }) },
+		// 下面三 可以使用优惠券
+ 		createExam(u,t,n,p,e,c,loc,o,j,tic) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'eitem_id': e, 'condition': c, 'location_id': loc,'other':o,'judgec': j,'ticket_id':tic }) },
+ 		createJourney(u,t,n,p,ji,c,loc,o,j,tic) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'jitem_id': ji, 'condition': c, 'location_id': loc,'other':o,'judgec': j,'ticket_id':tic }) },
+ 		createFruit(u,t,n,p,f,c,loc,o,j,tic) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'fitem_id': f, 'condition': c, 'location_id': loc,'other':o,'judgec': j,'ticket_id':tic }) },
 		
 		createExamCart(u,t,n,p,e,c,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'eitem_id': e, 'condition': c,'judgec': j }) },
  		createJourneyCart(u,t,n,p,ji,c,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'jitem_id': ji, 'condition': c,'judgec': j }) },
@@ -245,7 +246,7 @@ export default  {
 		delete(id) { return req.post('/ent/cart', { 'judge': 2, 'id': id }) },
         updateCondition(id ,c) { return req.post('/ent/cart', { 'judge': 3, 'id': id,'condition':c }) },
         updateJudge(id , j) { return req.post('/ent/cart', { 'judge': 3, 'id': id,'judgec':j }) },
-        updateCart(id,n,loc,o,c,j) { return req.post('/ent/cart', { 'judge': 3, 'id':id,'number':n,'location_id':loc,'other':o,'condition':c,'judgec':j }) },
+        updateCart(id,n,loc,o,c,j,tic) { return req.post('/ent/cart', { 'judge': 3, 'id':id,'number':n,'location_id':loc,'other':o,'condition':c,'judgec':j,'ticket_id':tic }) },
 
         findAndCountAll(o, l) { return req.post('/ass/cart', { 'judge': 0, 'offset': o, 'limit': l }) },
         findOneById(id) { return req.post('/ass/cart', { 'judge': 1, 'id': id }) },
@@ -273,9 +274,9 @@ export default  {
     },
     // 资金信息
     stock: {
-		create(u,m,c) { return req.post('/ent/stock', { 'judge': 1, 'user_id': u, 'money':m, 'condition':c }) },
+		create(u,m,s,c) { return req.post('/ent/stock', { 'judge': 1, 'user_id': u, 'money':m, 'score':s, 'condition':c }) },
         delete(id) { return req.post('/ent/stock', { 'judge': 2, 'id': id }) },
-		updateMoney(id,m) { return req.post('/ent/stock', { 'judge': 3, 'id': id, 'money': m }) },
+		updateMoneyScore(id,m,s) { return req.post('/ent/stock', { 'judge': 3, 'id': id, 'money': m, 'score':s }) },
 
         findAndCountAll(o, l) { return req.post('/ass/stock', { 'judge': 0, 'offset': o, 'limit': l }) },
         findOneById(id) { return req.post('/ass/stock', { 'judge': 1, 'id': id }) },
@@ -303,10 +304,22 @@ export default  {
 	// 收藏
 	favorite:{
 		createExam(t,e,u) { return req.post('/ent/favorite', { 'judge': 1, 'type': t, 'eitem_id': e, 'user_id': u }) },
-		createJourney(t,e,u) { return req.post('/ent/favorite', { 'judge': 1, 'type': t, 'eitem_id': e, 'user_id': u }) },
-		createFruit(t,e,u) { return req.post('/ent/favorite', { 'judge': 1, 'type': t, 'eitem_id': e, 'user_id': u }) },
+		createJourney(t,e,u) { return req.post('/ent/favorite', { 'judge': 1, 'type': t, 'jitem_id': e, 'user_id': u }) },
+		createFruit(t,e,u) { return req.post('/ent/favorite', { 'judge': 1, 'type': t, 'fitem_id': e, 'user_id': u }) },
         delete(id) { return req.post('/ent/favorite', { 'judge': 2, 'id': id }) },
+		
         findAndCountAllByUser(u) { return req.post('/ass/favorite', { 'judge': 0, 'user_id': u }) },
+		findExam(uid,eid) { return req.post('/ass/favorite', { 'judge': 1, 'eitem_id': eid, 'user_id': uid }) },
+		findJourney(uid,jid) { return req.post('/ass/favorite', { 'judge': 2, 'jitem_id': jid, 'user_id': uid }) },
+		findFruit(uid,fid) { return req.post('/ass/favorite', { 'judge': 3, 'fitem_id': fid, 'user_id': uid }) },
+	},
+	// 优惠券
+	uticket:{
+		create(u,t,c) { return req.post('/ent/user_ticket', { 'judge': 1, 'user_id': u, 'ticket_id': t,'condition': c }) },
+        delete(id) { return req.post('/ent/user_ticket', { 'judge': 2, 'id': id }) },
+        update(id, c) { return req.post('/ent/user_ticket', { 'judge': 3, 'id': id, 'condition': c }) },
+		
+		findAndCountAllByUser(uid,o,l) { return req.post('/ass/user_ticket', { 'judge': 1, 'user_id': uid, 'offset': o,'limit':l }) },
 	}
 
 }

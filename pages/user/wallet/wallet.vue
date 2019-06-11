@@ -6,11 +6,11 @@
                 <text>余额</text>
             </view>
             <view class="tj-item">
-                <text class="num">{{  stock.ticket || 0 }}</text>
+                <text class="num">{{  ticketCount || 0 }}</text>
                 <text>优惠券</text>
             </view>
             <view class="tj-item">
-                <text class="num">{{  stock.jifen || 0 }}</text>
+                <text class="num">{{  stock.score || 0 }}</text>
                 <text>积分</text>
             </view>
         </view>
@@ -21,21 +21,22 @@
 		
 		<!-- 优惠券面板 -->
 		<!-- 优惠券页面，仿mt -->
-		<view class="coupon-item" v-for="(item,index) in couponList" :key="index">
+		<view class="coupon-item" v-for="(item,index) in ticketList" :key="index">
 			<view class="con">
 				<view class="left">
-					<text class="title">{{item.title}}</text>
-					<text class="time">有效期至2019-06-30</text>
+					<text class="title">{{item.ticket.title}}</text>
+					<text class="time">有效期至{{item.end}}</text>
 				</view>
 				<view class="right">
-					<text class="price">{{item.price}}</text>
-					<text>满30可用</text>
+					<text class="price" style="color: #707070;" v-if="item.condition === -1">{{item.ticket.short}}</text>
+					<text class="price" v-else>{{item.ticket.short}}</text>
+					<text>满{{item.ticket.fill}}可用</text>
 				</view>
 				
 				<view class="circle l"></view>
 				<view class="circle r"></view>
 			</view>
-			<text class="tips">限新用户使用</text>
+			<text class="tips">{{item.ticket.details}}</text>
 		</view>
 		
 
@@ -73,18 +74,22 @@
 					{ value: 3, name: '60元', checked: false, hot: true, }, 
 					{ value: 4, name: '80元', checked: false, hot: false, }, 
 					{ value: 5, name: '100元', checked: false, hot: false, }],
-				couponList: [    // 测试数据
-					{ title: '新用户专享优惠券', price: 5, },
-					{ title: '庆五一发一波优惠券', price: 10, },
-					{ title: '优惠券优惠券优惠券优惠券', price: 15, }
-				],	
+				ticketCount:0,
+				ticketList:[]
 			};
 		},
 		computed: { ...mapState(['user']) },
-		onLoad() {
-			this.$apis.stock.findByUserId(this.user.id).then(res=>{ console.log('账户资金信息',res.data); this.stock = res.data })  // 获取资金信息	
-		},
+		onLoad() { this.getStock(); this.getTicket() },
 		methods:{
+			// 获取资金信息	
+			getStock(){ this.$apis.stock.findByUserId(this.user.id).then(res=>{ console.log('账户资金信息',res.data); this.stock = res.data }) },
+			// 获取优惠券信息
+			async getTicket(){
+				let tic = await this.$apis.uticket.findAndCountAllByUser(this.user.id,0,100)
+				this.ticketCount = tic.data.count
+				this.ticketList = tic.data.rows.filter(item=>{ item = Object.assign(item, this.orderTimeExp(item.ticket.end)); return item; });	
+				console.log('获取优惠券信息',this.ticketList)
+			},
             showModal(e) { this.modalName = e.currentTarget.dataset.target },
 			hideModal(e) { this.modalName = null },
             choose(){
@@ -104,6 +109,11 @@
 						items[i].checked = false;
                     }
 				}
+			},
+			//时间格式化
+			orderTimeExp(time){
+				let end = time.split('T')[0]
+				return {end};
 			}
 		}
 	}

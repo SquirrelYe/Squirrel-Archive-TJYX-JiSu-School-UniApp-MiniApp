@@ -74,16 +74,6 @@
 					const { from,key,location_id,money,total } = this.order
 					// 微信支付
 					
-					// 写入订单
-					if(this.type == 1){  //  1、发布代取快递
-						let log = await this.$apis.logistic.create(id,from,location_id,total,money,key,school_id)
-						let tran = await this.$apis.cart.createLog(id,-1,1,log.data.id,1,location_id,2)
-						console.log(log,tran)
-						if(log && tran){
-							this.$api.msg('订单创建成功')
-							uni.redirectTo({ url: '/pages/money/paySuccess' })
-						}else this.$api.msg('订单创建失败')
-					}
 				}
 				// 预付款支付
 				else{
@@ -92,9 +82,15 @@
 					let stock = await this.$apis.stock.findByUserId(id)
 					
 					if( money<=stock.data.money ){  // 账户余额足够
-						// 扣款
+						// 统一扣款
 						let m = stock.data.money - money;
-						let final = await this.$apis.stock.updateMoney(stock.data.id,m)
+						let s = Number(stock.data.score) + Number(money);
+						let final = await this.$apis.stock.updateMoneyScore(stock.data.id,m,s)
+						// 统一使用优惠券
+						if(this.order.tic){							
+							let tid = this.order.tic.id;
+							let utic = await this.$apis.uticket.update(tid,-1)  // -1表示优惠券已使用
+						}
 						// 写入订单					
 						if(this.type == 1){ //  1、发布代取快递
 							const { from,key,location_id,total } = this.order
@@ -118,7 +114,8 @@
 							if(this.kind == 0){
 								const { price }	= this.order.item
 								const { other,number } = this.order.good
-								let exam = await this.$apis.cart.createExam(id,0,number,price,this.order.item.id,1,location_id,other,0)	// u,t,n,p,e,c,loc,o,j
+								let tic = this.order.tic.ticket_id || null
+								let exam = await this.$apis.cart.createExam(id,0,number,price,this.order.item.id,1,location_id,other,0,tic)	// u,t,n,p,e,c,loc,o,j,tic
 								console.log(exam.data)
 								if(exam.data){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
 								else this.$api.msg('订单创建失败')
@@ -129,7 +126,8 @@
 							if(this.kind == 0){								
 								const { price }	= this.order.item
 								const { other,number } = this.order.good
-								let journey = await this.$apis.cart.createJourney(id,1,number,price,this.order.item.id,1,location_id,other,0)	// u,t,n,p,ji,c,loc,o,j
+								let tic = this.order.tic.ticket_id || null
+								let journey = await this.$apis.cart.createJourney(id,1,number,price,this.order.item.id,1,location_id,other,0,tic)	// u,t,n,p,ji,c,loc,o,j,tic
 								console.log(journey.data)
 								if(journey.data){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
 								else this.$api.msg('订单创建失败')
@@ -140,7 +138,8 @@
 							if(this.kind == 0){			
 								const { price }	= this.order.item
 								const { other,number } = this.order.good
-								let fruit = await this.$apis.cart.createFruit(id,2,number,price,this.order.item.id,1,location_id,other,0)	// u,t,n,p,f,c,loc,o,j
+								let tic = this.order.tic.ticket_id || null
+								let fruit = await this.$apis.cart.createFruit(id,2,number,price,this.order.item.id,1,location_id,other,0,tic)	// u,t,n,p,f,c,loc,o,j,tic
 								console.log(fruit.data)
 								if(fruit.data){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
 								else this.$api.msg('订单创建失败')
@@ -154,7 +153,10 @@
 			async pay(){
 				const { location_id } = this.order;
 				const { id,other,number } = this.order.good
-				let res = await this.$apis.cart.updateCart(id,number,location_id,other,1,0)  // 1.已付款，0.未发货
+				let tic;
+				if(this.order.tic) tic = this.order.tic.ticket_id
+				else tic = null
+				let res = await this.$apis.cart.updateCart(id,number,location_id,other,1,0,tic)  // 1.已付款，0.未发货  id,n,loc,o,c,j,tic
 				console.log(res.data)
 				if(res.data[0] == 1){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
 				else this.$api.msg('订单创建失败')

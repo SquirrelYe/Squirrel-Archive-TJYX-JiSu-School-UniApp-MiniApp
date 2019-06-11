@@ -33,8 +33,12 @@
 			<view class="title">{{data.number}}</view>
 		</view>
 		<view class="cu-form-group">
-			<view class="title">价格</view>
+			<view class="title">单价</view>
 			<view class="title">￥{{data.price}}</view>
+		</view>
+		<view class="cu-form-group" v-if="data.ticket">
+			<view class="title">优惠券</view>
+			<view class="title">{{data.ticket.title}}  ￥{{data.ticket.short}}</view>
 		</view>
 		<view class="cu-form-group align-start">
 			<textarea maxlength="-1" disabled :placeholder="log.key"></textarea>

@@ -37,14 +37,13 @@
 
 		<!-- 优惠明细 -->
 		<view class="yt-list">
-			<view class="yt-list-cell b-b" @click="toggleMask('show')">
+			<view class="yt-list-cell b-b">
 				<view class="cell-icon">
 					券
 				</view>
 				<text class="cell-tit clamp">优惠券</text>
-				<text class="cell-tip active">
-					选择优惠券
-				</text>
+				<text class="cell-tip active" v-if="!useTicket" @click="toggleMask('show')"> 选择优惠券 </text>
+				<text class="cell-tip active" v-else @click="cancelTic"> 不使用优惠券 </text>
 				<text class="cell-more wanjia wanjia-gengduo-d"></text>
 			</view>
 			<!-- <view class="yt-list-cell b-b">
@@ -67,7 +66,7 @@
 			</view>
 			<view class="yt-list-cell b-b">
 				<text class="cell-tit clamp">优惠金额</text>
-				<text class="cell-tip red">-￥35</text>
+				<text class="cell-tip red">-￥{{short}}</text>
 			</view>
 			<view class="yt-list-cell b-b">
 				<text class="cell-tit clamp">运费</text>
@@ -84,7 +83,7 @@
 			<view class="price-content">
 				<text>实付款</text>
 				<text class="price-tip">￥</text>
-				<text class="price">{{good.price * good.number}}</text>
+				<text class="price">{{good.price * good.number - short}}</text>
 			</view>
 			<text class="submit" @click="submit">提交订单</text>
 		</view>
@@ -93,21 +92,21 @@
 		<view class="mask" :class="maskState===0 ? 'none' : maskState===1 ? 'show' : ''" @click="toggleMask">
 			<view class="mask-content" @click.stop.prevent="stopPrevent">
 				<!-- 优惠券页面，仿mt -->
-				<view class="coupon-item" v-for="(item,index) in couponList" :key="index">
+				<view class="coupon-item" v-for="(item,index) in ticketList" :key="index" @click="chooseTicket(item)">
 					<view class="con">
 						<view class="left">
-							<text class="title">{{item.title}}</text>
-							<text class="time">有效期至2019-06-30</text>
+							<text class="title">{{item.ticket.title}}</text>
+							<text class="time">有效期至{{item.end}}</text>
 						</view>
 						<view class="right">
-							<text class="price">{{item.price}}</text>
-							<text>满30可用</text>
+							<text class="price">{{item.ticket.short}}</text>
+							<text>满{{item.ticket.fill}}可用</text>
 						</view>
 						
 						<view class="circle l"></view>
 						<view class="circle r"></view>
 					</view>
-					<text class="tips">限新用户使用</text>
+					<text class="tips">{{item.ticket.details}}</text>
 				</view>
 			</view>
 		</view>
@@ -116,6 +115,7 @@
 </template>
 
 <script>
+	import { mapState } from 'vuex';
 	export default {
 		data() {
 			return {
@@ -124,16 +124,15 @@
 				type:null,  // 支付类别 3、考试下单、旅游下单，水果下单 (仅限直接购买使用)
 				good:{},
 				item:{},
+				short:0,
+				useTicket:null,
 				maskState: 0, //优惠券面板显示状态
-				couponList: [
-					{ title: '新用户专享优惠券', price: 5, },
-					{ title: '庆五一发一波优惠券', price: 10, },
-					{ title: '优惠券优惠券优惠券优惠券', price: 15, }
-				],					
+				ticketList:[],
 				addressData: { name: '点击选择收货地址', phone: '', school: '', dom: '', },
 				isSubmit:false
 			}
 		},
+		computed: { ...mapState(['user']) },
 		onLoad(option){
 			this.host = this.$host
 			this.kind = option.kind
@@ -158,14 +157,38 @@
 		methods: {
 			// 显示优惠券面板
 			toggleMask(type){
+				this.getTicket()
 				let timer = type === 'show' ? 10 : 300;
 				let	state = type === 'show' ? 1 : 0;
 				this.maskState = 2;
-				setTimeout(()=>{
-					this.maskState = state;
-				}, timer)
+				setTimeout(()=>{ this.maskState = state; }, timer)
+			},
+			// 获取优惠券信息
+			async getTicket(){
+				let tic = await this.$apis.uticket.findAndCountAllByUser(this.user.id,0,100)
+				this.ticketList = tic.data.rows.filter(item=>{ 
+					let now = new Date().toLocaleDateString()
+					let end = new Date(item.ticket.end.split('T')[0]).toLocaleDateString()
+					if(item.condition == 0 && now <= end){ item = Object.assign(item, this.orderTimeExp(item.ticket.end));  return item; }
+				});	
+				console.log('获取优惠券信息',this.ticketList)
 			},
 			stopPrevent(){},
+			// 选择优惠券
+			chooseTicket(item){
+				console.log('选择优惠券',item)
+				const { price,number } = this.good
+				if(price*number >= item.ticket.fill){
+					this.short = item.ticket.short
+					this.useTicket = item
+					this.toggleMask()  // 关闭优惠券面板
+				}else this.$api.msg('未达到指定金额哟~')				
+			},
+			// 放弃优惠券
+			cancelTic(){
+				this.useTicket = null,
+				this.short = 0
+			},
 			// 提交
 			submit(){
 				if(this.isSubmit) this.$api.msg('请不要重复提交喔~');
@@ -175,16 +198,17 @@
 					else{					
 						console.log(this.addressData,this.item)
 						// 提交支付信息
+						//kind : 0.直接购买、1.购物车付款	
 						// 支付类别 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、旅游下单，水果下单
 						if(this.kind == 0){							
-							let obj = JSON.stringify({ location_id: this.addressData.id, good:this.good, item:this.item, money:this.good.price * this.good.number})
+							let obj = JSON.stringify({ location_id: this.addressData.id, good:this.good, item:this.item,tic:this.useTicket, money:this.good.price * this.good.number - this.short})
 							this.isSubmit = true  // 标记已经提交订单
 							// 提交代取信息
 							uni.redirectTo({ url: `../money/pay?kind=${this.kind}&type=${this.type}&order=${obj}` });
 						}else if(this.kind == 1){						
 							// 封装传递数据
 							let type = this.typeExp(this.good.type)
-							let obj = JSON.stringify({ location_id: this.addressData.id, good:this.good, money:this.good.price * this.good.number})
+							let obj = JSON.stringify({ location_id: this.addressData.id, good:this.good, tic:this.useTicket, money:this.good.price * this.good.number-this.short})
 							this.isSubmit = true  // 标记已经提交订单
 							// 提交代取信息
 							uni.redirectTo({ url: `../money/pay?kind=${this.kind}&type=${type}&order=${obj}` });
@@ -198,6 +222,11 @@
 				if(type == 0) return 3;
 				if(type == 1) return 4;
 				if(type == 2) return 5;
+			},
+			//时间格式化
+			orderTimeExp(time){
+				let end = time.split('T')[0]
+				return {end};
 			}
 		}
 	}

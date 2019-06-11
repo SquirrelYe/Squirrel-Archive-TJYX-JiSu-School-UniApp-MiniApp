@@ -105,11 +105,12 @@ export default {
 	data() {
 		return {
 			host:'',
-			favorite: true,
+			favorite: false,
 			item:{},
 			shareList: [],
 			callbackNumber:null,
 			callbackList:[],
+			fid:null,  // 收藏信息
 			// 图文详情  <rich-text :nodes="desc"></rich-text>
 			desc: `
 					<div style="width:100%">
@@ -121,26 +122,46 @@ export default {
 	computed: { ...mapState(['user']) },
 	async onLoad(options) {
 		this.host = this.$host
+		let uid = this.user.id
 		//接收传值  包含judge=1 的为首页面传过来的值,不包含则为列表页面传递（减少访问请求，减轻服务器压力）
 		if(options.judge == 1){
 			let id = options.id;
 			let exam = await this.$apis.eitem.findOneById(id);
 			var call = await this.$apis.cart.findExamCallBack(id,0,1)
+			var fav = await this.$apis.favorite.findExam(uid,id)
 			this.item = exam.data
 		}else{
 			this.item = JSON.parse(options.item)
 			var call = await this.$apis.cart.findExamCallBack(this.item.id,0,1)
+			var fav = await this.$apis.favorite.findExam(uid,this.item.id)
 		}
 		this.callbackNumber = call.data.count || 0
 		this.callbackList = call.data.rows.filter(item=>{ item = Object.assign(item, this.orderTimeExp(item.updated_at)); return item; });	
-		console.log(this.item,this.callbackList)
+		console.log('考试项目',this.item,'评价清单',this.callbackList,'收藏',fav.data)
 		this.shareList = await this.$api.json('shareList');  // 载入分享		
+		fav.data ? this.favorite = true:this.favorite = false;		// 判断收藏显示
+		fav.data ? this.fid = fav.data.id: this.fid =null;		// 暂存收藏信息
 	},
 	methods: {
 		//分享
 		share() { this.$refs.share.toggleMask(); },
 		//收藏
-		toFavorite() { this.favorite = !this.favorite; },
+		async toFavorite() {
+			let eid = this.item.id
+			let uid = this.user.id
+			uni.showLoading({ title:'收藏中，请稍后^_^' })			
+			if(this.favorite){   // 已经加入收藏，删除
+				let delFav = await this.$apis.favorite.delete(this.fid)
+				uni.showToast({ title:'取消成功~', icon:'success' })
+				console.log('删除',delFav.data)
+			}else{		// 未加入收藏，添加
+				let addFav = await this.$apis.favorite.createExam(0,eid,uid)
+				this.fid = addFav.data.id
+				uni.showToast({ title:'收藏成功~', icon:'success' })
+				console.log('添加',addFav)
+			}
+			this.favorite = !this.favorite; 
+		},
 		// 购买
 		buy() {
 			let data = JSON.stringify(this.item)

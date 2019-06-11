@@ -39,11 +39,11 @@
 					<text>余额</text>
 				</view>
 				<view class="tj-item">
-					<text class="num">{{  stock.ticket || 0 }}</text>
+					<text class="num">{{  ticketCount || 0 }}</text>
 					<text>优惠券</text>
 				</view>
 				<view class="tj-item">
-					<text class="num">{{ stock.jifen || 0 }}</text>
+					<text class="num">{{ stock.score || 0 }}</text>
 					<text>积分</text>
 				</view>
 			</view>
@@ -68,15 +68,17 @@
 			</view>
 			<!-- 浏览历史 -->
 			<view class="history-section icon">
-				<view class="sec-header">
-					<text class="yticon icon-xingxing"></text>
-					<text>我的收藏</text>
-				</view>
-				<scroll-view scroll-x class="h-list">
-					<block v-for="(item,index) in favList" :key='index'>
-						<image @longpress="delFav(item)"  :src="host+'/'+item.logo" mode="aspectFill"></image>
-					</block>
-				</scroll-view>
+				<block v-if="hasLogin">
+					<view class="sec-header">
+						<text class="yticon icon-xingxing"></text>
+						<text>我的收藏</text>
+					</view>
+					<scroll-view scroll-x class="h-list">
+						<block v-for="(item,index) in favList" :key='index'>
+							<image @longpress="delFav(item)" @tap="navToDetailPage(item)" :src="host+'/'+item.logo" mode="aspectFill"></image>
+						</block>
+					</scroll-view>
+				</block>
 				<list-cell icon="icon-iconfontweixin" iconColor="#e07472" title="我的钱包" @eventClick="navTo('/pages/user/wallet/wallet')" tips="你的小金库"></list-cell>
 				<list-cell icon="icon-dizhi" iconColor="#5fcda2" title="地址管理" @eventClick="navTo('/pages/address/address')"></list-cell>
 				<list-cell icon="icon-share" iconColor="#9789f7" open-type="share" title="分享" tips="人人为我，我为人人" @eventClick="share()"></list-cell>
@@ -98,14 +100,16 @@ export default {
 		return {
 			host:null,
 			stock:{},
+			ticketCount:0,
 			coverTransform: 'translateY(0px)',
 			coverTransition: '0s',
 			moving: false,
 			favList:[]
 		};
 	},
+	computed: { ...mapState(['hasLogin', 'userInfo', 'user']) },
 	onLoad() { this.host = this.$host  },
-	onShow() { this.getStock(); this.getFav() },
+	onShow() { this.getStock(); this.getFav(); this.getTicket() },
 	// #ifndef MP
 	onNavigationBarButtonTap(e) {
 		const index = e.index;
@@ -122,10 +126,14 @@ export default {
 		}
 	},
 	// #endif
-	computed: { ...mapState(['hasLogin', 'userInfo', 'user']) },
 	methods: {
 		// 获取资金信息
 		getStock(){ this.$apis.stock.findByUserId(this.user.id).then(res=>{ console.log('账户资金信息',res.data); this.stock = res.data }) },
+		// 获取优惠券信息
+		async getTicket(){
+			let tic = await this.$apis.uticket.findAndCountAllByUser(this.user.id,0,100)
+			this.ticketCount = tic.data.count
+		},
 		// 获取收藏信息
 		async getFav(){
 			this.favList = []
@@ -134,7 +142,6 @@ export default {
 				// 备注：此处的数据未对condition进行过滤
 				let type = item.type // 0.考试、1.旅游、2.水果
 				let obj = { 'pid': item.id}
-				// console.log(item)
 				if(type == 0) this.favList.push(Object.assign(item.eitem,obj)) 
 				if(type == 1) this.favList.push(Object.assign(item.jitem,obj)) 
 				if(type == 2) this.favList.push(Object.assign(item.fitem,obj)) 
@@ -196,6 +203,14 @@ export default {
 					}
 				}
 			});
+		},
+		//详情页
+		navToDetailPage(item) {		
+			console.log(item)
+			// 根据judge ,item 的三级数据的内容判断页面跳转 judge 0、滚动图片，1、大图，2、限时秒杀
+			if(item.mexam_id) uni.navigateTo({ url:`../exam/exam_list/exam_list?judge=1&id=${item.id}` })
+			if(item.mjourney_id) uni.navigateTo({ url:`../journey/journey_list/journey_list?judge=1&id=${item.id}` })
+			if(item.mfruit_id) uni.navigateTo({ url:`../fruit/fruit_list/fruit_list?judge=1&id=${item.id}` })
 		}
 	}
 };

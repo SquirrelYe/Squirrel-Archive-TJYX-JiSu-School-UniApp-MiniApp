@@ -41,6 +41,23 @@
 			</view>
 			<button class="confirm-btn" :disabled="logining" v-if="canIUse" open-type="getUserInfo" @getuserinfo="bindGetUserInfo" @click="toRegister">注册</button>
 		</view>
+		<view class="register-section">
+			 注册即同意
+			<text @tap="law" data-target="law">用户条款</text>
+		</view>
+		<!-- <view class="cu-modal" :class="modalName=='law'?'show':''">
+			<view class="cu-dialog">
+				<view class="cu-bar bg-white justify-end">
+					<view class="content">用户条款</view>
+					<view class="action" @tap="hideModal">
+						<text class="cuIcon-close text-red"></text>
+					</view>
+				</view>
+				<view class="padding-xl">
+					{{claw}}
+				</view>
+			</view>
+		</view> -->
 	</view>
 </template>
 
@@ -65,7 +82,7 @@
 				schoolObj:{},
 				userinfo:'',
 				openid: null,
-				AccessTaken: null
+				AccessTaken: null,
 			}
 		},
 		computed:{ ...mapState(['userInfo'])},
@@ -142,7 +159,7 @@
 					let user = await apis.user.cusCreate(mobile,openid,userinfo.nickName,password, schoolObj[index].id)
 					if(user.data[1]){
 						// 初始化资产信息
-						let stock = await apis.stock.create(user.data[0].id,0,0)
+						let stock = await apis.stock.create(user.data[0].id,0,0,0)  // u,m,s,c
 						// 上传微信信息
 						let u = this.userinfo;
 						let info = await apis.info.creat(user.data[0].id, u.nickName, u.avatarUrl, u.gender, u.province, u.city, u.country)
@@ -159,7 +176,9 @@
 						}
 					}else _this.$api.msg('电话号码被占用')	
 				}
-			}
+			},
+			// 用户条款
+			law(e){ uni.navigateTo({ url:"law/law?judge=0" })}
 		},
 
 	}
