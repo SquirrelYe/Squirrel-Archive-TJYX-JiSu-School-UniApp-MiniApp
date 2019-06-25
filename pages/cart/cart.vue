@@ -105,7 +105,7 @@ export default {
 		this.loadData(2)		
 	},
 	methods: {
-		init() {  this.cartList = []; this.loadData(0);},
+		init() {  this.cartList = []; this.off = 0; this.lim = 5; this.loadData(0); this.show = false},
 		//请求数据
 		async loadData(judge) {
 			const { id } = this.user;

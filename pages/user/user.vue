@@ -83,7 +83,7 @@
 				<list-cell icon="icon-dizhi" iconColor="#5fcda2" title="地址管理" @eventClick="navTo('/pages/address/address')"></list-cell>
 				<list-cell icon="icon-share" iconColor="#9789f7" open-type="share" title="分享" tips="人人为我，我为人人" @eventClick="share()"></list-cell>
 				<list-cell icon="icon-shezhi1" iconColor="#e07472" title="设置" @eventClick="navTo('/pages/set/set')"></list-cell>
-				<list-cell icon="icon-bangzhu" iconColor="#54b4ef" title="联系客服" @eventClick="about()" border=""></list-cell>
+				<list-cell icon="icon-bangzhu" iconColor="#54b4ef" title="联系客服" @eventClick="about()"  open-type="contact" border=""></list-cell>
 			</view>
 		</view>		
 	</view>

@@ -42,7 +42,7 @@
 					券
 				</view>
 				<text class="cell-tit clamp">优惠券</text>
-				<text class="cell-tip active" v-if="!useTicket" @click="toggleMask('show')"> 选择优惠券 </text>
+				<text class="cell-tip active" v-if="!useTicket" @click="getTicket('show')"> 选择优惠券 </text>
 				<text class="cell-tip active" v-else @click="cancelTic"> 不使用优惠券 </text>
 				<text class="cell-more wanjia wanjia-gengduo-d"></text>
 			</view>
@@ -157,14 +157,13 @@
 		methods: {
 			// 显示优惠券面板
 			toggleMask(type){
-				this.getTicket()
 				let timer = type === 'show' ? 10 : 300;
 				let	state = type === 'show' ? 1 : 0;
 				this.maskState = 2;
 				setTimeout(()=>{ this.maskState = state; }, timer)
 			},
 			// 获取优惠券信息
-			async getTicket(){
+			async getTicket(type){   // type传递给 toggleMask()
 				let tic = await this.$apis.uticket.findAndCountAllByUser(this.user.id,0,100)
 				this.ticketList = tic.data.rows.filter(item=>{ 
 					let now = new Date().toLocaleDateString()
@@ -172,6 +171,8 @@
 					if(item.condition == 0 && now <= end){ item = Object.assign(item, this.orderTimeExp(item.ticket.end));  return item; }
 				});	
 				console.log('获取优惠券信息',this.ticketList)
+				if(this.ticketList.length != 0) this.toggleMask(type);
+				else this.$api.msg('暂无可用优惠券喔~')
 			},
 			stopPrevent(){},
 			// 选择优惠券

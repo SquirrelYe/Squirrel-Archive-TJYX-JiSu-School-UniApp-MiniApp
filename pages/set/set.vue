@@ -43,25 +43,14 @@
 	import { mapMutations } from 'vuex';
 	export default {
 		data() {
-			return {				
-				modalName: null,
+			return {
 				edition:null
 			};
 		},
-		onLoad() {
-			this.edition = this.$edition
-		},
+		onLoad() { this.edition = this.$edition },
 		methods:{
 			...mapMutations(['logout']),
-
-			navTo(url){
-				this.$api.msg(`跳转到${url}`);
-			},
-			navToPage(url){
-				uni.navigateTo({  
-					url
-				})  
-			}, 
+			navToPage(url){ uni.navigateTo({ url }) }, 
 			//退出登录
 			toLogout(){
 				uni.showModal({
@@ -76,6 +65,7 @@
 				    }
 				});
 			},
+			// 检查更新
 			update(){
 				let _this = this
 				const updateManager = wx.getUpdateManager()
@@ -99,15 +89,9 @@
 				updateManager.onUpdateFailed(function () {
 				  // 新版本下载失败
 				})
-			},			
-			showModal(e) {
-				// this.modalName = e.currentTarget.dataset.target
-				this.$api.msg('程序猿是个小哥哥^_^')
-			},
-			hideModal(e) {
-				this.modalName = null
-			},
-
+			},	
+			// 显示关于 
+			showModal(e) { this.$api.msg('程序猿是个小哥哥^_^') },
 		}
 	}
 </script>

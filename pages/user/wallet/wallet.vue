@@ -28,7 +28,7 @@
 					<text class="time">有效期至{{item.end}}</text>
 				</view>
 				<view class="right">
-					<text class="price" style="color: #707070;" v-if="item.condition === -1">{{item.ticket.short}}</text>
+					<text class="price" style="color: #707070;" v-if="item.condition === -1 || item.isTimeOut">{{item.ticket.short}}</text>
 					<text class="price" v-else>{{item.ticket.short}}</text>
 					<text>满{{item.ticket.fill}}可用</text>
 				</view>
@@ -87,7 +87,7 @@
 			async getTicket(){
 				let tic = await this.$apis.uticket.findAndCountAllByUser(this.user.id,0,100)
 				this.ticketCount = tic.data.count
-				this.ticketList = tic.data.rows.filter(item=>{ item = Object.assign(item, this.orderTimeExp(item.ticket.end)); return item; });	
+				this.ticketList = tic.data.rows.filter(item=>{ item = Object.assign(item, this.orderExp(item.ticket)); return item; });	
 				console.log('获取优惠券信息',this.ticketList)
 			},
             showModal(e) { this.modalName = e.currentTarget.dataset.target },
@@ -111,9 +111,12 @@
 				}
 			},
 			//时间格式化
-			orderTimeExp(time){
-				let end = time.split('T')[0]
-				return {end};
+			orderExp(item){  // 此处item 为 ticket
+				let end = item.end.split('T')[0]
+				let now = new Date().toLocaleDateString()
+				let final = new Date(end).toLocaleDateString()
+				let isTimeOut = now >= final
+				return {end,isTimeOut};
 			}
 		}
 	}
