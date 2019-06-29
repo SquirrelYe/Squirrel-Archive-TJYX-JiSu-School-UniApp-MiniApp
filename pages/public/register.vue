@@ -19,45 +19,47 @@
 						v-model="mobile"
 					/>
 				</view>
-				<view class="input-item">
-					<text class="tit">密码</text>
-					<input 
-						type="mobile" 
-						placeholder="6-16位不含特殊字符的数字、字母组合"
-						placeholder-class="input-empty"
-						maxlength="20"
-						password 
-						v-model="password"
-					/>
-				</view>
-				<view class="input-item">
-					<text class="tit">学校</text>
-					<picker @change="PickerChange" :value="index" :range="school" >
-						<view class="picker">
-							{{index>-1?school[index]:'选择学校'}}
-						</view>
-					</picker>
+				<!-- 输入验证码 -->
+				<view class="input-item" v-show="judgeCode && !judgePhone">
+						<text class="tit">验证码</text>
+						<input 
+							type="text" 
+							placeholder="请输入收到的手机验证码"
+							placeholder-class="input-empty"
+							v-model="virifycode"
+						/>
+					</view>
+				<!-- 短信验证成功 -->
+				<view v-show="judgePhone">					
+					<view class="input-item">
+						<text class="tit">密码</text>
+						<input 
+							type="mobile" 
+							placeholder="6-16位不含特殊字符的数字、字母组合"
+							placeholder-class="input-empty"
+							maxlength="20"
+							password 
+							v-model="password"
+						/>
+					</view>
+					<view class="input-item">
+						<text class="tit">学校</text>
+						<picker @change="PickerChange" :value="index" :range="school" >
+							<view class="picker">
+								{{index>-1?school[index]:'选择学校'}}
+							</view>
+						</picker>
+					</view>
 				</view>
 			</view>
-			<button class="confirm-btn" :disabled="logining" v-if="canIUse" open-type="getUserInfo" @getuserinfo="bindGetUserInfo" @click="toRegister">注册</button>
+			<button class="confirm-btn" :disabled="coding" v-if="canIUse && !judgeCode" @click="toCode">发送验证码</button>
+			<button class="confirm-btn" :disabled="coding" v-if="canIUse && judgeCode && !judgePhone" @click="toVerify">验证验证码</button>
+			<button class="confirm-btn" :disabled="logining" v-if="canIUse && judgePhone" open-type="getUserInfo" @getuserinfo="bindGetUserInfo" @click="toRegister">注册</button>
 		</view>
 		<view class="register-section">
 			 注册即同意
 			<text @tap="law" data-target="law">用户条款</text>
 		</view>
-		<!-- <view class="cu-modal" :class="modalName=='law'?'show':''">
-			<view class="cu-dialog">
-				<view class="cu-bar bg-white justify-end">
-					<view class="content">用户条款</view>
-					<view class="action" @tap="hideModal">
-						<text class="cuIcon-close text-red"></text>
-					</view>
-				</view>
-				<view class="padding-xl">
-					{{claw}}
-				</view>
-			</view>
-		</view> -->
 	</view>
 </template>
 
@@ -71,8 +73,12 @@
 			return {
 				canIUse: uni.canIUse('button.open-type.getUserInfo'),
 				isGetUserInfo :false,
-
+				code:'',	// 验证码
+				
+				judgeCode:false,	// 判断短信发送状态
+				judgePhone:false,	// 判断验证码状态
 				mobile: '',
+				virifycode:'',
 				password: '',
 				school:'',
 				logining: false,
@@ -144,6 +150,38 @@
 					}
 				  }
 				}) 
+			},
+			// 发送验证码
+			async toCode(){
+				var code=""; 
+				for(let i=0;i<6;i++) { code+=Math.floor(Math.random()*10); } 
+				this.code = code
+				console.log('发送验证码',this.code)
+				// 调用短信接口
+				// setTimeout(()=> {
+				// 	this.$api.msg('验证信息发送成功！');
+				// 	this.judgeCode = true
+				// }, 1500);
+				// 测试微信支付
+				uni.requestPayment({
+				  timeStamp: '',
+				  nonceStr: '',
+				  package: '',
+				  signType: 'MD5',
+				  paySign: '',
+				  success (res) {
+					  console.log('success--->',res)
+				  },
+				  fail (res) {					  
+					 console.log('fail--->',res)
+				  }
+				})
+			},
+			// 验证验证码
+			toVerify(){
+				console.log(this.virifycode)
+				if(this.code != this.virifycode){ this.$api.msg('验证输入有误喔~'); return;}
+				this.judgePhone = true;				
 			},
 			// 注册信息提交
 			async submit(){

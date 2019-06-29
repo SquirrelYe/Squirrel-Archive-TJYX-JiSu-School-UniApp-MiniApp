@@ -128,7 +128,7 @@ export default {
 		},
 		// 加载首页设置
 		async loadIndex(){
-			let sid = this.user.school_id || 4
+			let sid = this.user.school_id || 4	// 新用户未登录默认加载天津城建大学数据
 			let index = await this.$apis.index.findAndCountAllBySchool(sid)
 			console.log('加载首页设置',index.data)
 			uni.showLoading({ title:'加载中^_^' })
