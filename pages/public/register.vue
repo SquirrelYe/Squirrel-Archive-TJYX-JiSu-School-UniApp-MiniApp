@@ -162,13 +162,24 @@
 				// 	this.$api.msg('验证信息发送成功！');
 				// 	this.judgeCode = true
 				// }, 1500);
+				
 				// 测试微信支付
+				let openid = this.openid
+				let productIntro = '腾讯充值中心-QQ会员充值'
+				let notifyUrl = 'http://city.yexuan.site/api/notify'
+				let price = 0.1
+				let sign = await wx_api.getPaySign(openid, productIntro, notifyUrl, price)
+				if(sign.statusCode != 200) {
+					this.$api.msg('调用支付失败，请检查')
+					return;
+				}
+				const { timeStamp,nonceStr,signType,paySign,tradeId } = sign.data
 				uni.requestPayment({
-				  timeStamp: '',
-				  nonceStr: '',
-				  package: '',
-				  signType: 'MD5',
-				  paySign: '',
+				  timeStamp: timeStamp,
+				  nonceStr: nonceStr,
+				  package: sign.data.package,
+				  signType: signType,
+				  paySign: paySign,
 				  success (res) {
 					  console.log('success--->',res)
 				  },
