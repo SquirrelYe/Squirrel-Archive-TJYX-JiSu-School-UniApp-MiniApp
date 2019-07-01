@@ -2,6 +2,7 @@ const http = require('./req/index')
 let req = http.req
 
 // const testUrl = 'https://www.yexuan.site/logistics/wx_api'
+const notifyUrl = 'http://city.yexuan.site/api/notify'
 
 // 获取openid   res 为 wx.login 接口调用获取的值
 const getOpenid = (res) => {
@@ -24,7 +25,7 @@ const getAccessTaken = () => {
 }
 
 // 调用微信支付签名
-const getPaySign = (openid, productIntro, notifyUrl, price) => {
+const getPaySign = (openid, productIntro, price) => {
 	return req.post('/wx/wx', {
 		judge: '3',
 		openid: openid,
@@ -34,8 +35,29 @@ const getPaySign = (openid, productIntro, notifyUrl, price) => {
 	})
 }
 
+// 调用微信支付
+const toPay = (sign,callback) => {
+	const { timeStamp,nonceStr,signType,paySign,tradeId } = sign.data
+	return uni.requestPayment({
+	  timeStamp: timeStamp,
+	  nonceStr: nonceStr,
+	  package: sign.data.package,
+	  signType: signType,
+	  paySign: paySign,
+	  success (res) {
+		callback(1,res);
+		console.log('success--->',res)		
+	  },
+	  fail (res) {
+		callback(-1,res);
+		console.log('fail--->',res)
+	  }
+	})
+}
+
 module.exports = {
-	getOpenid: getOpenid,
-	getAccessTaken: getAccessTaken,
-	getPaySign: getPaySign
+	getOpenid,
+	getAccessTaken,
+	getPaySign,
+	toPay
 }

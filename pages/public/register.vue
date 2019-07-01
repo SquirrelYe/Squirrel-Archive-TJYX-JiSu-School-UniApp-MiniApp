@@ -153,40 +153,32 @@
 			},
 			// 发送验证码
 			async toCode(){
-				var code=""; 
-				for(let i=0;i<6;i++) { code+=Math.floor(Math.random()*10); } 
-				this.code = code
-				console.log('发送验证码',this.code)
-				// 调用短信接口
-				// setTimeout(()=> {
-				// 	this.$api.msg('验证信息发送成功！');
-				// 	this.judgeCode = true
-				// }, 1500);
+				// var code=""; 
+				// for(let i=0;i<6;i++) { code+=Math.floor(Math.random()*10); } 
+				// this.code = code
+				// console.log('发送验证码',this.code)
+				// uni.showLoading({ title:'发送中，请稍等哈~' })
+				// // 调用短信接口
+				// let msg = await this.$msg_api.sendRegisterCode(this.mobile,this.code)
+				// console.log('调用短信接口--->',msg.data)
+				// if(msg.data.code != 0){ this.$api.msg('验证码发送失败~'); return; }
+				// this.$api.msg('验证信息发送成功！');
+				// this.judgeCode = true
 				
 				// 测试微信支付
 				let openid = this.openid
 				let productIntro = '腾讯充值中心-QQ会员充值'
-				let notifyUrl = 'http://city.yexuan.site/api/notify'
-				let price = 0.1
-				let sign = await wx_api.getPaySign(openid, productIntro, notifyUrl, price)
-				if(sign.statusCode != 200) {
-					this.$api.msg('调用支付失败，请检查')
-					return;
-				}
-				const { timeStamp,nonceStr,signType,paySign,tradeId } = sign.data
-				uni.requestPayment({
-				  timeStamp: timeStamp,
-				  nonceStr: nonceStr,
-				  package: sign.data.package,
-				  signType: signType,
-				  paySign: paySign,
-				  success (res) {
-					  console.log('success--->',res)
-				  },
-				  fail (res) {					  
-					 console.log('fail--->',res)
-				  }
+				let price = 0.01
+				let sign = await wx_api.getPaySign(openid, productIntro, price)
+				if(sign.statusCode != 200) { this.$api.msg('调用支付接口失败，请检查'); return; }				
+				wx_api.toPay(sign,(judge,res)=>{
+					console.log('callback',judge,res)
+					if(judge != 1){ this.$api.msg('支付失败啦~'); return; }
+					this.$api.msg('支付成功啦~');
+					// 写入交易
+					
 				})
+				
 			},
 			// 验证验证码
 			toVerify(){
@@ -223,7 +215,7 @@
 							this.$api.msg('注册失败，请联系客服');
 							this.logining = false;
 						}
-					}else _this.$api.msg('电话号码被占用')	
+					}else this.$api.msg('电话号码被占用')	
 				}
 			},
 			// 用户条款
