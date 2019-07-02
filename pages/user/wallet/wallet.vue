@@ -49,7 +49,7 @@
 				<view class="grid col-3 padding-sm">
 					<view v-for="(item,index) in checkbox" class="padding-xs" :key="index">
 						<button class="cu-btn orange lg block text-xs" :class="item.checked?'bg-orange':'line-orange'" @tap="ChooseCheckbox"
-						 :data-value="item.value"> {{item.name}}
+						 :data-value="item.value"> {{item.name}}元
 							<view class="cu-tag sm round" :class="item.checked?'bg-white text-orange':'bg-orange'" v-if="item.hot">HOT</view>
 						</button>
 					</view>
@@ -67,20 +67,22 @@
 			return {
 				stock:{},
 				modalName: null,
+				choosePrice:0,
 				checkbox: [
-					{ value: 0, name: '10元', checked: false, hot: false, }, 
-					{ value: 1, name: '20元', checked: false, hot: false, }, 
-					{ value: 2, name: '30元', checked: true, hot: true, }, 
-					{ value: 3, name: '60元', checked: false, hot: true, }, 
-					{ value: 4, name: '80元', checked: false, hot: false, }, 
-					{ value: 5, name: '100元', checked: false, hot: false, }],
+					{ value: 0, name: 10, checked: false, hot: false, }, 
+					{ value: 1, name: 20, checked: false, hot: false, }, 
+					{ value: 2, name: 30, checked: false, hot: true, }, 
+					{ value: 3, name: 60, checked: false, hot: true, }, 
+					{ value: 4, name: 80, checked: false, hot: false, }, 
+					{ value: 5, name: 100, checked: false, hot: false, }],
 				ticketCount:0,
 				ticketList:[]
 			};
 		},
 		computed: { ...mapState(['user']) },
-		onLoad() { this.getStock(); this.getTicket() },
+		onLoad() { this.init() },
 		methods:{
+			init(){ this.getStock(); this.getTicket() },
 			// 获取资金信息	
 			getStock(){ this.$apis.stock.findByUserId(this.user.id).then(res=>{ console.log('账户资金信息',res.data); this.stock = res.data }) },
 			// 获取优惠券信息
@@ -92,16 +94,38 @@
 			},
             showModal(e) { this.modalName = e.currentTarget.dataset.target },
 			hideModal(e) { this.modalName = null },
-            choose(){
+            async choose(){
 				// 调用微信支付接口
 				// 更新资产
-				console.log('微信支付')
-                this.hideModal()
+				console.log('微信支付', this.choosePrice)
+				const { id,openid } = this.user
+				let productIntro = 'E校团充值中心-个人账户充值'+ this.choosePrice
+				let price = 0.01 || this.choosePrice
+				// 生成签名
+				let sign = await this.$wx_api.getPaySign(openid, productIntro, price)
+				if(sign.statusCode != 200) { this.$api.msg('调用支付接口失败，请检查'); return; }	
+				// 调用支付
+				this.$wx_api.toPay(sign, async (judge,res)=>{
+					if(judge != 1){ this.$api.msg('支付失败啦~'); return; }
+					this.$apis.cart.createStockCart( id,this.choosePrice,productIntro )					
+					let stock = await this.$apis.stock.findByUserId(id)
+					let m = Number(stock.data.money) + Number(this.choosePrice);
+					let s = Number(stock.data.score);
+					let final = await this.$apis.stock.updateMoneyScore(stock.data.id,m,s)
+					
+					
+					this.$api.msg('支付成功啦~');
+					this.init();	// 重新刷新页面
+					this.hideModal()
+					console.log('sign-->',sign,'callback-->',judge,res)
+					// 写入交易
+				})
             },
 			ChooseCheckbox(e) {
 				let items = this.checkbox;
                 let values = e.currentTarget.dataset.value;
-                console.log(this.checkbox[values])
+				this.choosePrice = items[values].name;  // 选择金额
+                console.log( values,items[values] )
 				for (let i = 0; i < items.length; ++i) {
 					if (items[i].value == values) {
 						items[i].checked = true;

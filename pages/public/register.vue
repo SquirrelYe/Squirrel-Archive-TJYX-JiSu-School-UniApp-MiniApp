@@ -17,6 +17,7 @@
 						placeholder="请输入手机号码"
 						maxlength="11"
 						v-model="mobile"
+						@input="phoneChange()"
 					/>
 				</view>
 				<!-- 输入验证码 -->
@@ -138,6 +139,13 @@
 			bindGetUserInfo(e) { console.log(e.detail.userInfo); this.userinfo = e.detail.userInfo },
 			// 选择学校
 			PickerChange(e) { this.index = e.detail.value },
+			// 电话号码更改
+			phoneChange(){
+				this.password = '';
+				this.virifycode = '';
+				this.judgeCode = false;
+				this.judgePhone = false;
+			},
 			async toRegister(){
 				let _this = this
 				// 查看是否授权
@@ -153,31 +161,40 @@
 			},
 			// 发送验证码
 			async toCode(){
-				// var code=""; 
-				// for(let i=0;i<6;i++) { code+=Math.floor(Math.random()*10); } 
-				// this.code = code
-				// console.log('发送验证码',this.code)
-				// uni.showLoading({ title:'发送中，请稍等哈~' })
-				// // 调用短信接口
-				// let msg = await this.$msg_api.sendRegisterCode(this.mobile,this.code)
-				// console.log('调用短信接口--->',msg.data)
-				// if(msg.data.code != 0){ this.$api.msg('验证码发送失败~'); return; }
-				// this.$api.msg('验证信息发送成功！');
-				// this.judgeCode = true
+				var code=""; 
+				for(let i=0;i<6;i++) { code+=Math.floor(Math.random()*10); } 
+				this.code = code
+				console.log('发送验证码',this.code)
+				uni.showLoading({ title:'发送中，请稍等哈~' })
+				// 调用短信接口
+				let msg = await this.$msg_api.sendRegisterCode(this.mobile,this.code)
+				console.log('调用短信接口--->',msg.data)
+				if(msg.data.code != 0){ this.$api.msg('验证码发送失败~'); return; }
+				this.$api.msg('验证信息发送成功！');
+				this.judgeCode = true
 				
 				// 测试微信支付
-				let openid = this.openid
-				let productIntro = '腾讯充值中心-QQ会员充值'
-				let price = 0.01
-				let sign = await wx_api.getPaySign(openid, productIntro, price)
-				if(sign.statusCode != 200) { this.$api.msg('调用支付接口失败，请检查'); return; }				
-				wx_api.toPay(sign,(judge,res)=>{
-					console.log('callback',judge,res)
-					if(judge != 1){ this.$api.msg('支付失败啦~'); return; }
-					this.$api.msg('支付成功啦~');
-					// 写入交易
-					
-				})
+				// let openid = this.openid
+				// let productIntro = '腾讯充值中心-QQ会员充值'
+				// let price = 0.01
+				// // 生成签名
+				// let sign = await wx_api.getPaySign(openid, productIntro, price)
+				// if(sign.statusCode != 200) { this.$api.msg('调用支付接口失败，请检查'); return; }	
+				// // 调用支付
+				// wx_api.toPay(sign,(judge,res)=>{
+				// 	if(judge != 1){ this.$api.msg('支付失败啦~'); return; }
+				// 	this.$api.msg('支付成功啦~');
+				// 	console.log('sign-->',sign,'callback-->',judge,res)
+				// 	// 写入交易
+				// })
+				
+				// 测试新用户优惠券
+				// let school_id = 4;
+				// let tic = await this.$apis.uticket.findOneBySchoolConditionType(school_id,0,0);   // sid,condition,type
+				// const { id } = tic.data;
+				// let user_id = 43;
+				// let newUserTic = await this.$apis.uticket.newerGetTicket(user_id,id,0)	// uid,tid,c
+				// console.log(tic,newUserTic)
 				
 			},
 			// 验证验证码
@@ -201,6 +218,11 @@
 					if(user.data[1]){
 						// 初始化资产信息
 						let stock = await apis.stock.create(user.data[0].id,0,0,0)  // u,m,s,c
+						// 获取新用户优惠券
+						let tic = await this.$apis.uticket.findOneBySchoolConditionType(schoolObj[index].id,0,0);   // sid,condition,type
+						const { id } = tic.data;
+						let newUserTic = await this.$apis.uticket.newerGetTicket(user.data[0].id,id,0)	// uid,tid,c
+						console.log(tic,newUserTic)
 						// 上传微信信息
 						let u = this.userinfo;
 						let info = await apis.info.creat(user.data[0].id, u.nickName, u.avatarUrl, u.gender, u.province, u.city, u.country)

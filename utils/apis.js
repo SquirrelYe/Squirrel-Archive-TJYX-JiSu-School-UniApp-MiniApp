@@ -1,3 +1,4 @@
+
 const http = require('./req/index')
 let req = http.req
 export default  {
@@ -242,7 +243,8 @@ export default  {
 		createExamCart(u,t,n,p,e,c,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'eitem_id': e, 'condition': c,'judgec': j }) },
  		createJourneyCart(u,t,n,p,ji,c,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'jitem_id': ji, 'condition': c,'judgec': j }) },
  		createFruitCart(u,t,n,p,f,c,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'fitem_id': f, 'condition': c,'judgec': j }) },
-	
+ 		createStockCart(u,p,o) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': -4, 'number': 1 ,'price':p ,'fitem_id': f, 'other':o, 'condition': 1,'judgec': 2 }) },
+
 		delete(id) { return req.post('/ent/cart', { 'judge': 2, 'id': id }) },
         updateCondition(id ,c) { return req.post('/ent/cart', { 'judge': 3, 'id': id,'condition':c }) },
         updateJudge(id , j) { return req.post('/ent/cart', { 'judge': 3, 'id': id,'judgec':j }) },
@@ -315,9 +317,12 @@ export default  {
 	},
 	// 优惠券
 	uticket:{
+		findOneBySchoolConditionType(sid,condition,type) { return req.post('/ent/ticket', { 'judge': 4, 'school_id': sid, 'condition': condition,'type':type }) },
+		
 		create(u,t,c) { return req.post('/ent/user_ticket', { 'judge': 1, 'user_id': u, 'ticket_id': t,'condition': c }) },
         delete(id) { return req.post('/ent/user_ticket', { 'judge': 2, 'id': id }) },
         update(id, c) { return req.post('/ent/user_ticket', { 'judge': 3, 'id': id, 'condition': c }) },
+		newerGetTicket(uid,tid,c) { return req.post('/ent/user_ticket', { 'judge': 4, 'user_id': uid, 'ticket_id': tid, 'condition': c }) },
 		
 		findAndCountAllByUser(uid,o,l) { return req.post('/ass/user_ticket', { 'judge': 1, 'user_id': uid, 'offset': o,'limit':l }) },
 	}
