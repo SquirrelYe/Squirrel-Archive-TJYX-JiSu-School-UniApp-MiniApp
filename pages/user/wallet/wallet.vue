@@ -100,7 +100,7 @@
 				console.log('微信支付', this.choosePrice)
 				const { id,openid } = this.user
 				let productIntro = 'E校团充值中心-个人账户充值'+ this.choosePrice
-				let price = 0.01 || this.choosePrice
+				let price = this.choosePrice
 				// 生成签名
 				let sign = await this.$wx_api.getPaySign(openid, productIntro, price)
 				if(sign.statusCode != 200) { this.$api.msg('调用支付接口失败，请检查'); return; }	
@@ -110,9 +110,8 @@
 					this.$apis.cart.createStockCart( id,this.choosePrice,productIntro )					
 					let stock = await this.$apis.stock.findByUserId(id)
 					let m = Number(stock.data.money) + Number(this.choosePrice);
-					let s = Number(stock.data.score);
+					let s = Number(stock.data.score) + Number(this.choosePrice);;
 					let final = await this.$apis.stock.updateMoneyScore(stock.data.id,m,s)
-					
 					
 					this.$api.msg('支付成功啦~');
 					this.init();	// 重新刷新页面

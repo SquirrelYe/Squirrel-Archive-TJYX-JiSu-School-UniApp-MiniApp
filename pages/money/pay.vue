@@ -61,7 +61,7 @@
 			//确认支付
 			async confirm() {
 				console.log('订单信息-->',this.user, this.order)
-				const { id,school_id } = this.user
+				const { id,school_id,openid } = this.user
 				//  支付类别 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、4、旅游下单，5、水果下单
 				// ①、调用微信支付接口
 				// ②、回调，写入快递代取订单、写入订单信息 
@@ -71,8 +71,88 @@
 				
 				// 微信支付
 				if(this.payType == 1){
-					const { from,key,location_id,money,total } = this.order
-					// 微信支付
+					const { money,location_id } = this.order;
+					let good = this.order.good
+					// 调用微信支付接口
+					console.log('微信支付', money)
+					let productIntro = `E校团支付中心-类型k${good.type},交易T${good.id},金额${money}`;
+					// 生成签名
+					let sign = await this.$wx_api.getPaySign(openid, productIntro, 0.01)	// money
+					if(sign.statusCode != 200) { this.$api.msg('调用支付接口失败，请检查'); return; }	
+					// 调用支付
+					let [err,sig]= await this.$wx_api.toPay(sign)
+					console.log('sign-->',sign,'sig--->',sig)
+					if(err){ this.$api.msg('支付失败啦~'); return; }
+					else this.$api.msg('支付成功啦~');		
+					let stock = await this.$apis.stock.findByUserId(id)
+					let m = Number(stock.data.money)
+					let s = Number(stock.data.score) + Number(money);;
+					let final = await this.$apis.stock.updateMoneyScore(stock.data.id,m,s)	
+					// 统一使用优惠券
+					let tid;
+					if(this.order.tic){							
+						tid = this.order.tic.id;
+						let utic = await this.$apis.uticket.update(tid,-1)  // -1表示优惠券已使用
+					}
+					// 提取 timestamp、tradeId
+					const { timeStamp,tradeId } = sign.data;
+					// 写入订单					
+					if(this.type == 1){ //  1、发布代取快递
+						const { from,key,location_id,total } = this.order
+						let log = await this.$apis.logistic.create(id,from,location_id,total,money,key,school_id)
+						let tran = await this.$apis.cart.createLog(id,-1,1,money,log.data.id,1,location_id,2)
+						let payback = await this.$apis.cart.updateTimeTrade(tran.id,timeStamp,tradeId);  // 写入微信支付回调数据
+						console.log(log,tran)
+						if(log && tran){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
+						else this.$api.msg('订单创建失败')
+					}						
+					if(this.type == 2){ //  2、快递代发 
+						// if(this.kind == 0){} 不存在状态，均由购物车支付完成
+						if(this.kind == 1){
+							const { id } = this.order.good
+							// 更新订单状态
+							let lsend = await this.$apis.cart.updateCondition(id,1)
+							let payback = await this.$apis.cart.updateTimeTrade(id,timeStamp,tradeId);  // 写入微信支付回调数据
+							if(lsend.data[0] == 1){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
+							else this.$api.msg('订单创建失败')
+						}
+					}						
+					if(this.type == 3){ //  3、考试下单 	
+						if(this.kind == 0){
+							const { price }	= this.order.item
+							const { other,number } = this.order.good
+							let exam = await this.$apis.cart.createExam(id,0,number,price,this.order.item.id,1,location_id,other,0,tid)	// u,t,n,p,e,c,loc,o,j,tic
+							let payback = await this.$apis.cart.updateTimeTrade(exam.data.id,timeStamp,tradeId);  // 写入微信支付回调数据
+							console.log(exam.data)
+							if(exam.data){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
+							else this.$api.msg('订单创建失败')
+						}
+						if(this.kind == 1) this.pay(timeStamp,tradeId)
+					}						
+					if(this.type == 4){ //  4、旅游下单 
+						if(this.kind == 0){								
+							const { price }	= this.order.item
+							const { other,number } = this.order.good
+							let journey = await this.$apis.cart.createJourney(id,1,number,price,this.order.item.id,1,location_id,other,0,tid)	// u,t,n,p,ji,c,loc,o,j,tic
+							let payback = await this.$apis.cart.updateTimeTrade(journey.data.id,timeStamp,tradeId);  // 写入微信支付回调数据
+							console.log(journey.data)
+							if(journey.data){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
+							else this.$api.msg('订单创建失败')
+						}
+						if(this.kind == 1) this.pay(timeStamp,tradeId)
+					}						
+					if(this.type == 5){ //  5、水果下单 
+						if(this.kind == 0){			
+							const { price }	= this.order.item
+							const { other,number } = this.order.good
+							let fruit = await this.$apis.cart.createFruit(id,2,number,price,this.order.item.id,1,location_id,other,0,tid)	// u,t,n,p,f,c,loc,o,j,tic
+							let payback = await this.$apis.cart.updateTimeTrade(fruit.data.id,timeStamp,tradeId);  // 写入微信支付回调数据
+							console.log(fruit.data)
+							if(fruit.data){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
+							else this.$api.msg('订单创建失败')
+						}
+						if(this.kind == 1) this.pay(timeStamp,tradeId)
+					}
 					
 				}
 				// 预付款支付
@@ -86,9 +166,12 @@
 						let m = stock.data.money - money;
 						let s = Number(stock.data.score) + Number(money);
 						let final = await this.$apis.stock.updateMoneyScore(stock.data.id,m,s)
+						// 生成时间戳
+						let timeStamp = +new Date();
 						// 统一使用优惠券
+						let tid;
 						if(this.order.tic){							
-							let tid = this.order.tic.id;
+							tid = this.order.tic.id;
 							let utic = await this.$apis.uticket.update(tid,-1)  // -1表示优惠券已使用
 						}
 						// 写入订单					
@@ -96,6 +179,7 @@
 							const { from,key,location_id,total } = this.order
 							let log = await this.$apis.logistic.create(id,from,location_id,total,money,key,school_id)
 							let tran = await this.$apis.cart.createLog(id,-1,1,money,log.data.id,1,location_id,2)
+							let payback = await this.$apis.cart.updateTimeTrade(tran.data.id,timeStamp,null);  // 写入微信支付回调数据
 							console.log(log,tran)
 							if(log && tran){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
 							else this.$api.msg('订单创建失败')
@@ -106,6 +190,7 @@
 								const { id } = this.order.good
 								// 更新订单状态
 								let lsend = await this.$apis.cart.updateCondition(id,1)
+								let payback = await this.$apis.cart.updateTimeTrade(id,timeStamp,null);  // 写入微信支付回调数据
 								if(lsend.data[0] == 1){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
 								else this.$api.msg('订单创建失败')
 							}
@@ -114,49 +199,49 @@
 							if(this.kind == 0){
 								const { price }	= this.order.item
 								const { other,number } = this.order.good
-								let tic = this.order.tic.ticket_id || null
-								let exam = await this.$apis.cart.createExam(id,0,number,price,this.order.item.id,1,location_id,other,0,tic)	// u,t,n,p,e,c,loc,o,j,tic
+								let exam = await this.$apis.cart.createExam(id,0,number,price,this.order.item.id,1,location_id,other,0,tid)	// u,t,n,p,e,c,loc,o,j,tic
+								let payback = await this.$apis.cart.updateTimeTrade(exam.data.id,timeStamp,null);  // 写入微信支付回调数据
 								console.log(exam.data)
 								if(exam.data){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
 								else this.$api.msg('订单创建失败')
 							}
-							if(this.kind == 1) this.pay()
+							if(this.kind == 1) this.pay(timeStamp,null)
 						}						
 						if(this.type == 4){ //  4、旅游下单 
 							if(this.kind == 0){								
 								const { price }	= this.order.item
 								const { other,number } = this.order.good
-								let tic = this.order.tic.ticket_id || null
-								let journey = await this.$apis.cart.createJourney(id,1,number,price,this.order.item.id,1,location_id,other,0,tic)	// u,t,n,p,ji,c,loc,o,j,tic
+								let journey = await this.$apis.cart.createJourney(id,1,number,price,this.order.item.id,1,location_id,other,0,tid)	// u,t,n,p,ji,c,loc,o,j,tic
+								let payback = await this.$apis.cart.updateTimeTrade(journey.data.id,timeStamp,null);  // 写入微信支付回调数据
 								console.log(journey.data)
 								if(journey.data){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
 								else this.$api.msg('订单创建失败')
 							}
-							if(this.kind == 1) this.pay()
+							if(this.kind == 1) this.pay(timeStamp,null)
 						}						
 						if(this.type == 5){ //  5、水果下单 
 							if(this.kind == 0){			
 								const { price }	= this.order.item
 								const { other,number } = this.order.good
-								let tic = this.order.tic.ticket_id || null
-								let fruit = await this.$apis.cart.createFruit(id,2,number,price,this.order.item.id,1,location_id,other,0,tic)	// u,t,n,p,f,c,loc,o,j,tic
+								let fruit = await this.$apis.cart.createFruit(id,2,number,price,this.order.item.id,1,location_id,other,0,tid)	// u,t,n,p,f,c,loc,o,j,tic
+								let payback = await this.$apis.cart.updateTimeTrade(fruit.data.id,timeStamp,null);  // 写入微信支付回调数据
 								console.log(fruit.data)
 								if(fruit.data){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
 								else this.$api.msg('订单创建失败')
 							}
-							if(this.kind == 1) this.pay()
+							if(this.kind == 1) this.pay(timeStamp,null)
 						}
 					}else  this.$api.msg('可用余额不足')					
 				}
 			},
 			// 下单逻辑
-			async pay(){
+			async pay(timeStamp,tradeId){
 				const { location_id } = this.order;
 				const { id,other,number } = this.order.good
 				let tic;
-				if(this.order.tic) tic = this.order.tic.ticket_id
-				else tic = null
+				if(this.order.tic) tic = this.order.tic.ticket_id; else tic = null
 				let res = await this.$apis.cart.updateCart(id,number,location_id,other,1,0,tic)  // 1.已付款，0.未发货  id,n,loc,o,c,j,tic
+				let payback = await this.$apis.cart.updateTimeTrade(id,timeStamp,tradeId);  // 写入微信支付回调数据
 				console.log(res.data)
 				if(res.data[0] == 1){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
 				else this.$api.msg('订单创建失败')

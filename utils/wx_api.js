@@ -36,7 +36,7 @@ const getPaySign = (openid, productIntro, price) => {
 }
 
 // 调用微信支付
-const toPay = (sign,callback) => {
+const toPay = (sign) => {
 	const { timeStamp,nonceStr,signType,paySign,tradeId } = sign.data
 	return uni.requestPayment({
 	  timeStamp: timeStamp,
@@ -44,14 +44,14 @@ const toPay = (sign,callback) => {
 	  package: sign.data.package,
 	  signType: signType,
 	  paySign: paySign,
-	  success (res) {
-		callback(1,res);
-		console.log('success--->',res)		
-	  },
-	  fail (res) {
-		callback(-1,res);
-		console.log('fail--->',res)
-	  }
+	 //  success (res) {
+		// callback(1,res);
+		// console.log('success--->',res)		
+	 //  },
+	 //  fail (res) {
+		// callback(-1,res);
+		// console.log('fail--->',res)
+	 //  }
 	})
 }
 

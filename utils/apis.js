@@ -249,6 +249,7 @@ export default  {
         updateCondition(id ,c) { return req.post('/ent/cart', { 'judge': 3, 'id': id,'condition':c }) },
         updateJudge(id , j) { return req.post('/ent/cart', { 'judge': 3, 'id': id,'judgec':j }) },
         updateCart(id,n,loc,o,c,j,tic) { return req.post('/ent/cart', { 'judge': 3, 'id':id,'number':n,'location_id':loc,'other':o,'condition':c,'judgec':j,'ticket_id':tic }) },
+		updateTimeTrade(id,ts,tid) { return req.post('/ent/cart', { 'judge': 3, 'id': id,'timestamp':ts,'trade_id':tid }) },
 
         findAndCountAll(o, l) { return req.post('/ass/cart', { 'judge': 0, 'offset': o, 'limit': l }) },
         findOneById(id) { return req.post('/ass/cart', { 'judge': 1, 'id': id }) },
