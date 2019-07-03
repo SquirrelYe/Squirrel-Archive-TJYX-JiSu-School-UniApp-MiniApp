@@ -57,8 +57,9 @@ export default {
 	font-family: yticon;
 	font-weight: normal;
 	font-style: normal;
-	src: url('http://localhost:11130/iconfont/font.ttf');
-	// https://at.alicdn.com/t/font_1078604_w4kpxh0rafi.ttf
+	src: url('https://at.alicdn.com/t/font_1078604_w4kpxh0rafi.ttf');
+	// src: url('http://localhost:11130/iconfont/font.ttf');
+	// src: url('https://www.exiaopin.cn/api/iconfont/font.ttf');
 }
 
 .yticon {

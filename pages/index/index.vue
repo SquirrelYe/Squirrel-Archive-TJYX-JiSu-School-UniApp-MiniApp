@@ -159,7 +159,7 @@ export default {
 		},
 		//详情页
 		navToDetailPage(judge,item) {
-			if (!this.hasLogin) { uni.navigateTo({ url:'/pages/public/login' }); }			
+			if (!this.hasLogin) { uni.navigateTo({ url:'/pages/public/login' }); return; }			
 			console.log(item)
 			// 根据judge ,item 的三级数据的内容判断页面跳转 judge 0、滚动图片，1、大图，2、限时秒杀
 			if(judge ==2){				

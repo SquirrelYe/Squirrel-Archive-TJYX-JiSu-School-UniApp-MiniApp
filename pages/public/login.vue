@@ -81,6 +81,7 @@
 			navBack(){ uni.navigateBack(); },
 			toRegist(){ uni.navigateTo({url:'/pages/public/register'}) },
 			async toLogin(){
+				uni.showLoading({ title:'正在登录大部队，请稍等哈~',mask:true })
 				let _this = this
 				// 查看是否授权
 				wx.getSetting({

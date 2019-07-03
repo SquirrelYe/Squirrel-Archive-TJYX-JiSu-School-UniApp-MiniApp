@@ -38,17 +38,6 @@
 			}
 		},
 		{
-			"path": "pages/product/product",
-			"style": {
-				"navigationBarTitleText": "详情展示",
-				"app-plus": {
-					"titleNView": {
-						"type": "transparent"
-					}
-				}
-			}
-		},
-		{
 			"path": "pages/card/card",
 			"style": {
 				"navigationBarTitleText": "开卡",				
@@ -142,16 +131,6 @@
 				}
 			}
 		}, {
-			"path": "pages/detail/detail",
-			"style": {
-				"navigationBarTitleText": "",
-				"app-plus": {
-					"titleNView": {
-						"type": "transparent"
-					}
-				}
-			}
-		}, {
 			"path": "pages/order/order",
 			"style": {
 				"navigationBarTitleText": "我的订单",
@@ -193,12 +172,6 @@
 				"navigationBarTitleText": "支付成功"
 			}
 		}
-	    ,{
-            "path" : "pages/notice/notice",
-            "style" : {
-				"navigationBarTitleText": "通知"
-			}
-        }
         ,{
             "path" : "pages/flow/flow",
             "style" : {
@@ -213,13 +186,6 @@
 				"enablePullDownRefresh": true,
 				"onReachBottomDistance":50,
 				"navigationBarTitleText": "活动"
-			}
-        }
-        ,{
-            "path" : "pages/product/list",
-            "style" : {
-				"enablePullDownRefresh": true,
-				"navigationBarTitleText": "商品列表"
 			}
         }
         ,{

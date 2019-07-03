@@ -60,6 +60,11 @@
 			changePayType(type) { this.payType = type; },
 			//确认支付
 			async confirm() {
+				// 加载中
+				uni.showLoading({
+					title: '正在支付中哇^_^,等一下下~',
+					mask: true
+				});
 				console.log('订单信息-->',this.user, this.order)
 				const { id,school_id,openid } = this.user
 				//  支付类别 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、4、旅游下单，5、水果下单

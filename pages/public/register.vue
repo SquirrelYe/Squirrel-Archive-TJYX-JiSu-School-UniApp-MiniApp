@@ -204,7 +204,8 @@
 				this.judgePhone = true;				
 			},
 			// 注册信息提交
-			async submit(){
+			async submit(){				
+				uni.showLoading({ title:'正在挤进大部队，请稍等哈~',mask:true })
 				const {userinfo, mobile, password ,schoolObj ,index, openid, AccessTaken} = this;
 				// 校验
 				if(!openid) this.$api.msg('获取唯一识别码失败') ;

@@ -51,8 +51,9 @@ Vue.prototype.$regex = regex;
 Vue.prototype.$apis = apis;
 Vue.prototype.$wx_api = wx_api;
 Vue.prototype.$msg_api = msg_api;
-Vue.prototype.$host = 'http://127.0.0.1:11130';   
+// Vue.prototype.$host = 'http://127.0.0.1:11130';   
 // Vue.prototype.$host = 'https://jisu.yexuan.site/api';
+Vue.prototype.$host = 'https://www.exiaopin.cn/api';
 
 App.mpType = 'app'
 
