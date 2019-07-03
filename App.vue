@@ -3,18 +3,39 @@
  * vuex管理登陆状态，具体可以参考官方登陆模板示例
  */
 import { mapMutations } from 'vuex';
+import edi from 'utils/edition'
 export default {
-	methods: {
-		...mapMutations(['login'])
-	},
+	methods: { ...mapMutations(['login']) },
 	onLaunch: function() {
+		console.log('edition-->',edi.edition)
 		let hasLogin = uni.getStorageSync('hasLogin') || '';
 		let userInfo = uni.getStorageSync('userInfo') || '';
 		let user = uni.getStorageSync('user') || '';
-		if (hasLogin) {
-			//更新登陆状态
-			console.log(userInfo,user)
-		}
+		if (hasLogin) { console.log('用户已登录-->',userInfo,user) }
+		
+		let _this = this
+		const updateManager = wx.getUpdateManager()
+		updateManager.onCheckForUpdate(function (res) {
+		  // 请求完新版本信息的回调
+		  if(res.hasUpdate) _this.$api.msg('有新版本发布')
+		  // else _this.$api.msg('暂无新版本')
+		})
+		updateManager.onUpdateReady(function () {
+		  wx.showModal({
+			title: '更新提示',
+			content: '新版本已经准备好，是否重启应用？',
+			success: function (res) {
+			  if (res.confirm) {
+				// 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
+				updateManager.applyUpdate()
+			  }
+			}
+		  })
+		})
+		updateManager.onUpdateFailed(function () {
+		  // 新版本下载失败
+		  _this.$api.msg('应用新版本下载失败')
+		})
 	},
 	onShow: function() {
 		console.log('App Show');
@@ -36,7 +57,8 @@ export default {
 	font-family: yticon;
 	font-weight: normal;
 	font-style: normal;
-	src: url('https://at.alicdn.com/t/font_1078604_w4kpxh0rafi.ttf') format('truetype');
+	src: url('http://localhost:11130/iconfont/font.ttf');
+	// https://at.alicdn.com/t/font_1078604_w4kpxh0rafi.ttf
 }
 
 .yticon {

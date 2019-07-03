@@ -105,20 +105,21 @@
 				let sign = await this.$wx_api.getPaySign(openid, productIntro, price)
 				if(sign.statusCode != 200) { this.$api.msg('调用支付接口失败，请检查'); return; }	
 				// 调用支付
-				this.$wx_api.toPay(sign, async (judge,res)=>{
-					if(judge != 1){ this.$api.msg('支付失败啦~'); return; }
-					this.$apis.cart.createStockCart( id,this.choosePrice,productIntro )					
+				let [err,sig]= await this.$wx_api.toPay(sign)
+				console.log('sign-->',sign,'sig--->',sig)
+				if(err){ this.$api.msg('支付失败啦~'); return; }
+				else{
+					this.$api.msg('支付成功啦~');
+					let cart = await this.$apis.cart.createStockCart( id,this.choosePrice,productIntro )  // 写入交易
 					let stock = await this.$apis.stock.findByUserId(id)
 					let m = Number(stock.data.money) + Number(this.choosePrice);
-					let s = Number(stock.data.score) + Number(this.choosePrice);;
+					let s = Number(stock.data.score)
 					let final = await this.$apis.stock.updateMoneyScore(stock.data.id,m,s)
 					
-					this.$api.msg('支付成功啦~');
 					this.init();	// 重新刷新页面
 					this.hideModal()
-					console.log('sign-->',sign,'callback-->',judge,res)
-					// 写入交易
-				})
+					console.log('sign-->',sign,'callback-->',sig)
+				}				
             },
 			ChooseCheckbox(e) {
 				let items = this.checkbox;

@@ -72,12 +72,13 @@
 				// 微信支付
 				if(this.payType == 1){
 					const { money,location_id } = this.order;
-					let good = this.order.good
+					let good = this.order.good , type=null;
+					(good) && (type = good.type) || (type = null);
 					// 调用微信支付接口
 					console.log('微信支付', money)
-					let productIntro = `E校团支付中心-类型k${good.type},交易T${good.id},金额${money}`;
+					let productIntro = `E校团支付中心-类型k${type},金额${money}`;
 					// 生成签名
-					let sign = await this.$wx_api.getPaySign(openid, productIntro, 0.01)	// money
+					let sign = await this.$wx_api.getPaySign(openid, productIntro, money)	// money
 					if(sign.statusCode != 200) { this.$api.msg('调用支付接口失败，请检查'); return; }	
 					// 调用支付
 					let [err,sig]= await this.$wx_api.toPay(sign)
@@ -101,7 +102,7 @@
 						const { from,key,location_id,total } = this.order
 						let log = await this.$apis.logistic.create(id,from,location_id,total,money,key,school_id)
 						let tran = await this.$apis.cart.createLog(id,-1,1,money,log.data.id,1,location_id,2)
-						let payback = await this.$apis.cart.updateTimeTrade(tran.id,timeStamp,tradeId);  // 写入微信支付回调数据
+						let payback = await this.$apis.cart.updateTimeTrade(tran.data.id,timeStamp,tradeId);  // 写入微信支付回调数据
 						console.log(log,tran)
 						if(log && tran){ this.$api.msg('订单创建成功'); uni.redirectTo({ url: '/pages/money/paySuccess' }) }
 						else this.$api.msg('订单创建失败')

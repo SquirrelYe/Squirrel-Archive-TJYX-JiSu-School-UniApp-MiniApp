@@ -233,8 +233,8 @@ export default  {
     },
     // 购物车
     cart: {
-		createLog(u,t,n,p,log,c,loc,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'logistic_id': log, 'condition': c, 'location_id': loc,'judgec': j }) },
-		createLsend(u,t,n,ls,c,loc,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'lsend_id': ls, 'condition': c, 'location_id': loc,'judgec': j }) },
+		createLog(u,t,n,p,log,c,loc,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'logistic_id': log, 'condition': c, 'location_id': loc,'other':"E校拼-快递带取",'judgec': j }) },
+		createLsend(u,t,n,ls,c,loc,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'lsend_id': ls, 'condition': c, 'location_id': loc,'other':"E校拼-快递带发",'judgec': j }) },
 		// 下面三 可以使用优惠券
  		createExam(u,t,n,p,e,c,loc,o,j,tic) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'eitem_id': e, 'condition': c, 'location_id': loc,'other':o,'judgec': j,'ticket_id':tic }) },
  		createJourney(u,t,n,p,ji,c,loc,o,j,tic) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'jitem_id': ji, 'condition': c, 'location_id': loc,'other':o,'judgec': j,'ticket_id':tic }) },

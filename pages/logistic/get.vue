@@ -134,8 +134,8 @@ export default {
 			if (!msg) { this.$api.msg('请填写取件信息'); return; }
 			
 			console.log(price ,from, msg, this.imgList, this.addressData)
-			// 封装传递数据
-			let obj = JSON.stringify({ from: from, location_id: this.addressData.id, total:1, money:price, key:msg})
+			// 封装传递数据 类别*（-4、账户充值，-3、开卡，-2、代发，-1、代取，0.考试，1.旅游，2.水果）
+			let obj = JSON.stringify({ from: from, location_id: this.addressData.id, total:1, money:price, key:msg, type:-1})
 			// 提交支付信息
 			// 支付类别 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、旅游下单，水果下单
 			uni.navigateTo({ url: `../money/pay?kind=0&type=1&order=${obj}` });
