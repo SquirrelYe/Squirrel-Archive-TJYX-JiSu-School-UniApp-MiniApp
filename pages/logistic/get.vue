@@ -22,7 +22,7 @@
 
 		<view class="row b-b">
 			<text class="tit">佣金</text>
-			<input class="input" type="number" v-model="address.price" placeholder="一公斤以内1.5元,1-2公斤2.5元,2-4公斤4元,其他自定" placeholder-class="placeholder text-sm" />
+			<input class="input" type="digit" v-model="address.price" placeholder="一公斤以内1.5元,1-2公斤2.5元,2-4公斤4元,其他自定" placeholder-class="placeholder text-sm" />
 		</view>
 		<view class="row b-b">
 			<text class="tit">地址</text>

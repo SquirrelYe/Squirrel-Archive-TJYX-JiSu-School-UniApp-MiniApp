@@ -54,7 +54,7 @@ Vue.prototype.$wx_api = wx_api;
 Vue.prototype.$msg_api = msg_api;
 // Vue.prototype.$host = 'http://127.0.0.1:11130';   
 // Vue.prototype.$host = 'https://jisu.yexuan.site/api';
-Vue.prototype.$host = 'https://www.exiaopin.cn/api';
+Vue.prototype.$host = conf.host;
 
 App.mpType = 'app'
 

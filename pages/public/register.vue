@@ -232,12 +232,13 @@
 							// 保存用户数据到 vuex
 							// this.getInfo(info.data);
 							console.log('vuex',this.userInfo)
+							uni.hideLoading()
 							let that = this
 							uni.showModal({
 								title:'注册成功^_^',
 								content:`新用户优惠券&免费余额已到账`,
 								cancelText:'嗯嗯嗯',
-								confirmText:'我知道啦~',
+								confirmText:'我知道啦',
 								success() {									
 									that.logining = true;
 									uni.navigateBack()
