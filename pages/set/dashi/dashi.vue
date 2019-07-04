@@ -48,7 +48,7 @@
 				<view class="padding-xs solids" @tap="ChooseImage" v-if="imgList.length<2">
 					<text class='cuIcon-cameraadd'></text>
 				</view>
-				<text class="text-xs"  v-if="imgList.length==0">请提交一卡通、学生证、或其他证件信息</text>
+				<text class="text-xs"  v-if="imgList.length==0">请提交身份证（必须）、一卡通或学生证</text>
 			</view>
 		</view>
 		

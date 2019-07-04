@@ -94,7 +94,7 @@ export default {
 		confirm() {
 			// 校园大使才能查看详细信息
 			// uni.navigateTo({ url: `/pages/flow/logistic_detail/logistic_detail` });
-			this.$api.msg('校园大使才能查看喔')
+			this.$api.msg('请去e校拼校园大使端查看哦~')
 		},
 	}
 };

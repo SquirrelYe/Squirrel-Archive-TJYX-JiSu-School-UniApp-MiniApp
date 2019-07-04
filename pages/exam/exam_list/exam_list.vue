@@ -93,7 +93,7 @@
 		</view>
 
 		<!-- 分享 -->
-		<share ref="share" :contentHeight="580" :shareList="shareList"></share>
+		<!-- <share ref="share" :contentHeight="580" :shareList="shareList"></share> -->
 	</view>
 </template>
 
@@ -112,15 +112,16 @@ export default {
 			callbackList:[],
 			fid:null,  // 收藏信息
 			// 图文详情  <rich-text :nodes="desc"></rich-text>
-			desc: `
-					<div style="width:100%">
-						<img style="width:100%;display:block;" :src="host+'/'+item.detail" />
-					</div>
-				`
+			// desc: `
+			// 		<div style="width:100%">
+			// 			<img style="width:100%;display:block;" :src="host+'/'+item.detail" />
+			// 		</div>
+			// 	`
 		};
 	},
 	computed: { ...mapState(['user']) },
 	async onLoad(options) {
+		console.log('传递的值 -->examlist',options)
 		this.host = this.$host
 		let uid = this.user.id
 		//接收传值  包含judge=1 的为首页面传过来的值,不包含则为列表页面传递（减少访问请求，减轻服务器压力）
@@ -164,15 +165,20 @@ export default {
 		},
 		// 购买
 		buy() {
+			const { condition,price } = this.item;
+			if(condition == -1) { this.$api.msg('此产品已经下架啦~'); return; }
+			uni.showLoading({ title:'准备订单中~',mask:true})
 			let data = JSON.stringify(this.item)
-			let obj = JSON.stringify({ number: 1,price:this.item.price,other:null })
+			let obj = JSON.stringify({ number: 1,price:price,other:null })
+			uni.hideLoading()
 			// 支付类别 支付类别 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、4、旅游下单，5、水果下单
 			uni.navigateTo({ url: `/pages/order/createOrder?kind=0&type=3&data=${data}&other=${obj}` })
 		},
 		// 加入购物车
 		async toCart() {
+			const { id,price } = this.item;
 			uni.showLoading()
-			let ecart = await this.$apis.cart.createExamCart(this.user.id,0,1,this.item.price,this.item.id,0,0)   // u,t,n,p,e,c,j
+			let ecart = await this.$apis.cart.createExamCart(this.user.id,0,1,price,id,0,0)   // u,t,n,p,e,c,j
 			console.log(ecart.data)
 			if(ecart.data){
 				// 延时显示

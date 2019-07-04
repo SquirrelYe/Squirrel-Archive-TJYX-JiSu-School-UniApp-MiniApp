@@ -87,7 +87,7 @@ export default {
 	},
 	computed: { ...mapState(['hasLogin','user']) },
 	onLoad() { this.loadData(0); this.host = this.$host },
-	onShow() {  this.cartList = []; this.off = 0; this.lim = 5; this.loadData(0); this.show = false},
+	// onShow() {  this.cartList = []; this.off = 0; this.lim = 5; this.loadData(0); this.show = false},
 	watch: { //显示空白页
 		cartList(e) {
 			let empty = e.length === 0 ? true : false;
@@ -182,12 +182,20 @@ export default {
 			let list = this.cartList;
 			let good = {};
 			if(this.show){				
-				list.forEach(item => { if(item.checked) good = item });
-				console.log(good)
+				list.forEach(item => { if(item.checked) good = item; });
+				console.log('选中的购物车item--->',good)
+				const { type,eitem,jitem,fitem } = good;
+				// 已下架物品
+				let currentItem;
+				(type == 0)&&(currentItem = eitem)||(type == 1)&&(currentItem = jitem)||(type == 2)&&(currentItem = fitem);
+				if(currentItem && currentItem.condition == -1){
+					this.$api.msg('此物品下架啦~');
+					return;
+				}
 				// 生成订单信息传递到支付平台	kind : 0.直接购买、1.购物车付款	
 				// 类别*（-3、开卡，-2、代发，-1、代取，0.考试，1.旅游，2.水果）
 				// 支付类别 type 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、旅游下单，水果下单
-				if(good.type == -2) {
+				if(type == -2) {
 					if(good.lsend.condition != 1) this.$api.msg('请等待校园大使上门喔~')
 					else{						
 						let obj = JSON.stringify({ location_id: good.location_id,good:good, money:good.price})

@@ -245,6 +245,8 @@ export default  {
  		createFruitCart(u,t,n,p,f,c,j) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': t, 'number': n ,'price':p ,'fitem_id': f, 'condition': c,'judgec': j }) },
  		createStockCart(u,p,o) { return req.post('/ent/cart', { 'judge':1, 'user_id': u, 'type': -4, 'number': 1 ,'price':p ,'fitem_id': f, 'other':o, 'condition': 1,'judgec': 2 }) },
 
+        createCallback(id , j, c) { return req.post('/ent/cart', { 'judge': 3, 'id': id,'judgec':j,'callback':c }) },
+		
 		delete(id) { return req.post('/ent/cart', { 'judge': 2, 'id': id }) },
         updateCondition(id ,c) { return req.post('/ent/cart', { 'judge': 3, 'id': id,'condition':c }) },
         updateJudge(id , j) { return req.post('/ent/cart', { 'judge': 3, 'id': id,'judgec':j }) },

@@ -7,6 +7,7 @@ import regex from './utils/regex/regex'
 import apis from './utils/apis'
 import wx_api from './utils/wx_api'
 import msg_api from './utils/msg_api'
+import conf from './utils/config.js' 
 /**
  *  因工具函数属于公司资产, 所以直接在Vue实例挂载几个常用的函数
  *  所有测试用数据均存放于根目录json.js
@@ -43,7 +44,7 @@ const prePage = ()=>{
 }
 
 Vue.config.productionTip = false
-Vue.prototype.$edition = '1.0.0';
+Vue.prototype.$edition = conf.edition;
 Vue.prototype.$fire = new Vue();
 Vue.prototype.$store = store;
 Vue.prototype.$api = {msg, json, prePage};

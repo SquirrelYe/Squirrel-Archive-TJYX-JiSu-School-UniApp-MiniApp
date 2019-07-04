@@ -104,6 +104,10 @@ export default {
 		this.tabCurrentIndex = options.state || 0;
 		this.loadData(this.tabCurrentIndex,0);
 	},
+	onShow() {
+		this.off = 0; this.lim = 4;
+		this.loadData(this.tabCurrentIndex,3)
+	},
 	onPullDownRefresh() {
 		this.off = 0; this.lim = 4;
 		this.loadData(this.tabCurrentIndex,1)
@@ -143,6 +147,7 @@ export default {
 				}
 			}
 			if(judge === 1){ this.$api.msg('刷新成功'); uni.stopPullDownRefresh(); navItem.orderList = orderList; }
+			if(judge === 3){ navItem.orderList = orderList; }		// onShow 生命周期
 			if(judge === 2){
 				if(orderList.length != 0){
 					orderList.forEach(item=>{ navItem.orderList.push(item); })

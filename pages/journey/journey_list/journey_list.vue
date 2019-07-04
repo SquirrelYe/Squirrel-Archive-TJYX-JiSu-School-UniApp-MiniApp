@@ -164,6 +164,8 @@ export default {
 		},
 		// 购买
 		buy() {
+			const { condition } = this.item;
+			if(condition == -1) { this.$api.msg('此产品已经下架啦~'); return; }
 			let data = JSON.stringify(this.item)
 			let obj = JSON.stringify({ number: 1,price:this.item.price,other:null })
 			// 支付类别 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、4、旅游下单，5、水果下单

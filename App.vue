@@ -3,11 +3,11 @@
  * vuex管理登陆状态，具体可以参考官方登陆模板示例
  */
 import { mapMutations } from 'vuex';
-import edi from 'utils/edition'
+import conf from 'utils/config.js'
 export default {
 	methods: { ...mapMutations(['login']) },
 	onLaunch: function() {
-		console.log('edition-->',edi.edition)
+		console.log('edition-->',conf.edition)
 		let hasLogin = uni.getStorageSync('hasLogin') || '';
 		let userInfo = uni.getStorageSync('userInfo') || '';
 		let user = uni.getStorageSync('user') || '';

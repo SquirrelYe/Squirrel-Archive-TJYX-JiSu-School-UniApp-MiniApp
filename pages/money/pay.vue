@@ -61,10 +61,7 @@
 			//确认支付
 			async confirm() {
 				// 加载中
-				uni.showLoading({
-					title: '正在支付中哇^_^,等一下下~',
-					mask: true
-				});
+				uni.showLoading({ title: '正在支付中哇^_^,等一下下~' });
 				console.log('订单信息-->',this.user, this.order)
 				const { id,school_id,openid } = this.user
 				//  支付类别 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、4、旅游下单，5、水果下单
@@ -81,7 +78,7 @@
 					(good) && (type = good.type) || (type = null);
 					// 调用微信支付接口
 					console.log('微信支付', money)
-					let productIntro = `E校团支付中心-类型k${type},金额${money}`;
+					let productIntro = `E校拼支付中心-类型k${type},金额${money}`;
 					// 生成签名
 					let sign = await this.$wx_api.getPaySign(openid, productIntro, money)	// money
 					if(sign.statusCode != 200) { this.$api.msg('调用支付接口失败，请检查'); return; }	

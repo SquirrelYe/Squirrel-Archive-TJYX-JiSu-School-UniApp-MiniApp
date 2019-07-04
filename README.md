@@ -7,8 +7,9 @@
 软件架构说明
 
 #### 初始化服务器配置
-1. http请求地址: utils/req/index.js ---> config.baseUrl = 'http://127.0.0.1:11130';
-2. iconfont 字体文件： App.vue ---> @font-face = src: url('http://localhost:11130/iconfont/font.ttf');
+1. iconfont 字体文件： main.js ---> Vue.prototype.$host = 'https://www.exiaopin.cn/api';
+2. http请求地址: utils/req/index.js ---> config.baseUrl = 'http://127.0.0.1:11130';
+3. iconfont 字体文件： App.vue ---> @font-face = src: url('http://localhost:11130/iconfont/font.ttf');
 
 #### 安装教程
 

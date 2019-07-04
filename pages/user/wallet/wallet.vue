@@ -99,7 +99,7 @@
 				// 更新资产
 				console.log('微信支付', this.choosePrice)
 				const { id,openid } = this.user
-				let productIntro = 'E校团充值中心-个人账户充值'+ this.choosePrice
+				let productIntro = 'E校拼充值中心-个人账户充值'+ this.choosePrice
 				let price = this.choosePrice
 				// 生成签名
 				let sign = await this.$wx_api.getPaySign(openid, productIntro, price)

@@ -134,6 +134,7 @@
 		},
 		computed: { ...mapState(['user']) },
 		onLoad(option){
+			console.log('传递的值 -->create order',option)
 			this.host = this.$host
 			this.kind = option.kind
 			if(this.kind == 0){

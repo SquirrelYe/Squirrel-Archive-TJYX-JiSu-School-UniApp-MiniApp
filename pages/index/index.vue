@@ -106,46 +106,52 @@ export default {
 			swiperCurrent: 0,
 			swiperLength: 0,
 			carouselList: [],	// 滚动图片
-			bigImg:'/static/temp/ad1.jpg',		// 横置大图
+			bigImg:'static/temp/ad1.jpg',		// 横置大图
 			goodsList:[],		// 限时秒杀
 		};
 	},
 	computed: { ...mapState(['hasLogin', 'userInfo', 'user']) },
 	onLoad() { this.loadIndex(); this.host = this.$host; },
-	onShow() { this.init(); this.loadIndex(); },
+	onShow() { this.loadIndex(); },   // this.init(); 
+	onHide() { this.judgeInit = true; },
 	methods: {
 		// 初始化数据
-		init(){
-			this.swiperCurrent = 0;
-			this.swiperLength = 0;
-			this.carouselList = [];
-			this.bigImg = '/static/temp/ad1.jpg';
-			this.goodsList = []
-		},
+		// init(){
+		// 	this.swiperCurrent = 0;
+		// 	this.swiperLength = 0;
+		// 	this.carouselList = [];
+		// 	this.bigImg = 'static/temp/ad1.jpg';
+		// 	this.goodsList = []
+		// },
 		navToPage(url){
 			if (!this.hasLogin) { url = '/pages/public/login'; }
 			uni.navigateTo({ url });
 		},
-		// 加载首页设置
+		// 加载首页内容
 		async loadIndex(){
 			let sid = this.user.school_id || 4	// 新用户未登录默认加载天津城建大学数据
 			let index = await this.$apis.index.findAndCountAllBySchool(sid)
 			console.log('加载首页设置',index.data)
-			uni.showLoading({ title:'加载中^_^' })
+			// uni.showLoading({ title:'加载中^_^' })
+			// 暂存已有数据，判断是否刷新页面
+			let clist=[], bimg=[], glist=[];
 			index.data.rows.forEach(item => {
 				// 备注：此处的数据未对condition进行过滤
 				// 0.滚动图片、1.横置大图、2.限时秒杀
-				if(item.type ==0) this.carouselList.push(item) 
-				if(item.type ==1) this.bigImg = item.icon  // 有且只有一张大图
+				if(item.type ==0) clist.push(item) 
+				if(item.type ==1) bimg = item.icon  // 有且只有一张大图
 				if(item.type ==2){
 					let kind = item.kind // 0.考试、1.旅游、2.水果
-					// console.log(item)
-					if(kind == 0) this.goodsList.push(item.eitem) 
-					if(kind == 1) this.goodsList.push(item.jitem) 
-					if(kind == 2) this.goodsList.push(item.fitem) 	
-					console.log(this.goodsList)
+					if(kind == 0) glist.push(item.eitem) 
+					if(kind == 1) glist.push(item.jitem) 
+					if(kind == 2) glist.push(item.fitem) 
 				}				
 			})
+			if(this.carouselList != clist) this.carouselList = clist;
+			if(this.bigImg != bimg) this.bigImg = bimg;
+			if(this.goodsList != glist) this.goodsList = glist;
+			
+			
 			uni.hideLoading()
 			this.swiperLength = this.carouselList.length;
 			console.log('滚动图片',this.carouselList,'大图',this.bigImg,'限时秒杀',this.goodsList)
@@ -162,6 +168,12 @@ export default {
 			if (!this.hasLogin) { uni.navigateTo({ url:'/pages/public/login' }); return; }			
 			console.log(item)
 			// 根据judge ,item 的三级数据的内容判断页面跳转 judge 0、滚动图片，1、大图，2、限时秒杀
+			// if(item.mexam_id || item.eitem_id) uni.navigateTo({ url:`../exam/exam_list/exam_list?judge=1&id=${item.eitem_id||item.id}` })
+			if(judge ==0){
+				if(item.eitem_id) uni.navigateTo({ url:`../exam/exam_list/exam_list?judge=1&id=${item.eitem_id}` })
+				if(item.jitem_id) uni.navigateTo({ url:`../journey/journey_list/journey_list?judge=1&id=${item.jitem_id}` })
+				if(item.fitem_id) uni.navigateTo({ url:`../fruit/fruit_list/fruit_list?judge=1&id=${item.fitem_id}` })
+			}
 			if(judge ==2){				
 				if(item.mexam_id) uni.navigateTo({ url:`../exam/exam_list/exam_list?judge=1&id=${item.id}` })
 				if(item.mjourney_id) uni.navigateTo({ url:`../journey/journey_list/journey_list?judge=1&id=${item.id}` })

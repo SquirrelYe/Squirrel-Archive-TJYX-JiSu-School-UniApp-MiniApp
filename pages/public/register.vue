@@ -68,6 +68,7 @@
 	import { mapMutations, mapState } from 'vuex';
 	import apis from '../../utils/apis.js'
 	import wx_api from '../../utils/wx_api.js'
+	import conf from '../../utils/config.js'
 	
 	export default{
 		data(){
@@ -218,7 +219,7 @@
 					let user = await apis.user.cusCreate(mobile,openid,userinfo.nickName,password, schoolObj[index].id)
 					if(user.data[1]){
 						// 初始化资产信息
-						let stock = await apis.stock.create(user.data[0].id,0,0,0)  // u,m,s,c
+						let stock = await apis.stock.create(user.data[0].id,conf.free,0,0)  // u,m,s,c  新用户默认赠送conf.free块余额
 						// 获取新用户优惠券
 						let tic = await this.$apis.uticket.findOneBySchoolConditionType(schoolObj[index].id,0,0);   // sid,condition,type
 						const { id } = tic.data;
@@ -231,9 +232,17 @@
 							// 保存用户数据到 vuex
 							// this.getInfo(info.data);
 							console.log('vuex',this.userInfo)
-							this.$api.msg('注册成功') ;
-							this.logining = true;
-							uni.navigateBack();  
+							let that = this
+							uni.showModal({
+								title:'注册成功^_^',
+								content:`新用户优惠券&免费余额已到账`,
+								cancelText:'嗯嗯嗯',
+								confirmText:'我知道啦~',
+								success() {									
+									that.logining = true;
+									uni.navigateBack()
+								}
+							})							
 						}else{
 							this.$api.msg('注册失败，请联系客服');
 							this.logining = false;
