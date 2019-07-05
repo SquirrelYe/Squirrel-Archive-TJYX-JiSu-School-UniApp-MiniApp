@@ -97,7 +97,7 @@
 		onLoad(){
 			let _this = this
 			// 获取 openid
-			wx.login({
+			uni.login({
 			  complete: function (res) {
 				if (res.code) {
 				  console.log("JS_CODE\t------>\t" + res.code);
@@ -108,7 +108,7 @@
 			  }
 			})
 			// 查看是否授权
-			wx.getSetting({
+			uni.getSetting({
 			  success (res){
 				if (res.authSetting['scope.userInfo']) {
 				  // 已经授权，可以直接调用 getUserInfo 获取头像昵称
@@ -162,6 +162,7 @@
 			},
 			// 发送验证码
 			async toCode(){
+				if(!this.mobile){ this.$api.msg('不能输入空哦~'); return; }
 				var code=""; 
 				for(let i=0;i<6;i++) { code+=Math.floor(Math.random()*10); } 
 				this.code = code

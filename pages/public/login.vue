@@ -59,11 +59,11 @@
 		onLoad(){ 
 			let _this = this
 			// 查看是否授权
-			wx.getSetting({
+			uni.getSetting({
 			  success (res){
 				if (res.authSetting['scope.userInfo']) {
 				  // 已经授权，可以直接调用 getUserInfo 获取头像昵称
-				  wx.getUserInfo({
+				  uni.getUserInfo({
 					success: function(res) { _this.userinfo = res.userInfo }
 				  })
 				}
@@ -81,13 +81,15 @@
 			navBack(){ uni.navigateBack(); },
 			toRegist(){ uni.navigateTo({url:'/pages/public/register'}) },
 			async toLogin(){
+				const { mobile, password } = this;
+				if(!mobile || !password){ this.$api.msg('不能输入空哦~'); return; }
 				uni.showLoading({ title:'正在登录大部队，请稍等哈~',mask:true })
 				let _this = this
 				// 查看是否授权
-				wx.getSetting({
+				uni.getSetting({
 				  success (res){
 						if (res.authSetting['scope.userInfo']) {						
-							const {mobile, password, userinfo} = _this;
+							const { userinfo } = _this;
 							// 登录
 							_this.$apis.user.cusLogin(mobile,password)
 							.then(res=>{
