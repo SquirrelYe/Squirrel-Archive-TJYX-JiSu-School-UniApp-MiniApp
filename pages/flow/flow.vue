@@ -36,7 +36,7 @@ export default {
 			logisticList: [],
 			// 分页
 			off:0,
-			lim:6
+			lim:10
 		};
 	},
 	computed: { ...mapState(['user']) },
@@ -47,7 +47,7 @@ export default {
 		else this.headerPosition = 'absolute'; 
 	},
 	onPullDownRefresh() {
-		this.off = 0; this.lim = 6;
+		this.off = 0; this.lim = 10;
 		this.init(1)
 	},
 	onReachBottom() {
@@ -86,7 +86,7 @@ export default {
 				duration: 300,
 				scrollTop: 0
 			});
-			this.off = 0; this.lim = 6;
+			this.off = 0; this.lim = 10;
 			uni.showLoading({ title: '正在加载' });
 			this.init(0);
 		},
@@ -201,13 +201,18 @@ page,
 	}
 	.image-wrapper {
 		width: 100%;
-		height: 330upx;
+		height: 250upx;
 		border-radius: 10px;
 		overflow: hidden;
+		position: relative;
+		background-color: #fff;
 		image {
-			width: 100%;
-			height: 100%;
+			margin-top: 25upx;
+			margin-left: 20%;
+			width: 60%;
+			height: 200upx;
 			opacity: 1;
+			background-color: #fff
 		}
 	}
 	.title {

@@ -91,6 +91,7 @@
 <script>
 import listCell from '@/components/mix-list-cell';
 import { mapState } from 'vuex';
+import conf from '../../utils/config.js'
 let startY = 0,
 	moveY = 0,
 	pageAtTop = true;
@@ -168,7 +169,7 @@ export default {
 		},
 		// 分享
 		share() { console.log('分享') },
-		about(){ uni.makePhoneCall({ phoneNumber:'13032297225' }) },
+		about(){ uni.makePhoneCall({ phoneNumber:conf.phone }) },
 		/**
 		 *  会员卡下拉和回弹
 		 *  1.关闭bounce避免ios端下拉冲突
