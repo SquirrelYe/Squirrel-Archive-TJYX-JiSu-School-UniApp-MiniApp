@@ -83,7 +83,7 @@ export default  {
     },
     // 快递代取
     logistic: {
-		create(u,f,l,t,m,k,s) { return req.post('/ent/logistic', { 'judge': 1, 'user_id': u, 'from':f, 'location_id':l, 'total':t , 'money':m ,'key':k,'school_id':s }) },
+		create(u,f,l,t,m,i,k,s) { return req.post('/ent/logistic', { 'judge': 1, 'user_id': u, 'from':f, 'location_id':l, 'total':t , 'money':m , 'icon':i ,'key':k,'school_id':s }) },
         delete(id) { return req.post('/ent/logistic', { 'judge': 2, 'id': id }) },
         update(id, c) { return req.post('/ent/logistic', { 'judge': 3, 'id': id, 'condition': c }) },
         addTake(id, t, c) { return req.post('/ent/logistic', { 'judge': 3, 'id': id, 'take':t, 'condition': c }) },

@@ -36,7 +36,7 @@ export default {
 			logisticList: [],
 			// 分页
 			off:0,
-			lim:6
+			lim:10
 		};
 	},
 	computed: { ...mapState(['user']) },
@@ -47,7 +47,7 @@ export default {
 		else this.headerPosition = 'absolute'; 
 	},
 	onPullDownRefresh() {
-		this.off = 0; this.lim = 6;
+		this.off = 0; this.lim = 10;
 		this.init(1)
 	},
 	onReachBottom() {
@@ -86,7 +86,7 @@ export default {
 				duration: 300,
 				scrollTop: 0
 			});
-			this.off = 0; this.lim = 6;
+			this.off = 0; this.lim = 10;
 			uni.showLoading({ title: '正在加载' });
 			this.init(0);
 		},

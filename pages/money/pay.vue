@@ -101,8 +101,8 @@
 					const { timeStamp,tradeId } = sign.data;
 					// 写入订单					
 					if(this.type == 1){ //  1、发布代取快递
-						const { from,key,location_id,total } = this.order
-						let log = await this.$apis.logistic.create(id,from,location_id,total,money,key,school_id)
+						const { from,key,location_id,img,total } = this.order		
+						let log = await this.$apis.logistic.create(id,from,location_id,total,money,img,key,school_id)	// u,f,l,t,m,i,k,s
 						let tran = await this.$apis.cart.createLog(id,-1,1,money,log.data.id,1,location_id,2)
 						let payback = await this.$apis.cart.updateTimeTrade(tran.data.id,timeStamp,tradeId);  // 写入微信支付回调数据
 						console.log(log,tran)
@@ -179,8 +179,8 @@
 						}
 						// 写入订单					
 						if(this.type == 1){ //  1、发布代取快递
-							const { from,key,location_id,total } = this.order
-							let log = await this.$apis.logistic.create(id,from,location_id,total,money,key,school_id)
+							const { from,key,location_id,img,total } = this.order
+							let log = await this.$apis.logistic.create(id,from,location_id,total,money,img,key,school_id)
 							let tran = await this.$apis.cart.createLog(id,-1,1,money,log.data.id,1,location_id,2)
 							let payback = await this.$apis.cart.updateTimeTrade(tran.data.id,timeStamp,null);  // 写入微信支付回调数据
 							console.log(log,tran)
