@@ -9,7 +9,7 @@
 		</view>
 		<view class="goods-list">
 			<view v-for="(item, index) in logisticList" :key="index" class="goods-item" @click="confirm()">
-				<view class="image-wrapper"><image :src="item.cus.info.avatarUrl" lazy-load mode="aspectFill"></image></view>
+				<view class="image-wrapper"><image :src="item.cus.info.avatarUrl" lazy-load mode="scaleToFill"></image></view>
 				<text class="text-xs item-center">取件地址: {{item.from}}</text>
 				<text class="text-xs item-center">送货地址：{{item.location.dom}}</text>
 				<view class="price-box">
@@ -201,13 +201,18 @@ page,
 	}
 	.image-wrapper {
 		width: 100%;
-		height: 330upx;
+		height: 250upx;
 		border-radius: 10px;
 		overflow: hidden;
+		position: relative;
+		background-color: #fff;
 		image {
-			width: 100%;
-			height: 100%;
+			margin-top: 25upx;
+			margin-left: 20%;
+			width: 60%;
+			height: 200upx;
 			opacity: 1;
+			background-color: #fff
 		}
 	}
 	.title {

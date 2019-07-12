@@ -95,7 +95,7 @@ export default {
 			host:'',
 			// 分页数据
 			off:0,
-			lim:4
+			lim:10
 		};
 	},
 	computed: { ...mapState(['user']) },
@@ -105,11 +105,11 @@ export default {
 		this.loadData(this.tabCurrentIndex,0);
 	},
 	onShow() {
-		this.off = 0; this.lim = 4;
+		this.off = 0;
 		this.loadData(this.tabCurrentIndex,3)
 	},
 	onPullDownRefresh() {
-		this.off = 0; this.lim = 4;
+		this.off = 0; this.lim = 10;
 		this.loadData(this.tabCurrentIndex,1)
 	},
 	methods: {
@@ -162,7 +162,7 @@ export default {
 		//swiper 切换
 		changeTab(e) {
 			this.tabCurrentIndex = e.target.current;
-			this.off = 0; this.lim = 4;
+			this.off = 0; this.lim = 10;
 			this.loadData(this.tabCurrentIndex,0);
 		},
 		// 上拉加载

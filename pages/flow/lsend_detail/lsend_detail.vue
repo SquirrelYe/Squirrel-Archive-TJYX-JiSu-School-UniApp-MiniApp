@@ -3,7 +3,7 @@
 		<view class="bg-white padding margin-top-xs">
 			<view class="cu-steps">
 				<view class="cu-item" :class="item.judge <= lsend.condition ? 'text-orange' : ''" v-for="(item, index) in basicsList" :key="index">
-					<text :class="index > basics ? 'cuIcon-title' : 'cuIcon-' + item.icon"></text>
+					<text class="cuIcon-title"></text>
 					{{ item.name }}
 				</view>
 			</view>
@@ -32,11 +32,11 @@
 			<view class="title">收货地址</view>
 			<view class="title">{{lsend.arrive}}</view>
 		</view>
-		<view class="cu-form-group">
+		<view class="cu-form-group" v-if="lsend.condition >= 2">
 			<view class="title">重量</view>
 			<view class="title">{{lsend.weight}}kg</view>
 		</view>
-		<view class="cu-form-group">
+		<view class="cu-form-group" v-if="lsend.condition >= 2">
 			<view class="title">价格</view>
 			<view class="title">￥{{lsend.money}}</view>
 		</view>
@@ -57,10 +57,11 @@ export default {
 			basics: 3,
 			basicsList: [
 				// { icon: 'roundclosefill', name: '已取消',judge: -1 },
-				{ icon: 'usefullfill', name: '未领单',judge: 0 },
-				{ icon: 'radioboxfill', name: '已领单',judge :1 },
-				{ icon: 'subscription', name: '已送达',judge :3 },
-				{ icon: 'roundcheckfill', name: '已完成',judge :4 }
+				{ name: '未领单',judge: 0 },
+				{ name: '已接单',judge :1 },
+				{ name: '已取件',judge :2 },
+				{ name: '已入库',judge :3 },
+				{ name: '已邮寄',judge :4 }
 			],
 			loc:{},
 			lsend:{}
@@ -75,7 +76,14 @@ export default {
 	},
 	methods: {
 		// 拨打校园大使
-		call(phone){ uni.makePhoneCall({ phoneNumber:phone }) },
+		call(phone){ 
+			uni.showActionSheet({
+				itemList: [phone,'呼叫'],
+				success:function(res){
+				  if(res.tapIndex==1){ wx.makePhoneCall({ phoneNumber: phone }) }
+				}
+			})
+		},
 		// 格式化订单状态
 		orderConditionExp(condition){
 			let conditionTip = '';

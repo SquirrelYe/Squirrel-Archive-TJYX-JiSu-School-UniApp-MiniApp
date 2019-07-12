@@ -3,7 +3,7 @@
 		<view class="bg-white padding margin-top-xs">
 			<view class="cu-steps">
 				<view class="cu-item" :class="index <= log.condition ? 'text-orange' : ''" v-for="(item, index) in basicsList" :key="index">
-					<text :class="index > basics ? 'cuIcon-title' : 'cuIcon-' + item.icon"></text>
+					<text class="cuIcon-title"></text>
 					{{ item.name }}
 				</view>
 			</view>
@@ -54,6 +54,7 @@ export default {
 			basicsList: [
 				{ icon: 'usefullfill', name: '未领单' },
 				{ icon: 'radioboxfill', name: '已领单' },
+				{ icon: 'subscription', name: '已取件' },
 				{ icon: 'subscription', name: '待送达' },
 				{ icon: 'roundcheckfill', name: '已完成' }
 			],
@@ -71,8 +72,11 @@ export default {
 	methods: {
 		// 拨打校园大使
 		call(phone){
-			uni.makePhoneCall({
-				phoneNumber:phone
+			uni.showActionSheet({
+				itemList: [phone,'呼叫'],
+				success:function(res){
+				  if(res.tapIndex==1){ wx.makePhoneCall({ phoneNumber: phone }) }
+				}
 			})
 		},
 		// 格式化订单状态
@@ -82,8 +86,8 @@ export default {
 				case 0: conditionTip = '未接单'; break;
 				case 1: conditionTip = '已接单'; break;
 				case 2: conditionTip = '已取件'; break;
-				case 3: conditionTip = '已送达'; break;
-				case 4: conditionTip = '已评价'; break;
+				case 3: conditionTip = '待送达'; break;
+				case 4: conditionTip = '已完成'; break;
 			}
 			return {conditionTip};
 		},	
