@@ -149,6 +149,9 @@ export default {
 		async toFavorite() {
 			let jid = this.item.id
 			let uid = this.user.id
+			const { condition } = this.item;
+			if(condition == -1) { this.$api.msg('此产品已经下架啦~'); return; }
+			
 			uni.showLoading({ title:'收藏中，请稍后^_^' })			
 			if(this.favorite){   // 已经加入收藏，删除
 				let delFav = await this.$apis.favorite.delete(this.fid)
@@ -166,6 +169,7 @@ export default {
 		buy() {
 			const { condition } = this.item;
 			if(condition == -1) { this.$api.msg('此产品已经下架啦~'); return; }
+			
 			let data = JSON.stringify(this.item)
 			let obj = JSON.stringify({ number: 1,price:this.item.price,other:null })
 			// 支付类别 0、资金充值、1、发布代取快递，2、快递代发、3、考试下单、4、旅游下单，5、水果下单
@@ -173,6 +177,9 @@ export default {
 		},
 		// 加入购物车  
 		async toCart() {
+			const { condition } = this.item;
+			if(condition == -1) { this.$api.msg('此产品已经下架啦~'); return; }
+			
 			uni.showLoading()
 			// 类别*（-3、开卡，-2、代发，-1、代取，0.考试，1.旅游，2.水果）
 			let ecart = await this.$apis.cart.createJourneyCart(this.user.id,1,1,this.item.price,this.item.id,0,0)   // u,t,n,p,e,c,j

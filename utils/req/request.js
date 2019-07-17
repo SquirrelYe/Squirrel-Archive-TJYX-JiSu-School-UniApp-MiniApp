@@ -38,11 +38,12 @@ export default class Request {
 				let statusCode = response.statusCode
 				response.config = _config
 				response = Request.requestComFun(response)
-				if (statusCode === 200) { // 成功
-					resolve(response)
-				} else {					
-					reject(response)
-				}
+				// 成功
+				if (statusCode === 200) { resolve(response) } 
+				// 状态码 250 用户另一处代登录，被迫下线
+				else if (statusCode === 250) { this.toLogin() }
+				else if (statusCode === 251) { this.redisError() }
+				else { reject(response) }
 			}
 			let afC = { ...this.config, ...options }
 			_config = { ...afC, ...Request.requestBeforeFun(afC) }
@@ -62,5 +63,32 @@ export default class Request {
 		options.data = { 'ceshi': true, ...data }
 		options.method = 'POST'
 		return this.request(options)
+	}
+	// --------------------- 状态码响应方法 --------------------------------
+	// 250 --> 单一登录 to login
+	toLogin(){
+		uni.showModal({
+			title:'被迫下线',
+			content:'用户在另一处登录',
+			complete() {
+				// 清除缓存
+				uni.clearStorage()
+				// 重定向
+				uni.redirectTo({ url:"/pages/public/login" })
+			}
+		})
+	}
+	// 251 --> redis服务器出现错误
+	redisError(){
+		uni.showModal({
+			title: '服务器出错',
+			content: '请等待程序猿哥哥修复~',
+			complete: () => {
+				// 清除缓存
+				uni.clearStorage()
+				// 重定向
+				uni.redirectTo({ url:"/pages/public/login" })
+			}
+		});
 	}
 }

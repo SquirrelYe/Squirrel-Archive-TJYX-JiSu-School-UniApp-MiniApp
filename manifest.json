@@ -58,7 +58,8 @@
         "usingComponents" : true,
         "appid" : "wxa61d29a0f35c452b",
         "setting" : {
-            "urlCheck" : false
+            "urlCheck" : false,
+            "minified" : true
         },
         "permission" : {
             "scope.userLocation" : {

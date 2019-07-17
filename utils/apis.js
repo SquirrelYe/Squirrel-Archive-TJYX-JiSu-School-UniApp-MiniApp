@@ -325,6 +325,7 @@ export default  {
 		create(u,t,c) { return req.post('/ent/user_ticket', { 'judge': 1, 'user_id': u, 'ticket_id': t,'condition': c }) },
         delete(id) { return req.post('/ent/user_ticket', { 'judge': 2, 'id': id }) },
         update(id, c) { return req.post('/ent/user_ticket', { 'judge': 3, 'id': id, 'condition': c }) },
+		// 新用户优惠券赠送 数量定义在后台 user_ticket 默认为 3		
 		newerGetTicket(uid,tid,c) { return req.post('/ent/user_ticket', { 'judge': 4, 'user_id': uid, 'ticket_id': tid, 'condition': c }) },
 		
 		findAndCountAllByUser(uid,o,l) { return req.post('/ass/user_ticket', { 'judge': 1, 'user_id': uid, 'offset': o,'limit':l }) },

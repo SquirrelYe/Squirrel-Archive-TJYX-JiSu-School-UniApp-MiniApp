@@ -84,26 +84,26 @@
 				const { mobile, password } = this;
 				if(!mobile || !password){ this.$api.msg('不能输入空哦~'); return; }
 				uni.showLoading({ title:'正在登录大部队，请稍等哈~',mask:true })
-				let _this = this
+				let that = this
 				// 查看是否授权
 				uni.getSetting({
 				  success (res){
 						if (res.authSetting['scope.userInfo']) {						
-							const { userinfo } = _this;
+							const { userinfo } = that;
 							// 登录
-							_this.$apis.user.cusLogin(mobile,password)
+							that.$apis.user.cusLogin(mobile,password)
 							.then(res=>{
 								if(res.statusCode === 200){
-									// console.log(userinfo, res.data.token, res.data)
+									console.log(res.data)
 									let obj = { 'userinfo':userinfo, 'token':res.data.token, 'user':res.data}
-									_this.login(obj);
-									_this.logining = true;
-									uni.navigateBack();  
-								}else{ }
+									that.login(obj);
+									that.logining = true;
+									uni.switchTab({ url: '/pages/user/user' });
+								}
 							})
 							.catch(err=>{								
-								_this.$api.msg('账号或密码错误');
-								_this.logining = false;
+								that.$api.msg('账号或密码错误');
+								that.logining = false;
 							})
 							
 						}

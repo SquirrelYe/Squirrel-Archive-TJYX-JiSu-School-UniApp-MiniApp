@@ -150,6 +150,9 @@ export default {
 		async toFavorite() {
 			let eid = this.item.id
 			let uid = this.user.id
+			const { condition } = this.item;
+			if(condition == -1) { this.$api.msg('此产品已经下架啦~'); return; }
+			
 			uni.showLoading({ title:'收藏中，请稍后^_^' })			
 			if(this.favorite){   // 已经加入收藏，删除
 				let delFav = await this.$apis.favorite.delete(this.fid)
@@ -167,6 +170,7 @@ export default {
 		buy() {
 			const { condition,price } = this.item;
 			if(condition == -1) { this.$api.msg('此产品已经下架啦~'); return; }
+			
 			uni.showLoading({ title:'准备订单中~',mask:true})
 			let data = JSON.stringify(this.item)
 			let obj = JSON.stringify({ number: 1,price:price,other:null })
@@ -176,6 +180,9 @@ export default {
 		},
 		// 加入购物车
 		async toCart() {
+			const { condition } = this.item;
+			if(condition == -1) { this.$api.msg('此产品已经下架啦~'); return; }
+			
 			const { id,price } = this.item;
 			uni.showLoading()
 			let ecart = await this.$apis.cart.createExamCart(this.user.id,0,1,price,id,0,0)   // u,t,n,p,e,c,j

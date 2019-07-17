@@ -149,6 +149,9 @@ export default {
 		async toFavorite() {
 			let fid = this.item.id
 			let uid = this.user.id
+			const { condition } = this.item;
+			if(condition == -1) { this.$api.msg('此产品已经下架啦~'); return; }
+			
 			uni.showLoading({ title:'收藏中，请稍后^_^' })			
 			if(this.favorite){   // 已经加入收藏，删除
 				let delFav = await this.$apis.favorite.delete(this.fid)
@@ -173,6 +176,9 @@ export default {
 		},
 		// 加入购物车
 		async toCart() {
+			const { condition } = this.item;
+			if(condition == -1) { this.$api.msg('此产品已经下架啦~'); return; }
+			
 			uni.showLoading()
 			// 类别*（-3、开卡，-2、代发，-1、代取，0.考试，1.旅游，2.水果）
 			let fcart = await this.$apis.cart.createFruitCart(this.user.id,2,1,this.item.price,this.item.id,0,0)   // u,t,n,p,e,c,j

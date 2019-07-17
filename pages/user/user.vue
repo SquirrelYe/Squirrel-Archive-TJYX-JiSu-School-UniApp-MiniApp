@@ -33,7 +33,7 @@
 		>
 			<image class="arc" src="/static/arc.png"></image>
 
-			<view class="tj-sction">
+			<view class="tj-sction" @click="navTo('/pages/user/wallet/wallet')">
 				<view class="tj-item">
 					<text class="num">{{ stock.money || 0 }}</text>
 					<text>余额</text>
@@ -81,7 +81,7 @@
 				</block>
 				<list-cell icon="icon-iconfontweixin" iconColor="#e07472" title="我的钱包" @eventClick="navTo('/pages/user/wallet/wallet')" tips="你的小金库"></list-cell>
 				<list-cell icon="icon-dizhi" iconColor="#5fcda2" title="地址管理" @eventClick="navTo('/pages/address/address')"></list-cell>
-				<!-- <list-cell icon="icon-share" iconColor="#9789f7" open-type="share" title="分享" tips="人人为我，我为人人" @eventClick="share()"></list-cell> -->
+				<list-cell icon="icon-share" iconColor="#9789f7" open-type="share" title="分享" tips="人人为我，我为人人" @eventClick="share()"></list-cell>
 				<list-cell icon="icon-shezhi1" iconColor="#e07472" title="设置" @eventClick="navTo('/pages/set/set')"></list-cell>
 				<list-cell icon="icon-bangzhu" iconColor="#54b4ef" title="联系客服" @eventClick="about()"  open-type="contact" border=""></list-cell>
 			</view>
@@ -168,8 +168,15 @@ export default {
 			uni.navigateTo({ url });
 		},
 		// 分享
-		share() { console.log('分享') },
-		about(){ uni.makePhoneCall({ phoneNumber:conf.phone }) },
+		share() { console.log('分享'); this.$api.msg('请点击右上角三个点点来分享喔~') },
+		about(){
+			uni.showActionSheet({
+				itemList: [conf.phone,'呼叫'],
+				success:(res)=>{
+				  if(res.tapIndex==1){ wx.makePhoneCall({ phoneNumber: conf.phone }) }
+				}
+			})
+		 },
 		/**
 		 *  会员卡下拉和回弹
 		 *  1.关闭bounce避免ios端下拉冲突
