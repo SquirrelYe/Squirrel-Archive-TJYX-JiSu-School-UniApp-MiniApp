@@ -43,6 +43,10 @@
 		<view class="cu-form-group align-start" v-if="type == -1">
 			<textarea maxlength="-1" disabled :placeholder="log.key"></textarea>
 		</view>
+		<view class="cu-form-group align-start" v-if="data.judgec == 3">
+			<view class="title">评价</view>
+			<view class="title">{{data.callback}}</view>
+		</view>
 		<view class="cu-form-group" v-if="data.judgec == 2">
 			<view class="title">评价</view>
 			<view class="title text-red" @tap="showModal" data-target="ChooseModal">发表评论</view>

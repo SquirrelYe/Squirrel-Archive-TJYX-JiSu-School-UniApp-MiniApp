@@ -72,7 +72,7 @@
 		</view>
 
 		<!-- 底部操作菜单 -->
-		<view class="page-bottom">
+		<view class="page-bottom" v-if="judgeButtom">
 			<navigator url="/pages/index/index" open-type="switchTab" class="p-b-btn">
 				<text class="yticon icon-xiatubiao--copy"></text>
 				<text>首页</text>
@@ -110,7 +110,8 @@ export default {
 			shareList: [],
 			callbackNumber:null,
 			callbackList:[],
-			fid:null,  // 收藏信息
+			fid:null,  					// 收藏信息
+			judgeButtom:false			// 判断显示底部栏
 			// 图文详情  <rich-text :nodes="desc"></rich-text>
 			// desc: `
 			// 		<div style="width:100%">
@@ -139,9 +140,10 @@ export default {
 		this.callbackNumber = call.data.count || 0
 		this.callbackList = call.data.rows.filter(item=>{ item = Object.assign(item, this.orderTimeExp(item.updated_at)); return item; });	
 		console.log('考试项目',this.item,'评价清单',this.callbackList,'收藏',fav.data)
-		this.shareList = await this.$api.json('shareList');  // 载入分享		
-		fav.data ? this.favorite = true:this.favorite = false;		// 判断收藏显示
-		fav.data ? this.fid = fav.data.id: this.fid =null;		// 暂存收藏信息
+		// this.shareList = await this.$api.json('shareList');  				// 载入分享		
+		fav.data ? this.favorite = true:this.favorite = false;					// 判断收藏显示
+		fav.data ? this.fid = fav.data.id: this.fid =null;						// 暂存收藏信息
+		this.judgeButtom ? this.judgeButtom = false: this.judgeButtom = true;	// 判断显示底部栏
 	},
 	methods: {
 		//分享
