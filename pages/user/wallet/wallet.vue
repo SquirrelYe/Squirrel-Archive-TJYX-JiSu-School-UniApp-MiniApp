@@ -25,7 +25,9 @@
 			<view class="con">
 				<view class="left">
 					<text class="title">{{item.ticket.title}}</text>
-					<text class="time">有效期至{{item.end}}</text>
+					<text class="time" v-if="item.condition === -1">有效期至{{item.end}}(已使用)</text>
+					<text class="time" v-else-if="item.condition !== -1 && item.isTimeOut">有效期至{{item.end}}(已过期)</text>
+					<text class="time" v-else>有效期至{{item.end}}</text>
 				</view>
 				<view class="right">
 					<text class="price" style="color: #707070;" v-if="item.condition === -1 || item.isTimeOut">{{item.ticket.short}}</text>
@@ -137,8 +139,9 @@
 			//时间格式化
 			orderExp(item){  // 此处item 为 ticket
 				let end = item.end.split('T')[0]
-				let now = new Date().toLocaleDateString()
-				let final = new Date(end).toLocaleDateString()
+				let now = new Date().getTime();
+				let final = new Date(end).getTime();
+				console.log(now,final,now>final);
 				let isTimeOut = now >= final
 				return {end,isTimeOut};
 			}

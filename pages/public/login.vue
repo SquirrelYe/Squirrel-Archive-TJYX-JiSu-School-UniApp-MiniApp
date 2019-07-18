@@ -85,30 +85,30 @@
 				if(!mobile || !password){ this.$api.msg('不能输入空哦~'); return; }
 				uni.showLoading({ title:'正在登录大部队，请稍等哈~',mask:true })
 				let that = this
-				// 查看是否授权
-				uni.getSetting({
-				  success (res){
-						if (res.authSetting['scope.userInfo']) {						
-							const { userinfo } = that;
-							// 登录
-							that.$apis.user.cusLogin(mobile,password)
-							.then(res=>{
-								if(res.statusCode === 200){
-									console.log(res.data)
-									let obj = { 'userinfo':userinfo, 'token':res.data.token, 'user':res.data}
-									that.login(obj);
-									that.logining = true;
-									uni.switchTab({ url: '/pages/user/user' });
-								}
-							})
-							.catch(err=>{								
-								that.$api.msg('账号或密码错误');
-								that.logining = false;
-							})
-							
-						}
+				// 登录
+				that.$apis.user.cusLogin(mobile,password)
+				.then(res=>{
+					if(res.statusCode === 200){
+						console.log(res.data)
+						const { info,token } = res.data
+						let obj = { 'userinfo':info, 'token':token, 'user':res.data}
+						that.login(obj);
+						that.logining = true;
+						uni.switchTab({ url: '/pages/user/user' });
 					}
 				})
+				.catch(err=>{								
+					that.$api.msg('账号或密码错误');
+					that.logining = false;
+				})
+				// 查看是否授权
+				// uni.getSetting({
+				//   success (res){
+				// 		if (res.authSetting['scope.userInfo']) {						
+				// 			const { userinfo } = that;
+				// 		}
+				// 	}
+				// })
 			}
 		},
 
