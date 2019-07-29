@@ -1,4 +1,8 @@
 import store from '../../store/index'
+import conf from '../config.js'
+// JWT
+import jwt from '../../node_modules/jsonwebtoken/index.js'
+
 export default class Request {
 	constructor(arg) { this.request(arg) }
 	config = {
@@ -43,6 +47,7 @@ export default class Request {
 				if (statusCode === 200) { resolve(response) } 
 				// 状态码 250 用户另一处代登录，被迫下线
 				else if (statusCode === 250) { this.toLogin() }
+				else if (statusCode === 431) { this.tokenErr() }
 				else if (statusCode === 251) { this.redisError() }
 				else { reject(response) }
 			}
@@ -61,7 +66,9 @@ export default class Request {
 	// POST 请求
 	post(url, data, options = {}) {
 		options.url = url
-		options.data = { 'ceshi': true, ...data }
+		// 针对请求的数据进行 sha-256 加密
+		let encrp = jwt.sign(data , conf.interface ,{ expiresIn:'10s'});
+		options.data = { 'data' : encrp }
 		options.method = 'POST'
 		return this.request(options)
 	}
@@ -71,6 +78,20 @@ export default class Request {
 		uni.showModal({
 			title:'被迫下线',
 			content:'用户在另一处登录',
+			complete() {
+				// 清除缓存
+				store.commit('logout')
+				uni.clearStorage()
+				// 重定向
+				uni.redirectTo({ url:"/pages/public/login" })
+			}
+		})
+	}
+	// 431 --> token失效
+	tokenErr(){
+		uni.showModal({
+			title:'被迫下线',
+			content:'登录状态失效',
 			complete() {
 				// 清除缓存
 				store.commit('logout')

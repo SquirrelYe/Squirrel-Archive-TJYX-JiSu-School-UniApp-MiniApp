@@ -3,5 +3,7 @@ module.exports={
 	edition:'1.0.0',
 	host: 'https://www.exiaopin.cn/v1',
 	// host: 'http://localhost:11130',
-	phone:'02258716565'
+	phone:'02258716565',
+	
+	interface : 'interface--jsxy--yx',          // 接口 密钥
 }

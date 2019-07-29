@@ -66,7 +66,7 @@
 			<view class="d-header"><text>图文详情</text></view>
 			<rich-text >
 				<div style="width:100%">
-					<img style="width:100%;display:block;" :src="host+'/'+item.detail" />
+					<image style="width:100%;" mode="widthFix"  :src="host+'/'+item.detail"></image>
 				</div>				
 			</rich-text>
 		</view>
