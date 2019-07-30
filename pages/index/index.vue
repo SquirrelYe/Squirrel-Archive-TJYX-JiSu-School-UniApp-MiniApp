@@ -114,6 +114,11 @@ export default {
 	onLoad() { this.loadIndex(); this.host = this.$host; },
 	onShow() { this.loadIndex(); },   // this.init(); 
 	onHide() { this.judgeInit = true; },
+	async onPullDownRefresh() { 
+		await this.loadIndex(); 
+		uni.stopPullDownRefresh();
+		this.$api.msg('刷新成功^_^');
+	},
 	methods: {
 		// 初始化数据
 		// init(){

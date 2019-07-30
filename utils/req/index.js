@@ -10,6 +10,7 @@ req.setConfig((config) => {
 	config.baseUrl = conf.host
 	config.header = { 
 		edition: conf.edition,	// 请求头添加 应用版本信息
+		tourist: true
 	}
 	return config
 })

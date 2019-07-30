@@ -55,6 +55,8 @@ Vue.prototype.$msg_api = msg_api;
 // Vue.prototype.$host = 'http://127.0.0.1:11130';   
 // Vue.prototype.$host = 'https://jisu.yexuan.site/api';
 Vue.prototype.$host = conf.host;
+// 全局订单写入
+Vue.prototype.$ctran = apis.tran.create;
 
 App.mpType = 'app'
 

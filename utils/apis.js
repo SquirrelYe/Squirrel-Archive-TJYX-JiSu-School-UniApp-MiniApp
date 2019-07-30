@@ -268,14 +268,11 @@ export default  {
     },
     // 总订单交易
     tran: {
-        delete(id) { return req.post('/ent/tran', { 'judge': 2, 'id': id }) },
-
-        findAndCountAll(o, l) { return req.post('/ass/tran', { 'judge': 0, 'offset': o, 'limit': l }) },
-        findOneById(id) { return req.post('/ass/tran', { 'judge': 1, 'id': id }) },
-        findByUserId(u, o, l) { return req.post('/ass/tran', { 'judge': 2, 'user_id': u, 'offset': o, 'limit': l }) },
-        findByExam(e, o, l) { return req.post('/ass/tran', { 'judge': 3, 'eitem_id': e, 'offset': o, 'limit': l }) },
-        findByJourney(j, o, l) { return req.post('/ass/tran', { 'judge': 4, 'jitem_id': j, 'offset': o, 'limit': l }) },
-        findByFruit(f, o, l) { return req.post('/ass/tran', { 'judge': 5, 'fitem_id': f, 'offset': o, 'limit': l }) },
+        findAndCountAll(id) { return req.post('/ent/tran', { 'judge': 0 }) },
+        create(u, n, m, d) { return req.post('/ent/tran', { 'judge': 1, 'user_id': u, 'number':n, 'money':m, 'detail':d }) },
+        delete(id) { return req.post('/ent/tran', { 'judge': 2, 'id':id }) },
+        update(id, u, n, m, d) { return req.post('/ent/tran', { 'judge': 3, 'id': id, 'user_id': u, 'number':n, 'money':m, 'detail':d }) },
+        findByUser(user_id) { return req.post('/ent/tran', { 'judge': 4, 'user_id': user_id }) }
     },
     // 资金信息
     stock: {

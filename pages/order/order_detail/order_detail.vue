@@ -40,6 +40,10 @@
 			<view class="title">优惠券</view>
 			<view class="title">{{data.ticket.title}}  ￥{{data.ticket.short}}</view>
 		</view>
+		<view class="cu-form-group" v-if="data.other">
+			<view class="title">备注</view>
+			<view class="title">{{data.other}}</view>
+		</view>
 		<view class="cu-form-group align-start" v-if="type == -1">
 			<textarea maxlength="-1" disabled :placeholder="log.key"></textarea>
 		</view>

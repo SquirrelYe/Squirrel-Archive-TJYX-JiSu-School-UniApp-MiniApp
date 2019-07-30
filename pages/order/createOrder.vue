@@ -167,9 +167,9 @@
 			async getTicket(type){   // type传递给 toggleMask()
 				let tic = await this.$apis.uticket.findAndCountAllByUser(this.user.id,0,100)
 				this.ticketList = tic.data.rows.filter(item=>{ 
-					let now = new Date().toLocaleDateString()
-					let end = new Date(item.ticket.end.split('T')[0]).toLocaleDateString()
-					if(item.condition == 0 && now <= end){ item = Object.assign(item, this.orderTimeExp(item.ticket.end));  return item; }
+					let now = new Date().getTime();
+					let final = new Date(item.ticket.end).getTime();
+					if(item.condition == 0 && now <= final){ item = Object.assign(item, this.orderTimeExp(item.ticket.end));  return item; }
 				});	
 				console.log('获取优惠券信息',this.ticketList)
 				if(this.ticketList.length != 0) this.toggleMask(type);

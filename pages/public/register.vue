@@ -175,6 +175,9 @@
 				this.$api.msg('验证信息发送成功！');
 				this.judgeCode = true
 				
+				// 测试写入订单
+				// let tran = await this.$ctran(1,1,1,1) // u, n, m, d
+				
 				// 测试微信支付
 				// let openid = this.openid
 				// let productIntro = '腾讯充值中心-QQ会员充值'
@@ -229,6 +232,8 @@
 						// 上传微信信息
 						let u = this.userinfo;
 						let info = await apis.info.creat(user.data[0].id, u.nickName, u.avatarUrl, u.gender, u.province, u.city, u.country)
+						// 写入交易
+						let tran = await this.$ctran(user.data[0].id,1,conf.free,'【新用户】赠送新用户体验余额') // u, n, m, d						
 						if(info.statusCode === 200){
 							// 保存用户数据到 vuex
 							// this.getInfo(info.data);
@@ -240,7 +245,7 @@
 								content:`新用户优惠券&免费余额已到账`,
 								cancelText:'嗯嗯嗯',
 								confirmText:'我知道啦',
-								success() {									
+								complete() {									
 									that.logining = true;
 									uni.navigateBack()
 								}

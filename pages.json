@@ -6,6 +6,7 @@
 			"style": {
 				"navigationBarTitleText": "E校拼",
 				// "navigationStyle": "custom",
+				"enablePullDownRefresh":true,
 				"app-plus": {
 					"titleNView": {
 						"type": "transparent",

@@ -213,7 +213,8 @@ export default {
 		//订单时间格式化
 		orderTimeExp(time){
 			let tmp = time.split('T')
-			let date = tmp[0] + '  '+ tmp[1].split(':')[0]+ ':' + tmp[1].split(':')[1]
+			// 唉 下面小时数 +8 难受啊
+			let date = tmp[0] + '  '+ (Number(tmp[1].split(':')[0]) + 8) + ':' + tmp[1].split(':')[1]
 			return {date};
 		}
 	}

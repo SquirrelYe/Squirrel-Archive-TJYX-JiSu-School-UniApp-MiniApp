@@ -111,13 +111,15 @@
 				console.log('sign-->',sign,'sig--->',sig)
 				if(err){ this.$api.msg('支付失败啦~'); return; }
 				else{
-					this.$api.msg('支付成功啦~');
 					let cart = await this.$apis.cart.createStockCart( id,this.choosePrice,productIntro )  // 写入交易
 					let stock = await this.$apis.stock.findByUserId(id)
 					let m = Number(stock.data.money) + Number(this.choosePrice);
 					let s = Number(stock.data.score)
 					let final = await this.$apis.stock.updateMoneyScore(stock.data.id,m,s)
+					// 写入交易
+					await this.$ctran(id,1,this.choosePrice,`【帐户充值】帐户充值${this.choosePrice}`) // u, n, m, d
 					
+					this.$api.msg('支付成功啦~');
 					this.init();	// 重新刷新页面
 					this.hideModal()
 					console.log('sign-->',sign,'callback-->',sig)
