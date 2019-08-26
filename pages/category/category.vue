@@ -13,7 +13,7 @@
 			<view class="content">
 				<text class="title">{{item.title}}</text>
 				<view class="img-wrapper">
-					<image class="pic" :src="item.icon" lazy-load></image>
+					<image class="pic" :src="host+'/'+item.icon" lazy-load></image>
 					<view class="cover" v-if="item.condition === -1"> 活动结束 </view>
 				</view>
 				<text class="introduce">
@@ -29,6 +29,7 @@
 	export default {
 		data() {
 			return {
+				host: this.$host,
 				category:[],
 				off:0,
 				lim:4
@@ -50,7 +51,8 @@
 		methods: {
 			// 初始化页面  judge { 0.初始化、 1.下拉刷新、 2.上拉加载}
 			init(judge){ 
-				const {school_id, type} = this.user
+				const {school_id} = this.user;
+				let type = 0;
 				this.$apis.activity.findAllBySchoolType(school_id,type,this.off,this.lim).then(res=>{ 
 					console.log(res.data); 
 					if(judge === 0){ this.category = res.data.rows; }

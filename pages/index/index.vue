@@ -34,7 +34,7 @@
 			</view>
 			<view class="cate-item" @click="navToPage('/pages/exam/exam')">
 				<image src="/static/kind/exam.png"></image>
-				<text>考试</text>
+				<text>商品</text>
 			</view>
 			<view class="cate-item" @click="navToPage('/pages/fruit/fruit')">
 				<image src="/static/kind/fruit.png"></image>
