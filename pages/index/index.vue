@@ -36,13 +36,13 @@
 				<image src="/static/kind/exam.png"></image>
 				<text>商品</text>
 			</view>
-			<view class="cate-item" @click="navToPage('/pages/fruit/fruit')">
-				<image src="/static/kind/fruit.png"></image>
-				<text>水果</text>
-			</view>
 			<view class="cate-item" @click="navToPage('/pages/journey/journey')">
 				<image src="/static/kind/journey.png"></image>
 				<text>旅游</text>
+			</view>
+			<view class="cate-item" @click="navToPage('/pages/fruit/fruit')">
+				<image src="/static/kind/fruit.png"></image>
+				<text>其他</text>
 			</view>
 		</view>
 		

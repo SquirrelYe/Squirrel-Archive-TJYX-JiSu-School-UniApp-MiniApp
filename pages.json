@@ -50,7 +50,7 @@
 		{
 			"path": "pages/exam/exam",
 			"style": {
-				"navigationBarTitleText": "考试",				
+				"navigationBarTitleText": "商品",				
 				"app-plus": {
 					"bounce": "none"
 				}
@@ -230,7 +230,7 @@
         ,{
             "path" : "pages/fruit/fruit",
             "style" : {
-				"navigationBarTitleText": "水果"
+				"navigationBarTitleText": "其他"
 			}
         }
         ,{

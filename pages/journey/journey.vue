@@ -44,7 +44,11 @@ export default {
 			let jitem = await this.$apis.jitem.findAllBySchool(school_id,0,100)
 			jitem.data.rows.forEach(item => { if(item.condition ==0 ) this.tlist.push(item) })
 			// 初始化选中
-			this.currentId = this.flist[0].id
+			try{
+				this.currentId = this.flist[0].id
+			}catch(e){
+				console.log('暂无产品')
+			}
 			console.log(this.flist,this.slist,this.tlist)
 		},
 		//一级分类点击

@@ -47,7 +47,7 @@ export default {
 				msg:null
 			},
 			addressData: {
-				name: '点击选择收货地址',
+				name: '点击选择取货地址',
 				phone: '',
 				school: '',
 				dom: '',
