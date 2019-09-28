@@ -1,0 +1,19 @@
+{
+  "name": "TJYX_JiSu_School_Uniapp_WeiXinApp",
+  "version": "1.0.0",
+  "description": "#### 介绍 极速校园，用户微信小程序部分，天津毅襄科技发展有限公司。",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitee.com/git_x/TJYX_JiSu_School_Uniapp_WeiXinApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jsonwebtoken": "8.5.1"
+  }
+}
