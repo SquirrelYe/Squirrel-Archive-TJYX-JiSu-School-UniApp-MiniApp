@@ -14,6 +14,7 @@ export default  {
     user: {
         delete(id) { return req.post('/ent/user', { 'judge': 2, 'id': id }) },
         update(id, c) { return req.post('/ent/user', { 'judge': 3, 'id': id, 'condition': c }) },
+		forgetPass(phone,pass) { return req.post('/ent/user', { 'judge': 9, 'phone': phone, 'pass': pass }) },
         login(n, p) { return req.post('/ent/user', { 'judge': 5, 'name': n, 'pass': p }) },
         creatAdmin(n, p, m, c, s) { return req.post('/ent/user', { 'judge': 1, 'name': n, 'pass': p, 'mail': m, 'phone': c, 'school_id': s, 'type': 1, 'condition': 0 }) },
 		cusCreate(m,o,n,p,s) { return req.post('/ent/user', { 'judge': 7, 'phone':m, 'openid':o, 'name':n, 'pass': p ,'school_id': s}) },

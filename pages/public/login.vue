@@ -42,6 +42,10 @@
 			还没有账号?
 			<text @click="toRegist">马上注册</text>
 		</view>
+		<view class="forget-section">
+			密码忘记了?
+			<text @click="toForget">找回密码</text>
+		</view>
 	</view>
 </template>
 
@@ -109,7 +113,9 @@
 				// 		}
 				// 	}
 				// })
-			}
+			},
+			// 跳转找回密码
+			toForget(){ uni.navigateTo({url:'/pages/public/forget'}) },
 		},
 
 	}
@@ -233,15 +239,22 @@
 		}
 	}
 	.forget-section{
+		position:absolute;
+		left: 0;
+		bottom: 50upx;
+		width: 100%;
 		font-size: $font-sm+2upx;
-		color: $font-color-spec;
+		color: $font-color-base;
 		text-align: center;
-		margin-top: 40upx;
+		text{
+			color: $font-color-spec;
+			margin-left: 10upx;
+		}
 	}
 	.register-section{
 		position:absolute;
 		left: 0;
-		bottom: 50upx;
+		bottom: 100upx;
 		width: 100%;
 		font-size: $font-sm+2upx;
 		color: $font-color-base;
