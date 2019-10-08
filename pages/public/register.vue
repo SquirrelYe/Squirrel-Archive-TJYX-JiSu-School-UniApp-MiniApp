@@ -224,8 +224,8 @@
 					if(user.data[1]){
 						// 初始化资产信息
 						let stock = await apis.stock.create(user.data[0].id,conf.free,0,0)  // u,m,s,c  新用户默认赠送conf.free块余额
-						// 获取新用户优惠券
-						let tic = await this.$apis.uticket.findOneBySchoolConditionType(schoolObj[index].id,0,0);   // sid,condition,type
+						// 获取新用户优惠券  type -1,新用户专享，每个学校默认只有一个
+						let tic = await this.$apis.uticket.findOneBySchoolConditionType(schoolObj[index].id,0,-1);   // sid,condition,type
 						const { id } = tic.data;
 						let newUserTic = await this.$apis.uticket.newerGetTicket(user.data[0].id,id,0)	// uid,tid,c
 						console.log(tic,newUserTic)
