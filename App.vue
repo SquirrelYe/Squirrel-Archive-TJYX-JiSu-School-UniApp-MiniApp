@@ -14,14 +14,15 @@ export default {
 		if (hasLogin) { console.log('用户已登录-->',userInfo,user) }
 		
 		let _this = this
-		const updateManager = wx.getUpdateManager()
+		const updateManager = uni.getUpdateManager()
 		updateManager.onCheckForUpdate(function (res) {
+			console.warn(res)
 		  // 请求完新版本信息的回调
 		  if(res.hasUpdate) _this.$api.msg('有新版本发布')
 		  // else _this.$api.msg('暂无新版本')
 		})
 		updateManager.onUpdateReady(function () {
-		  wx.showModal({
+		  uni.showModal({
 			title: '更新提示',
 			content: '新版本已经准备好，是否重启应用？',
 			success: function (res) {
