@@ -4,8 +4,9 @@
 			<view class="nav-item" :class="{ current: filterIndex === -1 }" @click="tabClick(-1)">全部订单</view>
 			<view class="nav-item" :class="{ current: filterIndex === 0 }" @click="tabClick(0)">未领单</view>
 			<view class="nav-item" :class="{ current: filterIndex === 1 }" @click="tabClick(1)">已领单</view>
-			<view class="nav-item" :class="{ current: filterIndex === 2 }" @click="tabClick(2)">待送达</view>
-			<view class="nav-item" :class="{ current: filterIndex === 3 }" @click="tabClick(3)">已完成</view>
+			<view class="nav-item" :class="{ current: filterIndex === 2 }" @click="tabClick(2)">已取件</view>
+			<view class="nav-item" :class="{ current: filterIndex === 3 }" @click="tabClick(3)">待送达</view>
+			<view class="nav-item" :class="{ current: filterIndex === 4 }" @click="tabClick(4)">已完成</view>
 		</view>
 		<view class="goods-list">
 			<view v-for="(item, index) in logisticList" :key="index" class="goods-item" @click="confirm()">
@@ -13,7 +14,7 @@
 				<text class="text-xs item-center">取件地址: {{item.from}}</text>
 				<text class="text-xs item-center">送货地址：{{item.location.dom}}</text>
 				<view class="price-box">
-					<text>{{item.cus.info.nickName}}</text>
+					<text class="text-dots">{{item.cus.info.nickName}}</text>
 					<text>￥ {{item.money}}</text> 
 					<!-- 数量 3 -->
 				</view>
@@ -231,6 +232,12 @@ page,
 		padding-right: 10upx;
 		font-size: 24upx;
 		color: $font-color-light;
+		.text-dots{
+			width: 75%;
+			overflow:hidden;
+			text-overflow:ellipsis;
+			white-space:nowrap
+		}
 	}
 	.price {
 		font-size: $font-lg;
