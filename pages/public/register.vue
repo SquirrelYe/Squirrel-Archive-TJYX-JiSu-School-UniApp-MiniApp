@@ -220,7 +220,9 @@
 				else {
 					console.log(userinfo, mobile, password, index, schoolObj[index],openid,AccessTaken)							
 					// 调用注册接口
-					let user = await apis.user.cusCreate(mobile,openid,userinfo.nickName,password, schoolObj[index].id)
+					// 密码 MD5 转换
+					let passMd5 = this.$getMd5Encrp(password);
+					let user = await apis.user.cusCreate(mobile,openid,userinfo.nickName,passMd5, schoolObj[index].id)
 					if(user.data[1]){
 						// 初始化资产信息
 						let stock = await apis.stock.create(user.data[0].id,conf.free,0,0)  // u,m,s,c  新用户默认赠送conf.free块余额

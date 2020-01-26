@@ -90,7 +90,9 @@
 				uni.showLoading({ title:'正在登录大部队，请稍等哈~',mask:true })
 				let that = this
 				// 登录
-				that.$apis.user.cusLogin(mobile,password)
+				// 密码转换为 MD5
+				let passMd5 = this.$getMd5Encrp(password);
+				that.$apis.user.cusLogin(mobile,passMd5)
 				.then(res=>{
 					if(res.statusCode === 200){
 						console.log(res.data)

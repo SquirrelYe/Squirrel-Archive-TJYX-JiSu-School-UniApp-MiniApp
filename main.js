@@ -8,6 +8,16 @@ import apis from './utils/apis'
 import wx_api from './utils/wx_api'
 import msg_api from './utils/msg_api'
 import conf from './utils/config.js' 
+// MD5
+import md5 from 'js-md5'
+
+// MD5 算法加密封装
+const getMd5Encrp = (data) =>{	
+	// 针对请求的数据进行 sha-256 加密
+	let encrp = md5(data)
+	return encrp;
+}
+
 /**
  *  因工具函数属于公司资产, 所以直接在Vue实例挂载几个常用的函数
  *  所有测试用数据均存放于根目录json.js
@@ -57,6 +67,8 @@ Vue.prototype.$msg_api = msg_api;
 Vue.prototype.$host = conf.host;
 // 全局订单写入
 Vue.prototype.$ctran = apis.tran.create;
+// md5 算法加密封装
+Vue.prototype.$getMd5Encrp = getMd5Encrp;
 
 App.mpType = 'app'
 
