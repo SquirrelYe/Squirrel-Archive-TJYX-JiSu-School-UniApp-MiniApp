@@ -3,47 +3,49 @@
  * vuex管理登陆状态，具体可以参考官方登陆模板示例
  */
 import { mapMutations } from 'vuex';
-import conf from 'utils/config.js'
+import conf from 'utils/config.js';
 export default {
-	methods: { ...mapMutations(['login']) },
-	onLaunch: function() {
-		console.log('edition-->',conf.edition)
-		let hasLogin = uni.getStorageSync('hasLogin') || '';
-		let userInfo = uni.getStorageSync('userInfo') || '';
-		let user = uni.getStorageSync('user') || '';
-		if (hasLogin) { console.log('用户已登录-->',userInfo,user) }
-		
-		let _this = this
-		const updateManager = uni.getUpdateManager()
-		updateManager.onCheckForUpdate(function (res) {
-			console.warn(res)
-		  // 请求完新版本信息的回调
-		  if(res.hasUpdate) _this.$api.msg('有新版本发布')
-		  // else _this.$api.msg('暂无新版本')
-		})
-		updateManager.onUpdateReady(function () {
-		  uni.showModal({
-			title: '更新提示',
-			content: '新版本已经准备好，是否重启应用？',
-			success: function (res) {
-			  if (res.confirm) {
-				// 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
-				updateManager.applyUpdate()
-			  }
-			}
-		  })
-		})
-		updateManager.onUpdateFailed(function () {
-		  // 新版本下载失败
-		  _this.$api.msg('应用新版本下载失败')
-		})
-	},
-	onShow: function() {
-		console.log('App Show');
-	},
-	onHide: function() {
-		console.log('App Hide');
-	}
+  methods: { ...mapMutations(['login']) },
+  onLaunch: function () {
+    console.log('edition-->', conf.edition);
+    let hasLogin = uni.getStorageSync('hasLogin') || '';
+    let userInfo = uni.getStorageSync('userInfo') || '';
+    let user = uni.getStorageSync('user') || '';
+    if (hasLogin) {
+      console.log('用户已登录-->', userInfo, user);
+    }
+
+    let _this = this;
+    const updateManager = uni.getUpdateManager();
+    updateManager.onCheckForUpdate(function (res) {
+      console.warn(res);
+      // 请求完新版本信息的回调
+      if (res.hasUpdate) _this.$api.msg('有新版本发布');
+      // else _this.$api.msg('暂无新版本')
+    });
+    updateManager.onUpdateReady(function () {
+      uni.showModal({
+        title: '更新提示',
+        content: '新版本已经准备好，是否重启应用？',
+        success: function (res) {
+          if (res.confirm) {
+            // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
+            updateManager.applyUpdate();
+          }
+        }
+      });
+    });
+    updateManager.onUpdateFailed(function () {
+      // 新版本下载失败
+      _this.$api.msg('应用新版本下载失败');
+    });
+  },
+  onShow: function () {
+    console.log('App Show');
+  },
+  onHide: function () {
+    console.log('App Hide');
+  }
 };
 </script>
 
@@ -55,304 +57,304 @@ export default {
 	全局公共样式和字体图标
 */
 @font-face {
-	font-family: yticon;
-	font-weight: normal;
-	font-style: normal;
-	src: url('https://at.alicdn.com/t/font_1078604_w4kpxh0rafi.ttf');
-	// src: url('http://localhost:11130/iconfont/font.ttf');
-	// src: url('https://www.exiaopin.cn/api/iconfont/font.ttf');
+  font-family: yticon;
+  font-weight: normal;
+  font-style: normal;
+  src: url('https://at.alicdn.com/t/font_1078604_w4kpxh0rafi.ttf');
+  // src: url('http://localhost:11130/iconfont/font.ttf');
+  // src: url('https://www.exiaopin.cn/api/iconfont/font.ttf');
 }
 
 .yticon {
-	font-family: 'yticon' !important;
-	font-size: 16px;
-	font-style: normal;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+  font-family: 'yticon' !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .icon-yiguoqi1:before {
-	content: '\e700';
+  content: '\e700';
 }
 
 .icon-iconfontshanchu1:before {
-	content: '\e619';
+  content: '\e619';
 }
 
 .icon-iconfontweixin:before {
-	content: '\e611';
+  content: '\e611';
 }
 
 .icon-alipay:before {
-	content: '\e636';
+  content: '\e636';
 }
 
 .icon-shang:before {
-	content: '\e624';
+  content: '\e624';
 }
 
 .icon-shouye:before {
-	content: '\e626';
+  content: '\e626';
 }
 
 .icon-shanchu4:before {
-	content: '\e622';
+  content: '\e622';
 }
 
 .icon-xiaoxi:before {
-	content: '\e618';
+  content: '\e618';
 }
 
 .icon-jiantour-copy:before {
-	content: '\e600';
+  content: '\e600';
 }
 
 .icon-fenxiang2:before {
-	content: '\e61e';
+  content: '\e61e';
 }
 
 .icon-pingjia:before {
-	content: '\e67b';
+  content: '\e67b';
 }
 
 .icon-daifukuan:before {
-	content: '\e68f';
+  content: '\e68f';
 }
 
 .icon-pinglun-copy:before {
-	content: '\e612';
+  content: '\e612';
 }
 
 .icon-dianhua-copy:before {
-	content: '\e621';
+  content: '\e621';
 }
 
 .icon-shoucang:before {
-	content: '\e645';
+  content: '\e645';
 }
 
 .icon-xuanzhong2:before {
-	content: '\e62f';
+  content: '\e62f';
 }
 
 .icon-gouwuche_:before {
-	content: '\e630';
+  content: '\e630';
 }
 
 .icon-icon-test:before {
-	content: '\e60c';
+  content: '\e60c';
 }
 
 .icon-icon-test1:before {
-	content: '\e632';
+  content: '\e632';
 }
 
 .icon-bianji:before {
-	content: '\e646';
+  content: '\e646';
 }
 
 .icon-jiazailoading-A:before {
-	content: '\e8fc';
+  content: '\e8fc';
 }
 
 .icon-zuoshang:before {
-	content: '\e613';
+  content: '\e613';
 }
 
 .icon-jia2:before {
-	content: '\e60a';
+  content: '\e60a';
 }
 
 .icon-huifu:before {
-	content: '\e68b';
+  content: '\e68b';
 }
 
 .icon-sousuo:before {
-	content: '\e7ce';
+  content: '\e7ce';
 }
 
 .icon-arrow-fine-up:before {
-	content: '\e601';
+  content: '\e601';
 }
 
 .icon-hot:before {
-	content: '\e60e';
+  content: '\e60e';
 }
 
 .icon-lishijilu:before {
-	content: '\e6b9';
+  content: '\e6b9';
 }
 
 .icon-zhengxinchaxun-zhifubaoceping-:before {
-	content: '\e616';
+  content: '\e616';
 }
 
 .icon-naozhong:before {
-	content: '\e64a';
+  content: '\e64a';
 }
 
 .icon-xiatubiao--copy:before {
-	content: '\e608';
+  content: '\e608';
 }
 
 .icon-shoucang_xuanzhongzhuangtai:before {
-	content: '\e6a9';
+  content: '\e6a9';
 }
 
 .icon-jia1:before {
-	content: '\e61c';
+  content: '\e61c';
 }
 
 .icon-bangzhu1:before {
-	content: '\e63d';
+  content: '\e63d';
 }
 
 .icon-arrow-left-bottom:before {
-	content: '\e602';
+  content: '\e602';
 }
 
 .icon-arrow-right-bottom:before {
-	content: '\e603';
+  content: '\e603';
 }
 
 .icon-arrow-left-top:before {
-	content: '\e604';
+  content: '\e604';
 }
 
 .icon-icon--:before {
-	content: '\e744';
+  content: '\e744';
 }
 
 .icon-zuojiantou-up:before {
-	content: '\e605';
+  content: '\e605';
 }
 
 .icon-xia:before {
-	content: '\e62d';
+  content: '\e62d';
 }
 
 .icon--jianhao:before {
-	content: '\e60b';
+  content: '\e60b';
 }
 
 .icon-weixinzhifu:before {
-	content: '\e61a';
+  content: '\e61a';
 }
 
 .icon-comment:before {
-	content: '\e64f';
+  content: '\e64f';
 }
 
 .icon-weixin:before {
-	content: '\e61f';
+  content: '\e61f';
 }
 
 .icon-fenlei1:before {
-	content: '\e620';
+  content: '\e620';
 }
 
 .icon-erjiye-yucunkuan:before {
-	content: '\e623';
+  content: '\e623';
 }
 
 .icon-Group-:before {
-	content: '\e688';
+  content: '\e688';
 }
 
 .icon-you:before {
-	content: '\e606';
+  content: '\e606';
 }
 
 .icon-forward:before {
-	content: '\e607';
+  content: '\e607';
 }
 
 .icon-tuijian:before {
-	content: '\e610';
+  content: '\e610';
 }
 
 .icon-bangzhu:before {
-	content: '\e679';
+  content: '\e679';
 }
 
 .icon-share:before {
-	content: '\e656';
+  content: '\e656';
 }
 
 .icon-yiguoqi:before {
-	content: '\e997';
+  content: '\e997';
 }
 
 .icon-shezhi1:before {
-	content: '\e61d';
+  content: '\e61d';
 }
 
 .icon-fork:before {
-	content: '\e61b';
+  content: '\e61b';
 }
 
 .icon-kafei:before {
-	content: '\e66a';
+  content: '\e66a';
 }
 
 .icon-iLinkapp-:before {
-	content: '\e654';
+  content: '\e654';
 }
 
 .icon-saomiao:before {
-	content: '\e60d';
+  content: '\e60d';
 }
 
 .icon-shezhi:before {
-	content: '\e60f';
+  content: '\e60f';
 }
 
 .icon-shouhoutuikuan:before {
-	content: '\e631';
+  content: '\e631';
 }
 
 .icon-gouwuche:before {
-	content: '\e609';
+  content: '\e609';
 }
 
 .icon-dizhi:before {
-	content: '\e614';
+  content: '\e614';
 }
 
 .icon-fenlei:before {
-	content: '\e706';
+  content: '\e706';
 }
 
 .icon-xingxing:before {
-	content: '\e70b';
+  content: '\e70b';
 }
 
 .icon-tuandui:before {
-	content: '\e633';
+  content: '\e633';
 }
 
 .icon-zuanshi:before {
-	content: '\e615';
+  content: '\e615';
 }
 
 .icon-zuo:before {
-	content: '\e63c';
+  content: '\e63c';
 }
 
 .icon-shoucang2:before {
-	content: '\e62e';
+  content: '\e62e';
 }
 
 .icon-shouhuodizhi:before {
-	content: '\e712';
+  content: '\e712';
 }
 
 .icon-yishouhuo:before {
-	content: '\e71a';
+  content: '\e71a';
 }
 
 .icon-dianzan-ash:before {
-	content: '\e617';
+  content: '\e617';
 }
 
 view,
@@ -379,90 +381,90 @@ audio,
 camera,
 image,
 video {
-	box-sizing: border-box;
+  box-sizing: border-box;
 }
 /* 骨架屏替代方案 */
 .Skeleton {
-	background: #f3f3f3;
-	padding: 20upx 0;
-	border-radius: 8upx;
+  background: #f3f3f3;
+  padding: 20upx 0;
+  border-radius: 8upx;
 }
 
 /* 图片载入替代方案 */
 .image-wrapper {
-	font-size: 0;
-	background: #f3f3f3;
-	border-radius: 4px;
+  font-size: 0;
+  background: #f3f3f3;
+  border-radius: 4px;
 
-	image {
-		width: 100%;
-		height: 100%;
-		transition: 0.6s;
-		opacity: 0;
+  image {
+    width: 100%;
+    height: 100%;
+    transition: 0.6s;
+    opacity: 0;
 
-		&.loaded {
-			opacity: 1;
-		}
-	}
+    &.loaded {
+      opacity: 1;
+    }
+  }
 }
 
 .clamp {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
 }
 
 .common-hover {
-	background: #f5f5f5;
+  background: #f5f5f5;
 }
 
 /*边框*/
 .b-b:after,
 .b-t:after {
-	position: absolute;
-	z-index: 3;
-	left: 0;
-	right: 0;
-	height: 0;
-	content: '';
-	transform: scaleY(0.5);
-	border-bottom: 1px solid $border-color-base;
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  right: 0;
+  height: 0;
+  content: '';
+  transform: scaleY(0.5);
+  border-bottom: 1px solid $border-color-base;
 }
 
 .b-b:after {
-	bottom: 0;
+  bottom: 0;
 }
 
 .b-t:after {
-	top: 0;
+  top: 0;
 }
 
 /* button样式改写 */
 uni-button,
 button {
-	height: 80upx;
-	line-height: 80upx;
-	font-size: $font-lg + 2upx;
-	font-weight: normal;
+  height: 80upx;
+  line-height: 80upx;
+  font-size: $font-lg + 2upx;
+  font-weight: normal;
 
-	&.no-border:before,
-	&.no-border:after {
-		border: 0;
-	}
+  &.no-border:before,
+  &.no-border:after {
+    border: 0;
+  }
 }
 
 uni-button[type='default'],
 button[type='default'] {
-	color: $font-color-dark;
+  color: $font-color-dark;
 }
 
 /* input 样式 */
 .input-placeholder {
-	color: #999999;
+  color: #999999;
 }
 
 .placeholder {
-	color: #999999;
+  color: #999999;
 }
 </style>

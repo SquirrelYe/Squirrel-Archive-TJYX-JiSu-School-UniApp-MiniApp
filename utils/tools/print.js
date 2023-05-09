@@ -4,10 +4,9 @@ const config = {
   error: true,
   warn: true,
   count: true
-}
+};
 
 module.exports = {
-
   //普通
   log(...arg) {
     if (config.log) return console.log(...arg);
@@ -28,5 +27,4 @@ module.exports = {
   count(...arg) {
     if (config.count) return console.count(...arg);
   }
-
-}
+};
